@@ -3,7 +3,7 @@ name = "dobble"
 version = "0.1.0"
 description = ""
 authors = ["Marvin Theiss <mrvnthss@mail.de>"]
-license = "MIT"
+license = "GNU General Public License v3.0"
 readme = "README.md"
 
 [tool.poetry.dependencies]
