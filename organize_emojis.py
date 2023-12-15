@@ -44,10 +44,6 @@ def organize_emojis(directory: str) -> None:
             shutil.move(source_path, target_dir)
 
 
-def is_emojis_organized() -> bool:
-    """Check if emojis have been organized into subdirectories.
-
-    Returns:
-        bool: True if emojis have been organized, False otherwise.
-    """
-    return os.path.exists(constants.EMOJIS_ORGANIZED_FLAG)
+if __name__ == '__main__':
+    organize_emojis('color')
+    organize_emojis('black')

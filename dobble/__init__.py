@@ -10,13 +10,3 @@ Modules:
     - packing: Provides functions for handling circle packing data.
     - utils: Provides utility functions for finite projective planes.
 """
-
-from . import constants
-from ..organize_emojis import is_emojis_organized, organize_emojis
-
-if not is_emojis_organized():
-    organize_emojis('color')
-    organize_emojis('black')
-
-    with open(constants.EMOJIS_ORGANIZED_FLAG, "w") as flag_file:
-        flag_file.write("Emojis have been organized.")
