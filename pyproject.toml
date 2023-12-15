@@ -1,10 +1,11 @@
 [tool.poetry]
 name = "dobble"
 version = "0.1.0"
-description = ""
+description = "A Python package for generating individual Dobble playing cards and full decks with customizable emojis and layouts."
 authors = ["Marvin Theiss <mrvnthss@mail.de>"]
 license = "GNU General Public License v3.0"
 readme = "README.md"
+include = ["data/*"]
 
 [tool.poetry.dependencies]
 python = "^3.12"

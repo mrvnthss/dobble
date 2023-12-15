@@ -17,14 +17,16 @@ respectively.
 """
 
 # Standard Library Imports
-import os
 import csv
+import io
+import os
 import random
+from importlib import resources
 
 # Third-Party Library Imports
+from PIL import Image, ImageDraw
 import numpy as np
 import pandas as pd
-from PIL import Image, ImageDraw
 
 # Local Imports
 from . import constants
@@ -66,10 +68,10 @@ def _get_hexcodes(mode: str, group: str) -> list[str]:
     if mode not in ['color', 'black']:
         raise ValueError("Invalid mode: must be either 'color' or 'black'.")
 
-    dir_path = os.path.join(constants.EMOJIS_DIR, mode, group)
+    package = f'{constants.EMOJIS_DIR}.{mode}.{group}'
 
     hexcodes = []
-    for file in os.listdir(dir_path):
+    for file in resources.contents(package):
         if file.endswith('.png'):
             # Extract the base name without extension (i.e., without '.png')
             hexcode = os.path.splitext(file)[0]
@@ -85,34 +87,35 @@ def _load_emoji(mode: str, group: str, hexcode: str, return_pil: bool = False) -
     Args:
         mode (str): The mode of the emojis.  Either 'color' or 'black'.
         group (str): The name of the group of emojis to use.
-        hexcode (str): The filename of the emoji to load.
+        hexcode (str): The hexcode of the emoji to load.
         return_pil (bool): Whether to return a PIL Image (True) or a NumPy array (False).  Defaults to False.
 
     Returns:
         Image.Image or np.ndarray: The loaded emoji image.
 
     Raises:
-        ValueError: If the specified emoji file is not found or is not a valid PNG file.
+        FileNotFoundError: If the specified emoji is not found.
     """
-    # Create the file path pointing to the emoji that we want to load
-    file_path = os.path.join(constants.EMOJIS_DIR, mode, group, hexcode + '.png')
+    # Filename of the emoji that we want to load
+    file_name = hexcode + '.png'
 
-    # Check if the file exists and verify that it is a valid PNG file
-    if os.path.isfile(file_path):
-        try:
-            # Verify that the file is a valid PNG file and load it
-            Image.open(file_path).verify()
-            emoji_image = Image.open(file_path)
+    try:
+        # Open the file using importlib.resources
+        with resources.open_binary(f'{constants.EMOJIS_DIR}.{mode}.{group}', file_name) as file:
+            # Read the file into a bytes object
+            data = file.read()
 
-            # Convert to RGBA mode if necessary
-            emoji_image = emoji_image.convert('RGBA') if emoji_image.mode != 'RGBA' else emoji_image
+        # Create a BytesIO object from the data, and load the image from the BytesIO object
+        data_io = io.BytesIO(data)
+        emoji_image = Image.open(data_io)
 
-            return emoji_image if return_pil else np.array(emoji_image)
+        # Convert to RGBA mode if necessary
+        emoji_image = emoji_image.convert('RGBA') if emoji_image.mode != 'RGBA' else emoji_image
 
-        except (IOError, SyntaxError) as e:
-            raise ValueError(f'Failed to load emoji: {file_path} is not a valid PNG file.') from e
-    else:
-        raise ValueError(f'Failed to load emoji: {file_path} does not exist.')
+        return emoji_image if return_pil else np.array(emoji_image)
+
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Failed to load emoji: {file_name} not found.")
 
 
 def _rescale_emoji(emoji_image: np.ndarray, scale: float, return_pil: bool = True) -> Image.Image | np.ndarray:
@@ -270,7 +273,7 @@ def create_dobble_deck(
     """Create a full deck of Dobble playing cards (i.e., generate and save images).
 
     Args:
-        deck_name (str): The name of the deck.  This will be used to create the subdirectory in which all the images
+        deck_name (str): The name of the deck.  This will be used to create the directory in which all the images
             are stored.
         emojis (list[dict[str, str]]): The list of emojis to be used for the deck of playing cards.  Each list entry is
             a dictionary specifying the mode, group, and hexcode of the emoji to be used.
@@ -297,16 +300,12 @@ def create_dobble_deck(
         # If no 'save_dir' was provided, save the images in the current working directory
         deck_dir = os.path.join(os.getcwd(), deck_name)
 
-    # If the 'deck_dir' already exists, abort the function and inform the user, else create the directory
+    # If the 'deck_dir' already exists, abort the function and inform the user
     if os.path.exists(deck_dir):
         raise ValueError(f"Invalid 'deck_name': '{deck_name}' already exists in the specified 'save_dir'.")
-    else:
-        os.makedirs(deck_dir)
 
-    # Create the subdirectory in which to store the information about the deck (i.e., information for each playing card
-    # and emoji labels)
-    csv_dir = os.path.join(deck_dir, 'info')
-    os.makedirs(csv_dir)
+    # NOTE: We do not create the directory right away because we want to make sure that the number of emojis provided
+    #       is sufficient to create the deck.  If not, we raise an error and do not create the directory.
 
     # Compute number of cards in the deck
     # NOTE: Remember that there are as many distinct emojis in a deck as there are playing cards, and that the number of
@@ -324,12 +323,19 @@ def create_dobble_deck(
         emojis = random.sample(emojis, num_cards)
         print(f'WARNING: More emojis provided than needed.  Randomly choosing a subset of {num_cards} emojis.')
 
+    # Create the directories in which to store the images and CSV files.  The CSV files are stored in a subdirectory
+    # called 'info'.  The CSV files contain information about the individual cards (i.e., which emojis are placed on
+    # which card) and the emojis (i.e., the hexcode of each emoji and its corresponding label).
+    csv_dir = os.path.join(deck_dir, 'info')
+    os.makedirs(deck_dir)
+    os.makedirs(csv_dir)
+
     # Extract the hexcodes of all emojis used to create the deck
     hexcodes = [emoji['hexcode'] for emoji in emojis]
 
     # Create a CSV file containing the hexcode of each emoji along with a counter from 1 to 'len(emojis)' that serves as
     # the emoji label
-    emojis_info = pd.DataFrame({'Hexcode': hexcodes, 'Label': range(len(hexcodes))})
+    emojis_info = pd.DataFrame({'Hexcode': hexcodes, 'Label': range(1, len(hexcodes) + 1)})
     emojis_csv = os.path.join(csv_dir, 'emojis.csv')
     emojis_info.to_csv(emojis_csv, index=False)
 
@@ -339,7 +345,7 @@ def create_dobble_deck(
         writer = csv.writer(f)
         writer.writerow(
             ['FilePath'] + ['PackingType'] + ['Emoji' + str(i + 1) for i in range(emojis_per_card)]
-            )
+        )
 
     # Compute incidence matrix of corresponding finite projective plane.  This determines which emojis are placed on
     # which cards.
@@ -362,7 +368,7 @@ def create_dobble_deck(
 
         # Create playing card and save in directory
         dobble_card = create_dobble_card(chosen_emojis, packing_type, image_size, scale)
-        file_name = f'{deck_name}_{card + 1: 03d}.png'
+        file_name = f'{deck_name}_{card + 1:03d}.png'
         file_path = os.path.join(deck_dir, file_name)
         dobble_card.save(file_path)
 

@@ -16,7 +16,7 @@ particular, the paths to the packing data files.
 """
 
 # Standard Library Imports
-import os
+from importlib import resources
 
 # Third-Party Library Imports
 import numpy as np
@@ -38,10 +38,10 @@ def _read_coordinates_from_file(num_circles: int, packing_type: str) -> list[lis
     Raises:
         FileNotFoundError: If the text file for the specified packing type and number of circles is not found.
     """
-    file_name = os.path.join(constants.PACKING_DIR, packing_type, packing_type + str(num_circles) + '.txt')
+    file_name = packing_type + str(num_circles) + '.txt'
 
     try:
-        with open(file_name, 'r') as file:
+        with resources.open_text(f'{constants.PACKING_DIR}.{packing_type}', file_name) as file:
             # Read values line by line, split into separate columns and get rid of first column of text file
             coordinates = [line.strip().split()[1:] for line in file.readlines()]
             coordinates = [[float(coordinate) for coordinate in coordinates_list] for coordinates_list in coordinates]
@@ -64,10 +64,10 @@ def _read_radius_from_file(num_circles: int, packing_type: str) -> float:
         FileNotFoundError: If the text file for the specified packing type is not found.
         ValueError: If no radius is found for the specified packing type and number of circles.
     """
-    file_name = os.path.join(constants.PACKING_DIR, packing_type, 'radius.txt')
+    file_name = constants.RADIUS_TXT
 
     try:
-        with open(file_name, 'r') as file:
+        with resources.open_text(f'{constants.PACKING_DIR}.{packing_type}', file_name) as file:
             for line in file:
                 values = line.strip().split()
                 if len(values) == 2 and int(values[0]) == num_circles:

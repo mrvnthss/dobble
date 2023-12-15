@@ -14,22 +14,15 @@ Constants:
     - CLASSIC_DOBBLE_EMOJIS: A list of emojis to resemble the classic Dobble game.
 """
 
-# Standard Library Imports
-import os
+# Names of directories
+EMOJIS_DIR = 'data.openmoji'
+PACKING_DIR = 'data.packing_data'
 
-# Get the root directory of the project
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Names of specific files
+OPENMOJI_JSON = 'openmoji.json'
+RADIUS_TXT = 'radius.txt'
 
-# Paths to directories
-DATA_DIR = os.path.join(ROOT_DIR, 'data')
-EMOJIS_DIR = os.path.join(DATA_DIR, 'openmoji')
-PACKING_DIR = os.path.join(DATA_DIR, 'packing_data')
-
-# Paths to specific files
-OPENMOJI_JSON = os.path.join(EMOJIS_DIR, 'openmoji.json')
-EMOJIS_ORGANIZED_FLAG = os.path.join(ROOT_DIR, ".emojis_organized")
-
-# Constants for packing types
+# Packing types dictionary
 PACKING_TYPES_DICT = {
     'cci': (lambda n: 1, 'increasing'),
     'ccib': (lambda n: n ** (-1 / 5), 'decreasing'),
@@ -98,3 +91,4 @@ CLASSIC_DOBBLE_EMOJIS = [
     {'mode': 'color', 'group': 'symbols', 'hexcode': '262F'},           # yin yang
     {'mode': 'color', 'group': 'animals-nature', 'hexcode': '1F993'}    # zebra
 ]
+
