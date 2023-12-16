@@ -72,13 +72,15 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
 
     Example:
         >>> compute_incidence_matrix(2)
-        array([[ True,  True,  True, False, False, False, False],
-               [ True, False, False,  True,  True, False, False],
-               [ True, False, False, False, False,  True,  True],
-               [False,  True, False,  True, False,  True, False],
-               [False,  True, False, False,  True, False,  True],
-               [False, False,  True,  True, False, False,  True],
-               [False, False,  True, False,  True,  True, False]])
+        array([
+            [True, True, True, False, False, False, False],
+            [True, False, False, True, True, False, False],
+            [True, False, False, False, False, True, True],
+            [False, True, False, True, False, True, False],
+            [False, True, False, False, True, False, True],
+            [False, False, True, True, False, False, True],
+            [False, False, True, False, True, True, False]
+        ])
     """
     if not _is_prime_power(order):
         raise ValueError("The argument 'order' must be a prime power.")

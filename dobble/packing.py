@@ -177,7 +177,7 @@ def get_packing_data(num_circles: int, packing_type: str, image_size: int) -> di
     rel_coordinates_array = _read_coordinates_from_file(num_circles, packing_type)
     coordinates = [
         _convert_coordinates_to_pixels(rel_coordinates, image_size) for rel_coordinates in rel_coordinates_array
-        ]
+    ]
 
     # Sizes
     largest_radius = _read_radius_from_file(num_circles, packing_type)
@@ -188,6 +188,6 @@ def get_packing_data(num_circles: int, packing_type: str, image_size: int) -> di
     packing_data = {
         'coordinates': coordinates,
         'sizes': sizes
-        }
+    }
 
     return packing_data
