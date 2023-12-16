@@ -5,6 +5,18 @@ import pytest
 # Local Imports
 from dobble import utils
 
+# Constants for Testing
+NEGATIVE_NUMBER = -7
+PRIME_NUMBER = 13
+NON_PRIME_NUMBER = 14
+LARGE_PRIME_NUMBER = 7919
+LARGE_NON_PRIME_NUMBER = 7920
+PRIME_POWER = 8
+NON_PRIME_POWER = 10
+LARGE_PRIME_POWER = 3 ** 5
+LARGE_NON_PRIME_POWER = 10 ** 4
+SMALL_PRIME_POWER = 2
+
 
 def test_is_prime_with_zero():
     assert not utils._is_prime(0)
@@ -15,23 +27,23 @@ def test_is_prime_with_one():
 
 
 def test_is_prime_with_negative_number():
-    assert not utils._is_prime(-7)
+    assert not utils._is_prime(NEGATIVE_NUMBER)
 
 
 def test_is_prime_with_prime_number():
-    assert utils._is_prime(7)
+    assert utils._is_prime(PRIME_NUMBER)
 
 
 def test_is_prime_with_non_prime_number():
-    assert not utils._is_prime(8)
+    assert not utils._is_prime(NON_PRIME_NUMBER)
 
 
 def test_is_prime_with_large_prime_number():
-    assert utils._is_prime(7919)
+    assert utils._is_prime(LARGE_PRIME_NUMBER)
 
 
 def test_is_prime_with_large_non_prime_number():
-    assert not utils._is_prime(7920)
+    assert not utils._is_prime(LARGE_NON_PRIME_NUMBER)
 
 
 def test_is_prime_power_with_zero():
@@ -43,23 +55,23 @@ def test_is_prime_power_with_one():
 
 
 def test_is_prime_power_with_negative_number():
-    assert not utils._is_prime_power(-8)
+    assert not utils._is_prime_power(NEGATIVE_NUMBER)
 
 
 def test_is_prime_power_with_prime_power():
-    assert utils._is_prime_power(8)
+    assert utils._is_prime_power(PRIME_POWER)
 
 
 def test_is_prime_power_with_non_prime_power():
-    assert not utils._is_prime_power(10)
+    assert not utils._is_prime_power(NON_PRIME_POWER)
 
 
 def test_is_prime_power_with_large_prime_power():
-    assert utils._is_prime_power(6561)  # 6561 = 3^8
+    assert utils._is_prime_power(LARGE_PRIME_POWER)
 
 
 def test_is_prime_power_with_large_non_prime_power():
-    assert not utils._is_prime_power(10000)  # 10^4
+    assert not utils._is_prime_power(LARGE_NON_PRIME_POWER)
 
 
 def test_compute_incidence_matrix_with_zero():
@@ -74,10 +86,10 @@ def test_compute_incidence_matrix_with_one():
 
 def test_compute_incidence_matrix_with_negative_number():
     with pytest.raises(ValueError):
-        utils.compute_incidence_matrix(-2)
+        utils.compute_incidence_matrix(NEGATIVE_NUMBER)
 
 
-def test_compute_incidence_matrix_with_prime_power():
+def test_compute_incidence_matrix_with_small_prime_power():
     expected_matrix = np.array([
         [True, True, True, False, False, False, False],
         [True, False, False, True, True, False, False],
@@ -87,14 +99,14 @@ def test_compute_incidence_matrix_with_prime_power():
         [False, False, True, True, False, False, True],
         [False, False, True, False, True, True, False]
     ])
-    np.testing.assert_array_equal(utils.compute_incidence_matrix(2), expected_matrix)
+    np.testing.assert_array_equal(utils.compute_incidence_matrix(SMALL_PRIME_POWER), expected_matrix)
 
 
 def test_compute_incidence_matrix_with_large_prime_power():
     # This test is more of a performance test, as we don't check the result
-    utils.compute_incidence_matrix(81)  # 81 = 3^4
+    utils.compute_incidence_matrix(LARGE_PRIME_POWER)
 
 
 def test_compute_incidence_matrix_with_non_prime_power():
     with pytest.raises(ValueError):
-        utils.compute_incidence_matrix(6)  # 6 = 2 * 3
+        utils.compute_incidence_matrix(NON_PRIME_POWER)
