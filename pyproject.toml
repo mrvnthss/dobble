@@ -12,6 +12,7 @@ python = "^3.11"
 numpy = "^1.26.2"
 pillow = "^10.1.0"
 pandas = "^2.1.4"
+pylint = "^3.0.3"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.3"
