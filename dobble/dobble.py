@@ -164,6 +164,7 @@ def _rescale_emoji(emoji_image: np.ndarray, scale: float, return_pil: bool = Tru
 
     # Convert to PIL Image and rescale
     emoji_image_pil = Image.fromarray(emoji_image)
+    # pylint: disable=no-member
     emoji_image_pil = emoji_image_pil.resize((target_size, target_size), Image.LANCZOS)
 
     # Compute offset for centering/cropping the rescaled image
@@ -252,17 +253,14 @@ def create_dobble_card(emojis: list[dict[str, str]], packing_type: str = 'ccir',
 
     # Place emojis on card
     for count, emoji in enumerate(emojis):
-        # Get mode, group, and hexcode of emoji
-        mode = emoji['mode']
-        group = emoji['group']
-        hexcode = emoji['hexcode']
+        emoji_dict = {
+            'image': _rescale_emoji(_load_emoji(emoji['mode'], emoji['group'], emoji['hexcode']), scale),
+            'size': packing_data['sizes'][count],
+            'center': packing_data['coordinates'][count],
+            'rotation_angle': random.randint(0, 359)
+        }
 
-        # Load emoji, rescale, and place on card
-        emoji_image = _rescale_emoji(_load_emoji(mode, group, hexcode), scale)
-        emoji_size = packing_data['sizes'][count]
-        emoji_center = packing_data['coordinates'][count]
-        rotation_angle = random.randint(0, 359)
-        dobble_card = _place_emoji(dobble_card, emoji_image, emoji_size, emoji_center, rotation_angle)
+        dobble_card = _place_emoji(dobble_card, **emoji_dict)
 
     return dobble_card if return_pil else np.array(dobble_card)
 
