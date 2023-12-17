@@ -1,7 +1,7 @@
 # dobble
 
 [![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
-[![Python](https://img.shields.io/badge/Python-3.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
+[![Python](https://img.shields.io/badge/Python-3.11_|_3.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
 
 ## Table of Contents
 

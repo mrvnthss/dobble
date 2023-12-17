@@ -8,7 +8,7 @@ readme = "README.md"
 include = ["data/*"]
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.11"
 numpy = "^1.26.2"
 pillow = "^10.1.0"
 pandas = "^2.1.4"
