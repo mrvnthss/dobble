@@ -46,8 +46,10 @@ def _read_coordinates_from_file(num_circles: int, packing_type: str) -> list[lis
             coordinates = [line.strip().split()[1:] for line in file.readlines()]
             coordinates = [[float(coordinate) for coordinate in coordinates_list] for coordinates_list in coordinates]
         return coordinates
-    except FileNotFoundError:
-        raise FileNotFoundError(f"Coordinates file for '{packing_type}' packing with {num_circles} circles not found.")
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(
+            f"Coordinates file for '{packing_type}' packing with {num_circles} circles not found."
+        ) from exc
 
 
 def _read_radius_from_file(num_circles: int, packing_type: str) -> float:
@@ -73,8 +75,8 @@ def _read_radius_from_file(num_circles: int, packing_type: str) -> float:
                 if len(values) == 2 and int(values[0]) == num_circles:
                     return float(values[1])
         raise ValueError(f"No radius found for packing type '{packing_type}' with {num_circles} circles.")
-    except FileNotFoundError:
-        raise FileNotFoundError(f"Radius file for '{packing_type}' packing not found.")
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(f"Radius file for '{packing_type}' packing not found.") from exc
 
 
 def _compute_radii(num_circles: int, packing_type: str, largest_radius: float) -> list[float]:
@@ -93,7 +95,8 @@ def _compute_radii(num_circles: int, packing_type: str, largest_radius: float) -
 
     # If the function 'radius_function' is decreasing, we reverse the order of 'function_values' so that the values are
     # listed in increasing order
-    function_values.reverse() if monotonicity == 'decreasing' else None
+    if monotonicity == 'decreasing':
+        function_values.reverse()
 
     ratio = largest_radius / function_values[-1]
     radii = [function_values[n] * ratio for n in range(num_circles)]

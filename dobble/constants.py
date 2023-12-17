@@ -91,4 +91,3 @@ CLASSIC_DOBBLE_EMOJIS = [
     {'mode': 'color', 'group': 'symbols', 'hexcode': '262F'},           # yin yang
     {'mode': 'color', 'group': 'animals-nature', 'hexcode': '1F993'}    # zebra
 ]
-

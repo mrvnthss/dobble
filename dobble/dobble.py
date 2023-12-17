@@ -114,8 +114,8 @@ def _load_emoji(mode: str, group: str, hexcode: str, return_pil: bool = False) -
 
         return emoji_image if return_pil else np.array(emoji_image)
 
-    except FileNotFoundError:
-        raise FileNotFoundError(f"Failed to load emoji: {file_name} not found.")
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(f"Failed to load emoji: {file_name} not found.") from exc
 
 
 def _rescale_emoji(emoji_image: np.ndarray, scale: float, return_pil: bool = True) -> Image.Image | np.ndarray:
@@ -317,7 +317,7 @@ def create_dobble_deck(
     num_emojis_provided = len(emojis)
     if num_emojis_provided < num_cards:
         raise ValueError('Not enough emojis provided to create the Dobble deck.')
-    elif num_emojis_provided > num_cards:
+    if num_emojis_provided > num_cards:
         # If there are more emojis than we need, we randomly choose a subset of the appropriate size and raise a warning
         # to inform the user
         emojis = random.sample(emojis, num_cards)
@@ -341,7 +341,7 @@ def create_dobble_deck(
 
     # Set up a CSV file to store information about the individual cards
     deck_csv = os.path.join(csv_dir, 'deck.csv')
-    with open(deck_csv, 'w', newline='') as f:
+    with open(deck_csv, 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerow(
             ['FilePath'] + ['PackingType'] + ['Emoji' + str(i + 1) for i in range(emojis_per_card)]
@@ -352,7 +352,7 @@ def create_dobble_deck(
     incidence_matrix = utils.compute_incidence_matrix(order)
 
     # If no 'packing_type' was provided, choose one randomly each time from the 'PACKING_TYPES_DICT' dictionary
-    choose_randomly = True if packing_type is None else False
+    choose_randomly = packing_type is None
 
     # Create playing cards one-by-one using the incidence matrix to decide which emojis to put on which card
     # NOTE: len(a) is equivalent to np.shape(a)[0] for N-D arrays with N>=1.
@@ -373,7 +373,7 @@ def create_dobble_deck(
         dobble_card.save(file_path)
 
         # Write card information to the CSV file
-        with open(deck_csv, 'a', newline='') as f:
+        with open(deck_csv, 'a', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             writer.writerow([file_path] + [packing_type] + [emoji['hexcode'] for emoji in chosen_emojis])
 

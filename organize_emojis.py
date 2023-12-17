@@ -1,3 +1,13 @@
+"""Module for organizing emojis into subdirectories.
+
+This module is used to organize the emojis into subdirectories based on their OpenMoji 'group' attribute.
+
+Functions:
+    - organize_emojis: Organize emojis into subdirectories based on their OpenMoji 'group' attribute.
+
+The module uses the 'constants' module from the 'dobble' package.
+"""
+
 # Standard Library Imports
 import os
 import json
@@ -17,7 +27,7 @@ def organize_emojis(directory: str) -> None:
         None
     """
     # Read JSON file provided by OpenMoji
-    with open(constants.OPENMOJI_JSON, 'r') as json_file:
+    with open(constants.OPENMOJI_JSON, 'r', encoding='utf-8') as json_file:
         emojis_data = json.load(json_file)
 
     # Obtain unique 'group' values

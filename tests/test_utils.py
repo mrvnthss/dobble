@@ -1,3 +1,5 @@
+# pylint: disable=protected-access, missing-function-docstring
+
 # Third-Party Library Imports
 import numpy as np
 import pytest
