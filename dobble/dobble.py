@@ -176,14 +176,10 @@ def _rescale_emoji(emoji_image: np.ndarray, scale: float, return_pil: bool = Tru
         rescaled_image = Image.new('RGBA', (image_size, image_size), (255, 255, 255, 0))
         rescaled_image.paste(emoji_image_pil, (offset, offset), mask=emoji_image_pil)
     elif rescaling_factor > 1:
-        # Compute coordinates for cropping
-        left = offset
-        top = offset
-        right = left + image_size
-        bottom = top + image_size
-
         # Crop rescaled (larger) image
-        rescaled_image = emoji_image_pil.crop((left, top, right, bottom))
+        rescaled_image = emoji_image_pil.crop(
+            (offset, offset, image_size + offset, image_size + offset)
+        )
     else:
         # Return original image
         rescaled_image = emoji_image_pil
@@ -260,7 +256,9 @@ def create_dobble_card(emojis: list[dict[str, str]], packing_type: str = 'ccir',
             'rotation_angle': random.randint(0, 359)
         }
 
-        dobble_card = _place_emoji(dobble_card, **emoji_dict)
+        dobble_card = _place_emoji(
+            dobble_card, emoji_dict['image'], emoji_dict['size'], emoji_dict['center'], emoji_dict['rotation_angle']
+        )
 
     return dobble_card if return_pil else np.array(dobble_card)
 
