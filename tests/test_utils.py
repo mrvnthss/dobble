@@ -1,5 +1,11 @@
 # pylint: disable=protected-access, missing-function-docstring
 
+"""Unit tests for the utility functions in the 'dobble' package.
+
+The tests cover all the functions from the 'dobble.utils' module. Each function in this module represents a test case,
+and uses the pytest framework for setting up the test, executing it, and checking the results.
+"""
+
 # Third-Party Library Imports
 import numpy as np
 import pytest
