@@ -187,16 +187,18 @@ def _rescale_emoji(emoji_image: np.ndarray, scale: float, return_pil: bool = Tru
     return rescaled_image if return_pil else np.array(rescaled_image)
 
 
-def _place_emoji(image: Image.Image, emoji_image: Image.Image, emoji_size: int, emoji_center: tuple[int, int],
-                 rotation_angle: float = None, return_pil: bool = True) -> Image.Image | np.ndarray:
+def _place_emoji(image: Image.Image, emoji_image: Image.Image, placement: dict[str, int | tuple[int, int] | float],
+                 return_pil: bool = True) -> Image.Image | np.ndarray:
     """Place an emoji on a given image at specified coordinates with the specified size.
 
     Args:
         image (Image.Image): The image on which the emoji is to be placed.
         emoji_image (Image.Image): The emoji image to be placed on the image.
-        emoji_size (int): The desired size of the emoji in pixels when placed on the image.
-        emoji_center (tuple[int, int]): The coordinates of the center of the emoji in the form (x, y).
-        rotation_angle (float): The angle (in degrees) by which to rotate the emoji.  Defaults to None.
+        placement (dict[str, int | tuple[int, int] | float]): A dictionary containing the placement information.
+            The dictionary must contain the following keys:
+                - 'size': The size of the emoji in pixels.
+                - 'center': The coordinates of the center of the emoji on the image.
+                - 'rotation': The rotation angle of the emoji in degrees.  Must be in the range [0, 360).
         return_pil (bool): Whether to return a PIL Image (True) or a NumPy array (False).  Defaults to True.
 
     Returns:
@@ -205,21 +207,20 @@ def _place_emoji(image: Image.Image, emoji_image: Image.Image, emoji_size: int, 
     Raises:
         ValueError: If the 'rotation_angle' is provided but is outside the valid range [0, 360).
     """
-    x_center, y_center = emoji_center
+    x_center, y_center = placement['center']
 
     # Calculate the top-left coordinates of the emoji based on the center coordinates and size
-    x_left = x_center - emoji_size // 2
-    y_top = y_center - emoji_size // 2
+    x_left = x_center - placement['size'] // 2
+    y_top = y_center - placement['size'] // 2
 
     # Resize the emoji to the specified size
-    emoji_image = emoji_image.resize((emoji_size, emoji_size))
+    emoji_image = emoji_image.resize((placement['size'], placement['size']))
 
-    # Rotate the emoji if a rotation angle is provided
-    if rotation_angle:
-        if 0 <= rotation_angle < 360:
-            emoji_image = emoji_image.rotate(rotation_angle)
-        else:
-            raise ValueError('Invalid rotation angle: must be in the range [0, 360).')
+    # Check the rotation angle and rotate the emoji
+    if 0 <= placement['rotation'] < 360:
+        emoji_image = emoji_image.rotate(placement['rotation'])
+    else:
+        raise ValueError('Invalid rotation angle: must be in the range [0, 360).')
 
     # Paste the emoji onto the original image at the specified coordinates
     image.paste(emoji_image, (x_left, y_top), mask=emoji_image)
@@ -244,21 +245,18 @@ def create_dobble_card(emojis: list[dict[str, str]], packing_type: str = 'ccir',
         Image.Image or np.ndarray: The generated image of a Dobble playing card.
     """
     dobble_card = _create_empty_card(image_size)
-    num_emojis = len(emojis)
-    packing_data = packing.get_packing_data(num_emojis, packing_type, image_size)
+    packing_data = packing.get_packing_data(len(emojis), packing_type, image_size)
 
     # Place emojis on card
     for count, emoji in enumerate(emojis):
-        emoji_dict = {
-            'image': _rescale_emoji(_load_emoji(emoji['mode'], emoji['group'], emoji['hexcode']), scale),
+        emoji_image = _rescale_emoji(_load_emoji(emoji['mode'], emoji['group'], emoji['hexcode']), scale)
+        placement = {
             'size': packing_data['sizes'][count],
             'center': packing_data['coordinates'][count],
-            'rotation_angle': random.randint(0, 359)
+            'rotation': random.randint(0, 359)
         }
 
-        dobble_card = _place_emoji(
-            dobble_card, emoji_dict['image'], emoji_dict['size'], emoji_dict['center'], emoji_dict['rotation_angle']
-        )
+        dobble_card = _place_emoji(dobble_card, emoji_image, placement)
 
     return dobble_card if return_pil else np.array(dobble_card)
 
@@ -306,14 +304,12 @@ def create_dobble_deck(
     # Compute number of cards in the deck
     # NOTE: Remember that there are as many distinct emojis in a deck as there are playing cards, and that the number of
     #       playing cards in a deck is given by n^2 + n + 1, with n + 1 = 'emojis_per_card'
-    order = emojis_per_card - 1
-    num_cards = order ** 2 + order + 1
+    num_cards = (emojis_per_card - 1) ** 2 + emojis_per_card
 
     # Check whether the appropriate number of emojis was provided
-    num_emojis_provided = len(emojis)
-    if num_emojis_provided < num_cards:
+    if len(emojis) < num_cards:
         raise ValueError('Not enough emojis provided to create the Dobble deck.')
-    if num_emojis_provided > num_cards:
+    if len(emojis) > num_cards:
         # If there are more emojis than we need, we randomly choose a subset of the appropriate size and raise a warning
         # to inform the user
         emojis = random.sample(emojis, num_cards)
@@ -345,7 +341,7 @@ def create_dobble_deck(
 
     # Compute incidence matrix of corresponding finite projective plane.  This determines which emojis are placed on
     # which cards.
-    incidence_matrix = utils.compute_incidence_matrix(order)
+    incidence_matrix = utils.compute_incidence_matrix(emojis_per_card - 1)
 
     # If no 'packing_type' was provided, choose one randomly each time from the 'PACKING_TYPES_DICT' dictionary
     choose_randomly = packing_type is None
@@ -364,8 +360,7 @@ def create_dobble_deck(
 
         # Create playing card and save in directory
         dobble_card = create_dobble_card(chosen_emojis, packing_type, image_size, scale)
-        file_name = f'{deck_name}_{card + 1:03d}.png'
-        file_path = os.path.join(deck_dir, file_name)
+        file_path = os.path.join(deck_dir, f'{deck_name}_{card + 1:03d}.png')
         dobble_card.save(file_path)
 
         # Write card information to the CSV file
