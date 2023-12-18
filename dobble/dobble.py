@@ -7,7 +7,7 @@ Functions:
     - _get_hexcodes: Retrieve the hexcodes of all emojis in a specified group.
     - _load_emoji: Load a specified emoji into memory.
     - _rescale_emoji: Rescale an emoji so that it fits inside the circle inscribed in a square image.
-    - _place_emoji: Place an emoji on a given image at specified coordinates with the specified size.
+    - _place_emoji: Place an emoji on a card image at specified coordinates with the specified size.
     - create_dobble_card: Create a single Dobble playing card.
     - create_dobble_deck: Create a full deck of Dobble playing cards.
 
@@ -85,8 +85,8 @@ def _load_emoji(mode: str, group: str, hexcode: str, return_pil: bool = False) -
     """Load a specified emoji into memory.
 
     Args:
-        mode (str): The mode of the emojis.  Either 'color' or 'black'.
-        group (str): The name of the group of emojis to use.
+        mode (str): The mode of the emoji.  Either 'color' or 'black'.
+        group (str): The name of the group the emoji belongs to.
         hexcode (str): The hexcode of the emoji to load.
         return_pil (bool): Whether to return a PIL Image (True) or a NumPy array (False).  Defaults to False.
 
@@ -187,18 +187,20 @@ def _rescale_emoji(emoji_image: np.ndarray, scale: float, return_pil: bool = Tru
     return rescaled_image if return_pil else np.array(rescaled_image)
 
 
-def _place_emoji(image: Image.Image, emoji_image: Image.Image, placement: dict[str, int | tuple[int, int] | float],
+def _place_emoji(card_image: Image.Image,
+                 emoji_image: Image.Image,
+                 placement: dict[str, int | tuple[int, int] | float],
                  return_pil: bool = True) -> Image.Image | np.ndarray:
-    """Place an emoji on a given image at specified coordinates with the specified size.
+    """Place an emoji on a card image at specified coordinates with the specified size.
 
     Args:
-        image (Image.Image): The image on which the emoji is to be placed.
-        emoji_image (Image.Image): The emoji image to be placed on the image.
+        card_image (Image.Image): The card image on which the emoji is to be placed.
+        emoji_image (Image.Image): The emoji image to be placed on the card image.
         placement (dict[str, int | tuple[int, int] | float]): A dictionary containing the placement information.
             The dictionary must contain the following keys:
-                - 'size': The size of the emoji in pixels.
-                - 'center': The coordinates of the center of the emoji on the image.
-                - 'rotation': The rotation angle of the emoji in degrees.  Must be in the range [0, 360).
+                - 'size' (int): The size of the emoji in pixels.
+                - 'center' (tuple[int, int]): The coordinates of the center of the emoji on the image.
+                - 'rotation' (float): The rotation angle of the emoji in degrees.  Must be in the range [0, 360).
         return_pil (bool): Whether to return a PIL Image (True) or a NumPy array (False).  Defaults to True.
 
     Returns:
@@ -223,33 +225,54 @@ def _place_emoji(image: Image.Image, emoji_image: Image.Image, placement: dict[s
         raise ValueError('Invalid rotation angle: must be in the range [0, 360).')
 
     # Paste the emoji onto the original image at the specified coordinates
-    image.paste(emoji_image, (x_left, y_top), mask=emoji_image)
+    card_image.paste(emoji_image, (x_left, y_top), mask=emoji_image)
 
-    return image if return_pil else np.array(image)
+    return card_image if return_pil else np.array(card_image)
 
 
-def create_dobble_card(emojis: list[dict[str, str]], packing_type: str = 'ccir', image_size: int = 1024,
-                       scale: float = 0.9, return_pil: bool = True) -> Image.Image | np.ndarray:
+def create_dobble_card(emojis: list[dict[str, str]],
+                       card_params: dict[str, int | str | float] = None,
+                       return_pil: bool = True) -> Image.Image | np.ndarray:
     """Create a single Dobble playing card.
 
     Args:
-        emojis (list[dict[str, str]]): The list of emojis to be placed on the playing card.  Each list entry is a
-            dictionary specifying the mode, group, and hexcode of the emoji to be used.
-        packing_type (str): The type of circle packing used to arrange the emojis on the playing card.
-            Defaults to 'ccir'.
-        image_size (int): The size of the square image in pixels.  Defaults to 1024.
-        scale (float): Determines to what extent the emoji should fill the inscribed circle.  Defaults to 0.9.
+        emojis (list[dict[str, str]]): The list of emojis to be placed on the playing card.  Each emoji is specified
+            by a dictionary which must contain the following keys:
+                - 'mode' (str): The mode of the emoji.  Either 'color' or 'black'.
+                - 'group' (str): The name of the group the emoji belongs to.
+                - 'hexcode' (str): The hexcode of the emoji to load.
+        card_params (dict[str, str | int]): A dictionary containing the parameters of the playing card.
+            The dictionary must contain the following keys:
+                - 'size' (int): The size of the playing card in pixels.  Defaults to 1024.
+                - 'packing' (str): The type of circle packing used to arrange the emojis on the playing card.
+                    Chosen randomly, if not provided.  Defaults to None.
+                - 'scale' (float): Determines to what extent the emoji should fill the inscribed circle.  Defaults to
+                    0.9.
         return_pil (bool): Whether to return a PIL Image (True) or a NumPy array (False).  Defaults to True.
 
     Returns:
         Image.Image or np.ndarray: The generated image of a Dobble playing card.
     """
-    dobble_card = _create_empty_card(image_size)
-    packing_data = packing.get_packing_data(len(emojis), packing_type, image_size)
+    # Retrieve the default card parameters if none were provided
+    if card_params is None:
+        card_params = constants.DEFAULT_CARD_PARAMS.copy()
+
+    # Choose a random packing type if none was provided
+    if 'packing' not in card_params or card_params['packing'] is None:
+        card_params['packing'] = random.choice(list(constants.PACKING_TYPES_DICT.keys()))
+
+    # Get packing data
+    packing_data = packing.get_packing_data(len(emojis), card_params['packing'], card_params['size'])
+
+    # Create empty card
+    dobble_card = _create_empty_card(card_params['size'])
 
     # Place emojis on card
     for count, emoji in enumerate(emojis):
-        emoji_image = _rescale_emoji(_load_emoji(emoji['mode'], emoji['group'], emoji['hexcode']), scale)
+        emoji_image = _rescale_emoji(
+            _load_emoji(emoji['mode'], emoji['group'], emoji['hexcode']),
+            card_params['scale']
+        )
         placement = {
             'size': packing_data['sizes'][count],
             'center': packing_data['coordinates'][count],
@@ -262,49 +285,62 @@ def create_dobble_card(emojis: list[dict[str, str]], packing_type: str = 'ccir',
 
 
 def create_dobble_deck(
-        deck_name: str, emojis: list[dict[str, str]], emojis_per_card: int, save_dir: str = None,
-        packing_type: str = None, image_size: int = 1024, scale: float = 0.9) -> tuple[str, str]:
-    """Create a full deck of Dobble playing cards (i.e., generate and save images).
+        emojis: list[dict[str, str]],
+        deck_params: dict[str, str | int] = None,
+        card_params: dict[str, int | str | float] = None) -> tuple[str, str]:
+    """Create a full deck of Dobble playing cards (i.e., generate images and save to disk).
 
     Args:
-        deck_name (str): The name of the deck.  This will be used to create the directory in which all the images
-            are stored.
-        emojis (list[dict[str, str]]): The list of emojis to be used for the deck of playing cards.  Each list entry is
-            a dictionary specifying the mode, group, and hexcode of the emoji to be used.
-        emojis_per_card (int): The number of emojis to place on each card.
-        save_dir (str): The directory in which to save the generated images.  If not provided, the images are saved in
-            the current working directory.  Defaults to None.
-        packing_type (str): The type of circle packing used to arrange the emojis on the playing cards. If not provided,
-            a packing type is randomly chosen for each card.  Defaults to None.
-        image_size (int): The size of the square image in pixels.  Defaults to 1024.
-        scale (float): Determines to what extent the emoji should fill the inscribed circle.  Defaults to 0.9.
+        emojis (list[dict[str, str]]): The list of emojis to be used for the deck.  Each emoji is specified by a
+            dictionary which must contain the following keys:
+                - 'mode' (str): The mode of the emoji.  Either 'color' or 'black'.
+                - 'group' (str): The name of the group the emoji belongs to.
+                - 'hexcode' (str): The hexcode of the emoji to load.
+        deck_params (dict[str, str | int]): A dictionary containing the parameters of the deck.
+            The dictionary must contain the following keys:
+                - 'name' (str): The name of the deck.  This will be used to create the directory in which all the images
+                    are stored.
+                - 'emojis_per_card' (int): The number of emojis to place on each card.
+                - 'save_dir' (str): The directory in which to save the generated images.  If not provided, the images
+                    are saved in the current working directory.
+        card_params (dict[str, str | int]): A dictionary containing the parameters of the playing card.
+            The dictionary must contain the following keys:
+                - 'size' (int): The size of the playing card in pixels.  Defaults to 1024.
+                - 'packing' (str): The type of circle packing used to arrange the emojis on the playing card.
+                    Chosen randomly, if not provided.  Defaults to None.
+                - 'scale' (float): Determines to what extent the emoji should fill the inscribed circle.  Defaults to
+                    0.9.
 
     Returns:
-        tuple[str, str]: A tuple containing the file paths to the generated CSV files that store all
-            information about the playing cards ('deck.csv') as well as the emoji labels ('emoji_labels.csv').
+        dict[str, str]: A dictionary containing the file paths to the generated CSV files that store all
+            information about the playing cards ('deck.csv') as well as the emoji labels ('emojis.csv').
     """
+    # Retrieve the default deck parameters if none were provided
+    if deck_params is None:
+        deck_params = constants.DEFAULT_DECK_PARAMS.copy()
+
     # Construct the path to the directory in which to save the images
-    if save_dir is not None:
-        # Check if the specified 'save_dir' exists
-        if os.path.isdir(save_dir):
-            deck_dir = os.path.join(save_dir, deck_name)
-        else:
-            raise ValueError(f"Invalid 'save_dir': '{save_dir}' does not exist or is not a directory.")
-    else:
+    if 'save_dir' not in deck_params or deck_params['save_dir'] is None:
         # If no 'save_dir' was provided, save the images in the current working directory
-        deck_dir = os.path.join(os.getcwd(), deck_name)
+        deck_dir = os.path.join(os.getcwd(), deck_params['name'])
+    else:
+        # If a 'save_dir' was provided, check if it exists and is a directory
+        if os.path.isdir(deck_params['save_dir']):
+            deck_dir = os.path.join(deck_params['save_dir'], deck_params['name'])
+        else:
+            raise ValueError(f"Invalid 'save_dir': '{deck_params['save_dir']}' does not exist or is not a directory.")
 
     # If the 'deck_dir' already exists, abort the function and inform the user
     if os.path.exists(deck_dir):
-        raise ValueError(f"Invalid 'deck_name': '{deck_name}' already exists in the specified 'save_dir'.")
+        raise ValueError(f"Invalid 'deck_name': '{deck_params['name']}' already exists in the specified 'save_dir'.")
 
     # NOTE: We do not create the directory right away because we want to make sure that the number of emojis provided
     #       is sufficient to create the deck.  If not, we raise an error and do not create the directory.
 
     # Compute number of cards in the deck
     # NOTE: Remember that there are as many distinct emojis in a deck as there are playing cards, and that the number of
-    #       playing cards in a deck is given by n^2 + n + 1, with n + 1 = 'emojis_per_card'
-    num_cards = (emojis_per_card - 1) ** 2 + emojis_per_card
+    #       playing cards in a deck is given by n^2 + n + 1, with n + 1 = deck_params['emojis_per_card']
+    num_cards = (deck_params['emojis_per_card'] - 1) ** 2 + deck_params['emojis_per_card']
 
     # Check whether the appropriate number of emojis was provided
     if len(emojis) < num_cards:
@@ -315,57 +351,52 @@ def create_dobble_deck(
         emojis = random.sample(emojis, num_cards)
         print(f'WARNING: More emojis provided than needed.  Randomly choosing a subset of {num_cards} emojis.')
 
-    # Create the directories in which to store the images and CSV files.  The CSV files are stored in a subdirectory
-    # called 'info'.  The CSV files contain information about the individual cards (i.e., which emojis are placed on
-    # which card) and the emojis (i.e., the hexcode of each emoji and its corresponding label).
-    csv_dir = os.path.join(deck_dir, 'info')
-    os.makedirs(deck_dir)
-    os.makedirs(csv_dir)
-
     # Extract the hexcodes of all emojis used to create the deck
     hexcodes = [emoji['hexcode'] for emoji in emojis]
 
-    # Create a CSV file containing the hexcode of each emoji along with a counter from 1 to 'len(emojis)' that serves as
-    # the emoji label
+    # Create the directories in which to store the images and CSV files.  The CSV files are stored in a subdirectory
+    # called 'info'.  The CSV files contain information about the individual cards (i.e., which emojis are placed on
+    # which card) and the emojis themselves (i.e., the hexcode of each emoji and its corresponding label).
+    os.makedirs(deck_dir)
+    os.makedirs(os.path.join(deck_dir, 'info'))
+
+    # Create the filepaths pointing to the CSV files
+    csv_files = {
+        'deck': os.path.join(deck_dir, 'info', 'deck.csv'),
+        'emojis': os.path.join(deck_dir, 'info', 'emojis.csv')
+    }
+
+    # Create a CSV file containing the hexcode of each emoji along with a counter from 1 to 'len(hexcodes)' that serves
+    # as the emoji label
     emojis_info = pd.DataFrame({'Hexcode': hexcodes, 'Label': range(1, len(hexcodes) + 1)})
-    emojis_csv = os.path.join(csv_dir, 'emojis.csv')
-    emojis_info.to_csv(emojis_csv, index=False)
+    emojis_info.to_csv(csv_files['emojis'], index=False)
 
     # Set up a CSV file to store information about the individual cards
-    deck_csv = os.path.join(csv_dir, 'deck.csv')
-    with open(deck_csv, 'w', newline='', encoding='utf-8') as f:
+    with open(csv_files['deck'], 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerow(
-            ['FilePath'] + ['PackingType'] + ['Emoji' + str(i + 1) for i in range(emojis_per_card)]
+            ['FilePath'] + ['Emoji' + str(i + 1) for i in range(deck_params['emojis_per_card'])]
         )
 
     # Compute incidence matrix of corresponding finite projective plane.  This determines which emojis are placed on
     # which cards.
-    incidence_matrix = utils.compute_incidence_matrix(emojis_per_card - 1)
-
-    # If no 'packing_type' was provided, choose one randomly each time from the 'PACKING_TYPES_DICT' dictionary
-    choose_randomly = packing_type is None
+    incidence_matrix = utils.compute_incidence_matrix(deck_params['emojis_per_card'] - 1)
 
     # Create playing cards one-by-one using the incidence matrix to decide which emojis to put on which card
     # NOTE: len(a) is equivalent to np.shape(a)[0] for N-D arrays with N>=1.
     for card in range(num_cards):
         # Find the emojis that are to be placed on the playing card currently being created
-        which_emojis = np.where(incidence_matrix[card])[0]
-        chosen_emojis = [emojis[idx] for idx in which_emojis]
-        random.shuffle(chosen_emojis)
-
-        # If no 'packing_type' was provided initially, choose one randomly from the 'PACKING_TYPES_DICT' dictionary
-        if choose_randomly:
-            packing_type = random.choice(list(constants.PACKING_TYPES_DICT.keys()))
+        which_emojis = [emojis[idx] for idx in np.where(incidence_matrix[card])[0]]
+        random.shuffle(which_emojis)
 
         # Create playing card and save in directory
-        dobble_card = create_dobble_card(chosen_emojis, packing_type, image_size, scale)
-        file_path = os.path.join(deck_dir, f'{deck_name}_{card + 1:03d}.png')
+        dobble_card = create_dobble_card(which_emojis, card_params)
+        file_path = os.path.join(deck_dir, f"{deck_params['name']}_{card + 1:03d}.png")
         dobble_card.save(file_path)
 
         # Write card information to the CSV file
-        with open(deck_csv, 'a', newline='', encoding='utf-8') as f:
+        with open(csv_files['deck'], 'a', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
-            writer.writerow([file_path] + [packing_type] + [emoji['hexcode'] for emoji in chosen_emojis])
+            writer.writerow([file_path] + [emoji['hexcode'] for emoji in which_emojis])
 
-    return deck_csv, emojis_csv
+    return csv_files
