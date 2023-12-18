@@ -2,7 +2,9 @@
 
 [![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
 [![Python](https://img.shields.io/badge/Python-3.11_|_3.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
+[![Python package](https://github.com/mrvnthss/dobble/actions/workflows/python-package.yml/badge.svg)](https://github.com/mrvnthss/dobble/actions/workflows/python-package.yml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e97c5a4eaa045eace009/maintainability)](https://codeclimate.com/github/mrvnthss/dobble/maintainability)
+[![GitHub License](https://img.shields.io/github/license/mrvnthss/dobble?color=ad2317)](https://www.gnu.org/licenses/gpl-3.0.html.en)
 
 ## Table of Contents
 
