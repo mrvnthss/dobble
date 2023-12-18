@@ -1,16 +1,17 @@
 """Module defining project-level constants for the 'dobble' package.
 
-It provides the root directory of the project and paths to directories and specific files used in the project.
-It also defines a dictionary for packing types and a list of emojis to resemble the classic Dobble game.
+It provides names of directories and specific files used in the project.  Further, it defines a dictionary mapping
+packing types to their associated radii functions.  Finally, it defines default parameters for playing cards and
+decks, and a list of emojis to resemble the classic Dobble game.
 
 Constants:
-    - ROOT_DIR: The root directory of the project.
-    - DATA_DIR: The directory where data files are stored.
-    - EMOJIS_DIR: The directory where emoji files are stored.
+    - EMOJIS_DIR: The directory where emojis are stored.
     - PACKING_DIR: The directory where packing data files are stored.
-    - OPENMOJI_JSON: The path to the JSON file containing OpenMoji data.
-    - EMOJIS_ORGANIZED_FLAG: The path to the file that indicates whether the emojis have been organized.
-    - PACKING_TYPES_DICT: A dictionary mapping packing types to their associated functions.
+    - OPENMOJI_JSON: The name of the JSON file containing OpenMoji data.
+    - RADIUS_TXT: The name of the text file containing the radius of the largest circle in a packing.
+    - PACKING_TYPES_DICT: A dictionary mapping packing types to their associated radii functions.
+    - DEFAULT_CARD_PARAMS: A dictionary of default playing card parameters.
+    - DEFAULT_DECK_PARAMS: A dictionary of default deck parameters.
     - CLASSIC_DOBBLE_EMOJIS: A list of emojis to resemble the classic Dobble game.
 """
 
@@ -29,6 +30,20 @@ PACKING_TYPES_DICT = {
     'ccic': (lambda n: n ** (-2 / 3), 'decreasing'),
     'ccir': (lambda n: n ** (1/2), 'increasing'),
     'ccis': (lambda n: n ** (-1/2), 'decreasing')
+}
+
+# Default playing card parameters
+DEFAULT_CARD_PARAMS = {
+    'size': 1024,
+    'packing': None,
+    'scale': 0.9
+}
+
+# Default deck parameters
+DEFAULT_DECK_PARAMS = {
+    'name': 'my-dobble-deck',
+    'emojis_per_card': 8,
+    'save_dir': None
 }
 
 # Emojis to resemble the classic Dobble game
