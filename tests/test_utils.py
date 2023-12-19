@@ -98,15 +98,14 @@ def test_compute_incidence_matrix_with_negative_number():
 
 
 def test_compute_incidence_matrix_with_small_prime_power():
-    expected_matrix = np.array([
-        [True, True, True, False, False, False, False],
-        [True, False, False, True, True, False, False],
-        [True, False, False, False, False, True, True],
-        [False, True, False, True, False, True, False],
-        [False, True, False, False, True, False, True],
-        [False, False, True, True, False, False, True],
-        [False, False, True, False, True, True, False]
-    ])
+    expected_matrix = np.array([[1, 1, 1, 0, 0, 0, 0],
+                                [1, 0, 0, 1, 1, 0, 0],
+                                [1, 0, 0, 0, 0, 1, 1],
+                                [0, 1, 0, 1, 0, 1, 0],
+                                [0, 1, 0, 0, 1, 0, 1],
+                                [0, 0, 1, 1, 0, 0, 1],
+                                [0, 0, 1, 0, 1, 1, 0]], dtype=np.uint8)
+
     np.testing.assert_array_equal(utils.compute_incidence_matrix(SMALL_PRIME_POWER), expected_matrix)
 
 

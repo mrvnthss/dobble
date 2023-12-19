@@ -78,7 +78,7 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
                [0, 1, 0, 1, 0, 1, 0],
                [0, 1, 0, 0, 1, 0, 1],
                [0, 0, 1, 1, 0, 0, 1],
-               [0, 0, 1, 0, 1, 1, 0]])
+               [0, 0, 1, 0, 1, 1, 0]], dtype=uint8)
     """
     if not _is_prime_power(order):
         raise ValueError("The argument 'order' must be a prime power.")
@@ -87,7 +87,7 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
     size = order ** 2 + order + 1
 
     # Preallocate incidence matrix, where rows correspond to lines and columns correspond to points
-    incidence_matrix = np.zeros((size, size), dtype=int)
+    incidence_matrix = np.zeros((size, size), dtype=np.uint8)
 
     # Determine which points are on the first line
     which_line = 0
