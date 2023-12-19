@@ -36,7 +36,7 @@ PACKING_TYPES_DICT = {
 DEFAULT_CARD_PARAMS = {
     'size': 1024,
     'packing': None,
-    'scale': 0.9
+    'padding': 0.1
 }
 
 # Default deck parameters
