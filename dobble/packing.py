@@ -4,12 +4,12 @@ This module provides functions to read circle packing data from files, and conve
 for rendering on images.
 
 Functions:
-    - _read_coordinates_from_file: Read coordinates of circles from a text file.
-    - _read_radius_from_file: Read the radius of the largest circle in each packing from a text file.
+    - _read_coordinates_from_file: Read coordinates of a specified circle packing from a text file.
+    - _read_radius_from_file: Read the radius of the largest circle of a specified circle packing from a text file.
     - _compute_radii: Compute the radii of all circles in a packing.
     - _convert_coordinates_to_pixels: Convert relative coordinates to pixel values.
-    - _convert_radius_to_pixels: Convert a relative radius to a pixel value.
-    - get_packing_data: Get packing data (coordinates and sizes) and convert to pixel values.
+    - _convert_radii_to_pixels: Convert relative radii to pixel values based on the size of a square image.
+    - get_packing_data: Get data (coordinates and radii) of a specified packing in pixel values.
 
 The module uses the 'constants' module from the 'dobble' package to access the project-level constants, and in
 particular, the paths to the packing data files.
@@ -25,15 +25,15 @@ import numpy as np
 from . import constants
 
 
-def _read_coordinates_from_file(num_circles: int, packing_type: str) -> list[list[float]]:
-    """Read the coordinates of the specified circle packing from a text file.
+def _read_coordinates_from_file(num_circles: int, packing_type: str) -> np.ndarray:
+    """Read coordinates of a specified circle packing from a text file.
 
     Args:
         num_circles (int): Number of circles in the packing.
         packing_type (str): Type of circle packing.
 
     Returns:
-        list[list[float]]: The coordinates of the circles in the packing.
+        np.ndarray: The coordinates of the circles in the packing as an (n x 2)-array, where n = 'num_circles'.
 
     Raises:
         FileNotFoundError: If the text file for the specified packing type and number of circles is not found.
@@ -42,10 +42,13 @@ def _read_coordinates_from_file(num_circles: int, packing_type: str) -> list[lis
 
     try:
         with resources.open_text(f'{constants.PACKING_DIR}.{packing_type}', file_name) as file:
-            # Read values line by line, split into separate columns and get rid of first column of text file
-            coordinates = [line.strip().split()[1:] for line in file.readlines()]
-            coordinates = [[float(coordinate) for coordinate in coordinates_list] for coordinates_list in coordinates]
-        return coordinates
+            # Read the text file line by line
+            lines = file.readlines()
+            # Strip extra spaces from each line and split into columns
+            data = [line.strip().split() for line in lines]
+            # Convert the data to a NumPy array and skip the first column
+            data = np.array(data)[:, 1:3].astype(float)
+        return data
     except FileNotFoundError as exc:
         raise FileNotFoundError(
             f"Coordinates file for '{packing_type}' packing with {num_circles} circles not found."
@@ -53,7 +56,7 @@ def _read_coordinates_from_file(num_circles: int, packing_type: str) -> list[lis
 
 
 def _read_radius_from_file(num_circles: int, packing_type: str) -> float:
-    """Read the radius of the largest circle of the specified circle packing from a text file.
+    """Read the radius of the largest circle of a specified circle packing from a text file.
 
     Args:
         num_circles (int): Number of circles in the packing.
@@ -79,8 +82,8 @@ def _read_radius_from_file(num_circles: int, packing_type: str) -> float:
         raise FileNotFoundError(f"Radius file for '{packing_type}' packing not found.") from exc
 
 
-def _compute_radii(num_circles: int, packing_type: str, largest_radius: float) -> list[float]:
-    """Compute the radii of circles in a circle packing.
+def _compute_radii(num_circles: int, packing_type: str, largest_radius: float) -> np.ndarray:
+    """Compute the radii of all circles in a packing.
 
     Args:
         num_circles (int): Total number of circles in the packing.
@@ -88,24 +91,23 @@ def _compute_radii(num_circles: int, packing_type: str, largest_radius: float) -
         largest_radius (float): Radius of the largest circle in the packing.
 
     Returns:
-        list[float]: The computed radii of the circles in the packing.
+        np.ndarray: The computed radii of the circles in the packing.
     """
     radius_function, monotonicity = constants.PACKING_TYPES_DICT[packing_type]
-    function_values = [radius_function(n + 1) for n in range(num_circles)]
+    function_values = np.array([radius_function(n + 1) for n in range(num_circles)])
 
     # If the function 'radius_function' is decreasing, we reverse the order of 'function_values' so that the values are
     # listed in increasing order
     if monotonicity == 'decreasing':
-        function_values.reverse()
+        function_values.sort()
 
     ratio = largest_radius / function_values[-1]
-    radii = [function_values[n] * ratio for n in range(num_circles)]
+    radii = function_values * ratio
 
     return radii
 
 
-def _convert_coordinates_to_pixels(
-        rel_coordinates: np.ndarray[float, float] | tuple[float, float], image_size: int) -> tuple[int, int]:
+def _convert_coordinates_to_pixels(rel_coordinates: np.ndarray, image_size: int) -> np.ndarray:
     """Convert relative coordinates to pixel values based on the size of a square image.
 
     The function takes relative coordinates in the range of [-1, 1] and converts them to pixel values
@@ -114,18 +116,15 @@ def _convert_coordinates_to_pixels(
     correspond to the lower left and upper right corner of the image, respectively.
 
     Args:
-        rel_coordinates (np.ndarray[float, float] | tuple[float, float]): Relative coordinates in the range of [-1, 1].
+        rel_coordinates (np.ndarray): Relative coordinates in the range of [-1, 1].
         image_size (int): Size of the square image that coordinates are to be based on.
 
     Returns:
-        tuple[int, int]: Pixel values corresponding to the relative coordinates.
+        np.ndarray: Pixel values corresponding to the relative coordinates.
 
     Raises:
         ValueError: If the relative coordinates are outside the range of [-1, 1].
     """
-    # Convert rel_coordinates to NumPy array if necessary
-    rel_coordinates = np.array(rel_coordinates) if not isinstance(rel_coordinates, np.ndarray) else rel_coordinates
-
     # Check if the relative coordinates are within the range of [-1, 1]
     if np.any((rel_coordinates < -1) | (rel_coordinates > 1)):
         raise ValueError('Relative coordinates must be in the range of [-1, 1].')
@@ -136,39 +135,40 @@ def _convert_coordinates_to_pixels(
     # Scale coordinates from [0, 1] to [0, card_size] and convert to integer values
     coordinates = np.floor(rel_coordinates * image_size).astype('int')
 
-    return tuple(coordinates)
+    return coordinates
 
 
-def _convert_radius_to_pixels(rel_radius: float, image_size: int) -> int:
-    """Convert relative radius to pixel value based on the size of a square image.
+def _convert_radii_to_pixels(rel_radii: np.ndarray, image_size: int) -> np.ndarray:
+    """Convert relative radii to pixel values based on the size of a square image.
 
     Args:
-        rel_radius (float): Relative radius in the range of [0, 1].
+        rel_radii (np.ndarray): Relative radii in the range of [0, 1].
         image_size (int): Size of the square image that radii are to be based on.
 
     Returns:
-        int: Pixel value corresponding to the relative radius.
+        np.ndarray: Pixel values corresponding to the relative radii.
 
     Raises:
         ValueError: If the relative radius is outside the valid range of [0, 1].
     """
-    if rel_radius < 0 or rel_radius > 1:
-        raise ValueError('Relative radius must be in the range of [0, 1].')
+    if np.any((rel_radii < -1) | (rel_radii > 1)):
+        raise ValueError('Relative radii must be in the range of [0, 1].')
 
-    size = int(rel_radius * image_size)
+    radii = np.floor(rel_radii * image_size).astype('int')
 
-    return size
+    return radii
 
 
-def get_packing_data(num_circles: int, packing_type: str, image_size: int) -> dict[str, list]:
-    """
+def get_packing_data(num_circles: int, packing_type: str, image_size: int) -> dict[str, np.ndarray]:
+    """Get data (coordinates and radii) of a specified packing in pixel values.
+
     Args:
         num_circles (int): Total number of circles in the packing.
         packing_type (str): Type of circle packing.
         image_size (int): Size of the square image that coordinates and radii are to be based on.
 
     Returns:
-        dict[str, list]: A dictionary containing the coordinates and sizes in pixel values.
+        dict[str, np.ndarray]: A dictionary containing the coordinates and radii in pixel values.
 
     Raises:
         ValueError: If the packing type is not one of the supported packing types.
@@ -177,20 +177,16 @@ def get_packing_data(num_circles: int, packing_type: str, image_size: int) -> di
         raise ValueError(f"Invalid packing type: '{packing_type}' is not supported.")
 
     # Coordinates
-    rel_coordinates_array = _read_coordinates_from_file(num_circles, packing_type)
-    coordinates = [
-        _convert_coordinates_to_pixels(rel_coordinates, image_size) for rel_coordinates in rel_coordinates_array
-    ]
+    coordinates = _convert_coordinates_to_pixels(_read_coordinates_from_file(num_circles, packing_type), image_size)
 
-    # Sizes
+    # Radii (i.e., sizes of the circles in pixels)
     largest_radius = _read_radius_from_file(num_circles, packing_type)
-    rel_radii = _compute_radii(num_circles, packing_type, largest_radius)
-    sizes = [_convert_radius_to_pixels(rel_radius, image_size) for rel_radius in rel_radii]
+    radii = _convert_radii_to_pixels(_compute_radii(num_circles, packing_type, largest_radius), image_size)
 
     # Combine into dictionary
     packing_data = {
         'coordinates': coordinates,
-        'sizes': sizes
+        'radii': radii
     }
 
     return packing_data

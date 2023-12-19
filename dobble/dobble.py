@@ -189,7 +189,7 @@ def _rescale_emoji(emoji_image: np.ndarray, scale: float, return_pil: bool = Tru
 
 def _place_emoji(card_image: Image.Image,
                  emoji_image: Image.Image,
-                 placement: dict[str, int | tuple[int, int] | float],
+                 placement: dict[str, int | np.ndarray | float],
                  return_pil: bool = True) -> Image.Image | np.ndarray:
     """Place an emoji on a card image at specified coordinates with the specified size.
 
@@ -199,7 +199,7 @@ def _place_emoji(card_image: Image.Image,
         placement (dict[str, int | tuple[int, int] | float]): A dictionary containing the placement information.
             The dictionary must contain the following keys:
                 - 'size' (int): The size of the emoji in pixels.
-                - 'center' (tuple[int, int]): The coordinates of the center of the emoji on the image.
+                - 'center' (np.ndarray): The coordinates of the center of the emoji on the image.
                 - 'rotation' (float): The rotation angle of the emoji in degrees.  Must be in the range [0, 360).
         return_pil (bool): Whether to return a PIL Image (True) or a NumPy array (False).  Defaults to True.
 
@@ -209,11 +209,8 @@ def _place_emoji(card_image: Image.Image,
     Raises:
         ValueError: If the 'rotation_angle' is provided but is outside the valid range [0, 360).
     """
-    x_center, y_center = placement['center']
-
     # Calculate the top-left coordinates of the emoji based on the center coordinates and size
-    x_left = x_center - placement['size'] // 2
-    y_top = y_center - placement['size'] // 2
+    top_left = placement['center'] - placement['size'] // 2
 
     # Resize the emoji to the specified size
     emoji_image = emoji_image.resize((placement['size'], placement['size']))
@@ -225,7 +222,7 @@ def _place_emoji(card_image: Image.Image,
         raise ValueError('Invalid rotation angle: must be in the range [0, 360).')
 
     # Paste the emoji onto the original image at the specified coordinates
-    card_image.paste(emoji_image, (x_left, y_top), mask=emoji_image)
+    card_image.paste(emoji_image, tuple(top_left), mask=emoji_image)
 
     return card_image if return_pil else np.array(card_image)
 
@@ -267,18 +264,20 @@ def create_dobble_card(emojis: list[dict[str, str]],
     # Create empty card
     dobble_card = _create_empty_card(card_params['size'])
 
-    # Place emojis on card
+    # Place emojis on card one-by-one
     for count, emoji in enumerate(emojis):
+        # Load and rescale the emoji
         emoji_image = _rescale_emoji(
             _load_emoji(emoji['mode'], emoji['group'], emoji['hexcode']),
             card_params['scale']
         )
+        # Gather information about the placement of the emoji
         placement = {
-            'size': packing_data['sizes'][count],
+            'size': packing_data['radii'][count],
             'center': packing_data['coordinates'][count],
             'rotation': random.randint(0, 359)
         }
-
+        # Place the emoji on the card
         dobble_card = _place_emoji(dobble_card, emoji_image, placement)
 
     return dobble_card if return_pil else np.array(dobble_card)
@@ -287,7 +286,7 @@ def create_dobble_card(emojis: list[dict[str, str]],
 def create_dobble_deck(
         emojis: list[dict[str, str]],
         deck_params: dict[str, str | int] = None,
-        card_params: dict[str, int | str | float] = None) -> tuple[str, str]:
+        card_params: dict[str, int | str | float] = None) -> dict[str, str]:
     """Create a full deck of Dobble playing cards (i.e., generate images and save to disk).
 
     Args:
@@ -386,7 +385,7 @@ def create_dobble_deck(
     # NOTE: len(a) is equivalent to np.shape(a)[0] for N-D arrays with N>=1.
     for card in range(num_cards):
         # Find the emojis that are to be placed on the playing card currently being created
-        which_emojis = [emojis[idx] for idx in np.where(incidence_matrix[card])[0]]
+        which_emojis = [emojis[idx] for idx in np.nonzero(incidence_matrix[card])[0]]
         random.shuffle(which_emojis)
 
         # Create playing card and save in directory
