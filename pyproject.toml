@@ -13,11 +13,10 @@ numpy = "^1.26.2"
 pillow = "^10.1.0"
 pandas = "^2.1.4"
 
-[tool.poetry.group.test.dependencies]
-pytest = "^7.4.3"
-
 [tool.poetry.group.dev.dependencies]
 pylint = "^3.0.3"
+pytest = "^7.4.3"
+coverage = "^7.3.3"
 
 [build-system]
 requires = ["poetry-core"]

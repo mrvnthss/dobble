@@ -33,9 +33,10 @@ jobs:
     - name: Lint with pylint
       run: |
         poetry run pylint $(git ls-files '*.py')
-    - name: Test with pytest
+    - name: Test with pytest and coverage
       run: |
-        poetry run pytest
+        poetry run coverage run -m pytest
+        poetry run coverage xml
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
       env:
