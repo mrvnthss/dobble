@@ -118,12 +118,13 @@ def _load_emoji(mode: str, group: str, hexcode: str, return_pil: bool = False) -
         raise FileNotFoundError(f"Failed to load emoji: {file_name} not found.") from exc
 
 
-def _rescale_emoji(emoji_image: np.ndarray, scale: float, return_pil: bool = True) -> Image.Image | np.ndarray:
+def _rescale_emoji(emoji_image: np.ndarray, padding: float, return_pil: bool = True) -> Image.Image | np.ndarray:
     """Rescale an emoji so that it fits inside the circle inscribed in a square image.
 
     Args:
         emoji_image (np.ndarray): The emoji image to rescale as a NumPy array.
-        scale (float): Determines to what extent the emoji should fill the inscribed circle.
+        padding (float): Determines the (relative) amount of padding to be used when placing the emojis on the playing
+            cards.  Defaults to 0.1.
         return_pil (bool): Whether to return a PIL Image (True) or a NumPy array (False).  Defaults to True.
 
     Returns:
@@ -131,7 +132,7 @@ def _rescale_emoji(emoji_image: np.ndarray, scale: float, return_pil: bool = Tru
 
     Raises:
         ValueError: If the 'emoji_image' is not a NumPy array or not a square image.
-        ValueError: If the 'scale' is not in the range of (0, 1].
+        ValueError: If the 'padding' is not in the range of [0, 1).
     """
     # Ensure that the input image is a NumPy array
     if not isinstance(emoji_image, np.ndarray):
@@ -141,8 +142,8 @@ def _rescale_emoji(emoji_image: np.ndarray, scale: float, return_pil: bool = Tru
     if emoji_image.shape[0] != emoji_image.shape[1]:
         raise ValueError('Input image must be a square array.')
 
-    # Check if scale is within the range of (0, 1]
-    if not 0 < scale <= 1:
+    # Check if padding is within the range of [0, 1)
+    if not 0 <= padding < 1:
         raise ValueError('Scale must be in the range of (0, 1].')
 
     # Determine non-transparent pixels
@@ -157,7 +158,7 @@ def _rescale_emoji(emoji_image: np.ndarray, scale: float, return_pil: bool = Tru
     outermost_px_norm = np.max(np.linalg.norm(non_transparent_px, axis=1))
 
     # Compute rescaling factor and resulting target size
-    target_norm = scale * radius
+    target_norm = (1 - padding) * radius
     rescaling_factor = target_norm / outermost_px_norm
     image_size = emoji_image.shape[0]  # size of input image
     target_size = int(image_size * rescaling_factor)  # target size of rescaled image
@@ -227,7 +228,7 @@ def _place_emoji(card_image: Image.Image,
     return card_image if return_pil else np.array(card_image)
 
 
-def create_dobble_card(emojis: list[dict[str, str]],
+def create_dobble_card(emojis: list[dict[str, str]] = None,
                        card_params: dict[str, int | str | float] = None,
                        return_pil: bool = True) -> Image.Image | np.ndarray:
     """Create a single Dobble playing card.
@@ -238,25 +239,38 @@ def create_dobble_card(emojis: list[dict[str, str]],
                 - 'mode' (str): The mode of the emoji.  Either 'color' or 'black'.
                 - 'group' (str): The name of the group the emoji belongs to.
                 - 'hexcode' (str): The hexcode of the emoji to load.
+            If not provided, a random number of emojis similar to the ones used in the original Dobble deck are used.
         card_params (dict[str, str | int]): A dictionary containing the parameters of the playing card.
             The dictionary must contain the following keys:
                 - 'size' (int): The size of the playing card in pixels.  Defaults to 1024.
                 - 'packing' (str): The type of circle packing used to arrange the emojis on the playing card.
                     Chosen randomly, if not provided.  Defaults to None.
-                - 'scale' (float): Determines to what extent the emoji should fill the inscribed circle.  Defaults to
-                    0.9.
+                - 'padding' (float): Determines the (relative) amount of padding to be used when placing the emojis on
+                    the playing card.  Defaults to 0.1.
         return_pil (bool): Whether to return a PIL Image (True) or a NumPy array (False).  Defaults to True.
 
     Returns:
         Image.Image or np.ndarray: The generated image of a Dobble playing card.
     """
+    # Retrieve a random subset of the emojis resembling the symbols in a classic Dobble deck if none were provided
+    if emojis is None:
+        emojis = random.sample(constants.CLASSIC_DOBBLE_EMOJIS, random.randint(3, 8))
+
     # Retrieve the default card parameters if none were provided
     if card_params is None:
         card_params = constants.DEFAULT_CARD_PARAMS.copy()
 
+    # Set the default size of the card if none was provided
+    if 'size' not in card_params or card_params['size'] is None:
+        card_params['size'] = constants.DEFAULT_CARD_PARAMS['size']
+
     # Choose a random packing type if none was provided
     if 'packing' not in card_params or card_params['packing'] is None:
         card_params['packing'] = random.choice(list(constants.PACKING_TYPES_DICT.keys()))
+
+    # Set the default scale if none was provided
+    if 'padding' not in card_params or card_params['padding'] is None:
+        card_params['padding'] = constants.DEFAULT_CARD_PARAMS['padding']
 
     # Get packing data
     packing_data = packing.get_packing_data(len(emojis), card_params['packing'], card_params['size'])
@@ -269,7 +283,7 @@ def create_dobble_card(emojis: list[dict[str, str]],
         # Load and rescale the emoji
         emoji_image = _rescale_emoji(
             _load_emoji(emoji['mode'], emoji['group'], emoji['hexcode']),
-            card_params['scale']
+            card_params['padding']
         )
         # Gather information about the placement of the emoji
         placement = {
@@ -284,7 +298,7 @@ def create_dobble_card(emojis: list[dict[str, str]],
 
 
 def create_dobble_deck(
-        emojis: list[dict[str, str]],
+        emojis: list[dict[str, str]] = None,
         deck_params: dict[str, str | int] = None,
         card_params: dict[str, int | str | float] = None) -> dict[str, str]:
     """Create a full deck of Dobble playing cards (i.e., generate images and save to disk).
@@ -295,28 +309,41 @@ def create_dobble_deck(
                 - 'mode' (str): The mode of the emoji.  Either 'color' or 'black'.
                 - 'group' (str): The name of the group the emoji belongs to.
                 - 'hexcode' (str): The hexcode of the emoji to load.
+            If not provided, emojis similar to the ones used in the original Dobble deck are used.
         deck_params (dict[str, str | int]): A dictionary containing the parameters of the deck.
             The dictionary must contain the following keys:
                 - 'name' (str): The name of the deck.  This will be used to create the directory in which all the images
-                    are stored.
-                - 'emojis_per_card' (int): The number of emojis to place on each card.
+                    are stored.  Defaults to 'my-dobble-deck'.
+                - 'emojis_per_card' (int): The number of emojis to place on each card.  Defaults to 8.
                 - 'save_dir' (str): The directory in which to save the generated images.  If not provided, the images
-                    are saved in the current working directory.
+                    are saved in the current working directory.  Defaults to None.
         card_params (dict[str, str | int]): A dictionary containing the parameters of the playing card.
             The dictionary must contain the following keys:
                 - 'size' (int): The size of the playing card in pixels.  Defaults to 1024.
                 - 'packing' (str): The type of circle packing used to arrange the emojis on the playing card.
                     Chosen randomly, if not provided.  Defaults to None.
-                - 'scale' (float): Determines to what extent the emoji should fill the inscribed circle.  Defaults to
-                    0.9.
+                - 'padding' (float): Determines the (relative) amount of padding to be used when placing the emojis on
+                    the playing cards.  Defaults to 0.1.
 
     Returns:
         dict[str, str]: A dictionary containing the file paths to the generated CSV files that store all
             information about the playing cards ('deck.csv') as well as the emoji labels ('emojis.csv').
     """
+    # Retrieve the emojis resembling the symbols in a classic Dobble deck if none were provided
+    if emojis is None:
+        emojis = constants.CLASSIC_DOBBLE_EMOJIS.copy()
+
     # Retrieve the default deck parameters if none were provided
     if deck_params is None:
         deck_params = constants.DEFAULT_DECK_PARAMS.copy()
+
+    # Set the default name of the deck if none was provided
+    if 'name' not in deck_params or deck_params['name'] is None:
+        deck_params['name'] = constants.DEFAULT_DECK_PARAMS['name']
+
+    # Set the default number of emojis per card if none was provided
+    if 'emojis_per_card' not in deck_params or deck_params['emojis_per_card'] is None:
+        deck_params['emojis_per_card'] = constants.DEFAULT_DECK_PARAMS['emojis_per_card']
 
     # Construct the path to the directory in which to save the images
     if 'save_dir' not in deck_params or deck_params['save_dir'] is None:
