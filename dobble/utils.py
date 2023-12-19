@@ -72,15 +72,13 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
 
     Example:
         >>> compute_incidence_matrix(2)
-        array([
-            [True, True, True, False, False, False, False],
-            [True, False, False, True, True, False, False],
-            [True, False, False, False, False, True, True],
-            [False, True, False, True, False, True, False],
-            [False, True, False, False, True, False, True],
-            [False, False, True, True, False, False, True],
-            [False, False, True, False, True, True, False]
-        ])
+        array([[1, 1, 1, 0, 0, 0, 0],
+               [1, 0, 0, 1, 1, 0, 0],
+               [1, 0, 0, 0, 0, 1, 1],
+               [0, 1, 0, 1, 0, 1, 0],
+               [0, 1, 0, 0, 1, 0, 1],
+               [0, 0, 1, 1, 0, 0, 1],
+               [0, 0, 1, 0, 1, 1, 0]])
     """
     if not _is_prime_power(order):
         raise ValueError("The argument 'order' must be a prime power.")
@@ -89,12 +87,12 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
     size = order ** 2 + order + 1
 
     # Preallocate incidence matrix, where rows correspond to lines and columns correspond to points
-    incidence_matrix = np.zeros((size, size), dtype=bool)
+    incidence_matrix = np.zeros((size, size), dtype=int)
 
     # Determine which points are on the first line
     which_line = 0
     which_pts = list(range(order + 1))
-    incidence_matrix[which_line, which_pts] = True
+    incidence_matrix[which_line, which_pts] = 1
 
     # Determine which points are on the next n lines
     for line in range(order):
@@ -104,7 +102,7 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
         start = (line + 1) * order + 1
         end = start + order
         which_pts.extend(list(range(start, end)))
-        incidence_matrix[which_line, which_pts] = True
+        incidence_matrix[which_line, which_pts] = 1
 
     # Determine which points are on the final n^2 lines
     for block in range(order):
@@ -113,6 +111,6 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
             which_pts = [block + 1]
             for pt in range(order):
                 which_pts.append(order * (pt + 1) + ((block * pt + line) % order) + 1)
-            incidence_matrix[which_line, which_pts] = True
+            incidence_matrix[which_line, which_pts] = 1
 
     return incidence_matrix
