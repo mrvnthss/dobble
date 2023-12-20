@@ -252,9 +252,9 @@ def create_dobble_card(emojis: list[dict[str, str]] = None,
     Returns:
         Image.Image or np.ndarray: The generated image of a Dobble playing card.
     """
-    # Retrieve a random subset of the emojis resembling the symbols in a classic Dobble deck if none were provided
+    # Retrieve a random subset of the emojis resembling the symbols in a classic Dobble deck if no emojis were provided
     if emojis is None:
-        emojis = random.sample(constants.CLASSIC_DOBBLE_EMOJIS, random.randint(3, 8))
+        emojis = random.sample(constants.CLASSIC_DOBBLE_EMOJIS, random.randint(5, 8))
 
     # Retrieve the default card parameters if none were provided
     if card_params is None:
@@ -314,7 +314,8 @@ def create_dobble_deck(
             The dictionary must contain the following keys:
                 - 'name' (str): The name of the deck.  This will be used to create the directory in which all the images
                     are stored.  Defaults to 'my-dobble-deck'.
-                - 'emojis_per_card' (int): The number of emojis to place on each card.  Defaults to 8.
+                - 'emojis_per_card' (int): The number of emojis to place on each card.  Must be one more than some prime
+                    power, i.e., 'emojis_per_card' = p^k + 1, with p prime.  Defaults to 8.
                 - 'save_dir' (str): The directory in which to save the generated images.  If not provided, the images
                     are saved in the current working directory.  Defaults to None.
         card_params (dict[str, str | int]): A dictionary containing the parameters of the playing card.
@@ -327,7 +328,7 @@ def create_dobble_deck(
 
     Returns:
         dict[str, str]: A dictionary containing the file paths to the generated CSV files that store all
-            information about the playing cards ('deck.csv') as well as the emoji labels ('emojis.csv').
+            information about the playing cards ('deck') as well as the emoji labels ('emojis').
     """
     # Retrieve the emojis resembling the symbols in a classic Dobble deck if none were provided
     if emojis is None:
@@ -406,6 +407,8 @@ def create_dobble_deck(
 
     # Compute incidence matrix of corresponding finite projective plane.  This determines which emojis are placed on
     # which cards.
+    # NOTE: The number of emojis per card has to be one more than some prime power, i.e., 'emojis_per_card' = p^k + 1,
+    # with p prime.  Otherwise, the incidence matrix cannot be computed and an error is raised.
     incidence_matrix = utils.compute_incidence_matrix(deck_params['emojis_per_card'] - 1)
 
     # Create playing cards one-by-one using the incidence matrix to decide which emojis to put on which card
