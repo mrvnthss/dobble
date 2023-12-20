@@ -4,16 +4,16 @@ This module contains functions to create individual Dobble playing cards and ful
 
 Functions:
     - _create_empty_card: Create a square image of a white disk against a transparent background.
-    - _get_hexcodes: Retrieve the hexcodes of all emojis in a specified group.
-    - _load_emoji: Load a specified emoji into memory.
+    - _get_hex_codes: Retrieve the hex codes of all emojis in a group.
+    - _load_emoji: Load an emoji into memory.
     - _rescale_emoji: Rescale an emoji so that it fits inside the circle inscribed in a square image.
     - _place_emoji: Place an emoji on a card image at specified coordinates with the specified size.
     - create_dobble_card: Create a single Dobble playing card.
     - create_dobble_deck: Create a full deck of Dobble playing cards.
 
 The module uses the 'packing' and 'utils' modules from the 'dobble' package to arrange the emojis on the cards and to
-compute the incidence matrices for finite projective planes to distribute the emojis across the playing cards,
-respectively.
+compute the incidence matrices for finite projective planes, respectively.  The latter is used to determine which
+emojis are placed on which cards in order to create a valid Dobble deck.
 """
 
 # Standard Library Imports
@@ -54,15 +54,15 @@ def _create_empty_card(image_size: int, return_pil: bool = True) -> Image.Image 
     return image if return_pil else np.array(image)
 
 
-def _get_hexcodes(mode: str, group: str) -> list[str]:
-    """Retrieve the hexcodes of all emojis in a specified group.
+def _get_hex_codes(mode: str, group: str) -> list[str]:
+    """Retrieve the hex codes of all emojis in a group.
 
     Args:
         mode (str): The mode of the emojis.  Either 'color' or 'black'.
         group (str): The name of the group of emojis.
 
     Returns:
-        list[str]: A list of hexcodes of all emojis of the specified mode in the specified group.
+        list[str]: A list of hex codes of all emojis (of the specified mode) in the group.
     """
     # Ensure that the specified mode is valid
     if mode not in ['color', 'black']:
@@ -70,24 +70,24 @@ def _get_hexcodes(mode: str, group: str) -> list[str]:
 
     package = f'{constants.EMOJIS_DIR}.{mode}.{group}'
 
-    hexcodes = []
+    hex_codes = []
     for file in resources.contents(package):
         if file.endswith('.png'):
             # Extract the base name without extension (i.e., without '.png')
-            hexcode = os.path.splitext(file)[0]
-            hexcodes.append(hexcode)
-    hexcodes.sort()
+            hex_code = os.path.splitext(file)[0]
+            hex_codes.append(hex_code)
+    hex_codes.sort()
 
-    return hexcodes
+    return hex_codes
 
 
-def _load_emoji(mode: str, group: str, hexcode: str, return_pil: bool = False) -> Image.Image | np.ndarray:
-    """Load a specified emoji into memory.
+def _load_emoji(mode: str, group: str, hex_code: str, return_pil: bool = False) -> Image.Image | np.ndarray:
+    """Load an emoji into memory.
 
     Args:
         mode (str): The mode of the emoji.  Either 'color' or 'black'.
         group (str): The name of the group the emoji belongs to.
-        hexcode (str): The hexcode of the emoji to load.
+        hex_code (str): The hex code of the emoji to load.
         return_pil (bool): Whether to return a PIL Image (True) or a NumPy array (False).  Defaults to False.
 
     Returns:
@@ -97,7 +97,7 @@ def _load_emoji(mode: str, group: str, hexcode: str, return_pil: bool = False) -
         FileNotFoundError: If the specified emoji is not found.
     """
     # Filename of the emoji that we want to load
-    file_name = hexcode + '.png'
+    file_name = hex_code + '.png'
 
     try:
         # Open the file using importlib.resources
@@ -122,9 +122,9 @@ def _rescale_emoji(emoji_image: np.ndarray, padding: float, return_pil: bool = T
     """Rescale an emoji so that it fits inside the circle inscribed in a square image.
 
     Args:
-        emoji_image (np.ndarray): The emoji image to rescale as a NumPy array.
-        padding (float): Determines the (relative) amount of padding to be used when placing the emojis on the playing
-            cards.  Defaults to 0.1.
+        emoji_image (np.ndarray): The emoji image to rescale.
+        padding (float): Determines the (relative) amount of padding to be used when placing the emoji on a playing
+            card.  Defaults to 0.1.
         return_pil (bool): Whether to return a PIL Image (True) or a NumPy array (False).  Defaults to True.
 
     Returns:
@@ -192,7 +192,7 @@ def _place_emoji(card_image: Image.Image,
                  emoji_image: Image.Image,
                  placement: dict[str, int | np.ndarray | float],
                  return_pil: bool = True) -> Image.Image | np.ndarray:
-    """Place an emoji on a card image at specified coordinates with the specified size.
+    """Place an emoji on a card image at specified coordinates with the specified size
 
     Args:
         card_image (Image.Image): The card image on which the emoji is to be placed.
@@ -238,7 +238,7 @@ def create_dobble_card(emojis: list[dict[str, str]] = None,
             by a dictionary which must contain the following keys:
                 - 'mode' (str): The mode of the emoji.  Either 'color' or 'black'.
                 - 'group' (str): The name of the group the emoji belongs to.
-                - 'hexcode' (str): The hexcode of the emoji to load.
+                - 'hex' (str): The hex code of the emoji to load.
             If not provided, a random number of emojis similar to the ones used in the original Dobble deck are used.
         card_params (dict[str, str | int]): A dictionary containing the parameters of the playing card.
             The dictionary must contain the following keys:
@@ -253,6 +253,8 @@ def create_dobble_card(emojis: list[dict[str, str]] = None,
         Image.Image or np.ndarray: The generated image of a Dobble playing card.
     """
     # Retrieve a random subset of the emojis resembling the symbols in a classic Dobble deck if no emojis were provided
+    # NOTE: For all but one type of packing ('cci'), solutions are only provided for n >= 5 circles.  Hence, we choose
+    #       a random number of emojis in the range [5, 8] to ensure that we can always create a Dobble card.
     if emojis is None:
         emojis = random.sample(constants.CLASSIC_DOBBLE_EMOJIS, random.randint(5, 8))
 
@@ -282,7 +284,7 @@ def create_dobble_card(emojis: list[dict[str, str]] = None,
     for count, emoji in enumerate(emojis):
         # Load and rescale the emoji
         emoji_image = _rescale_emoji(
-            _load_emoji(emoji['mode'], emoji['group'], emoji['hexcode']),
+            _load_emoji(emoji['mode'], emoji['group'], emoji['hex']),
             card_params['padding']
         )
         # Gather information about the placement of the emoji
@@ -308,7 +310,7 @@ def create_dobble_deck(
             dictionary which must contain the following keys:
                 - 'mode' (str): The mode of the emoji.  Either 'color' or 'black'.
                 - 'group' (str): The name of the group the emoji belongs to.
-                - 'hexcode' (str): The hexcode of the emoji to load.
+                - 'hex' (str): The hex code of the emoji to load.
             If not provided, emojis similar to the ones used in the original Dobble deck are used.
         deck_params (dict[str, str | int]): A dictionary containing the parameters of the deck.
             The dictionary must contain the following keys:
@@ -378,12 +380,12 @@ def create_dobble_deck(
         emojis = random.sample(emojis, num_cards)
         print(f'WARNING: More emojis provided than needed.  Randomly choosing a subset of {num_cards} emojis.')
 
-    # Extract the hexcodes of all emojis used to create the deck
-    hexcodes = [emoji['hexcode'] for emoji in emojis]
+    # Extract the hex codes of all emojis used to create the deck
+    hex_codes = [emoji['hex'] for emoji in emojis]
 
     # Create the directories in which to store the images and CSV files.  The CSV files are stored in a subdirectory
     # called 'info'.  The CSV files contain information about the individual cards (i.e., which emojis are placed on
-    # which card) and the emojis themselves (i.e., the hexcode of each emoji and its corresponding label).
+    # which card) and the emojis themselves (i.e., the hex code of each emoji and its corresponding label).
     os.makedirs(deck_dir)
     os.makedirs(os.path.join(deck_dir, 'info'))
 
@@ -393,9 +395,9 @@ def create_dobble_deck(
         'emojis': os.path.join(deck_dir, 'info', 'emojis.csv')
     }
 
-    # Create a CSV file containing the hexcode of each emoji along with a counter from 1 to 'len(hexcodes)' that serves
-    # as the emoji label
-    emojis_info = pd.DataFrame({'Hexcode': hexcodes, 'Label': range(1, len(hexcodes) + 1)})
+    # Create a CSV file containing the hex code of each emoji along with a counter from 1 to 'len(hex_codes)' that
+    # serves as the emoji label
+    emojis_info = pd.DataFrame({'Hex': hex_codes, 'Label': range(1, len(hex_codes) + 1)})
     emojis_info.to_csv(csv_files['emojis'], index=False)
 
     # Set up a CSV file to store information about the individual cards
@@ -408,7 +410,7 @@ def create_dobble_deck(
     # Compute incidence matrix of corresponding finite projective plane.  This determines which emojis are placed on
     # which cards.
     # NOTE: The number of emojis per card has to be one more than some prime power, i.e., 'emojis_per_card' = p^k + 1,
-    # with p prime.  Otherwise, the incidence matrix cannot be computed and an error is raised.
+    #       with p prime.  Otherwise, the incidence matrix cannot be computed and an error is raised.
     incidence_matrix = utils.compute_incidence_matrix(deck_params['emojis_per_card'] - 1)
 
     # Create playing cards one-by-one using the incidence matrix to decide which emojis to put on which card
@@ -426,6 +428,6 @@ def create_dobble_deck(
         # Write card information to the CSV file
         with open(csv_files['deck'], 'a', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
-            writer.writerow([file_path] + [emoji['hexcode'] for emoji in which_emojis])
+            writer.writerow([file_path] + [emoji['hex'] for emoji in which_emojis])
 
     return csv_files
