@@ -7,7 +7,6 @@ decks, and a list of emojis to resemble the classic Dobble game.
 Constants:
     - EMOJIS_DIR: The directory where emojis are stored.
     - PACKING_DIR: The directory where packing data files are stored.
-    - OPENMOJI_JSON: The name of the JSON file containing OpenMoji data.
     - RADIUS_TXT: The name of the text file containing the radius of the largest circle in a packing.
     - PACKING_TYPES_DICT: A dictionary mapping packing types to their associated radii functions.
     - DEFAULT_CARD_PARAMS: A dictionary of default playing card parameters.
@@ -20,7 +19,6 @@ EMOJIS_DIR = 'data.openmoji'
 PACKING_DIR = 'data.packing_data'
 
 # Names of specific files
-OPENMOJI_JSON = 'openmoji.json'
 RADIUS_TXT = 'radius.txt'
 
 # Packing types dictionary
