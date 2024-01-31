@@ -417,14 +417,14 @@ def create_dobble_deck(
             deck_dir = os.path.join(deck_params["save_dir"], deck_params["name"])
         else:
             raise ValueError(
-                f"Invalid 'save_dir': '{deck_params["save_dir"]}' does not exist"
+                f"Invalid 'save_dir': '{deck_params['save_dir']}' does not exist"
                 f"or is not a directory."
             )
 
     # If the "deck_dir" already exists, abort the function and inform the user
     if os.path.exists(deck_dir):
         raise ValueError(
-            f"Invalid 'deck_name': '{deck_params["name"]}' already exists in the specified"
+            f"Invalid 'deck_name': '{deck_params['name']}' already exists in the specified"
             f"'save_dir'."
         )
 
@@ -495,7 +495,7 @@ def create_dobble_deck(
 
         # Create playing card and save in directory
         dobble_card = create_dobble_card(which_emojis, card_params)
-        file_path = os.path.join(deck_dir, f"{deck_params["name"]}_{card + 1:03d}.png")
+        file_path = os.path.join(deck_dir, f"{deck_params['name']}_{card + 1:03d}.png")
         dobble_card.save(file_path)
 
         # Write card information to the CSV file
