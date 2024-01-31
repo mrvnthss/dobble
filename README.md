@@ -11,6 +11,7 @@
 
 - [Acknowledgments](#acknowledgments)
 - [License](#license)
+- [Coding Style](#coding-style)
 
 ## Acknowledgments
 
@@ -38,5 +39,6 @@ Under the following terms:
 
 ## Coding Style
 
-- 120 character line length
-- PEP8 formatting
+- [PEP8](https://peps.python.org/pep-0008/) formatting
+- Maximum line length of 99 characters (72 characters for docstrings)
+- Consistent use of double-quoted strings

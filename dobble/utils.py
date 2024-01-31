@@ -1,11 +1,13 @@
 """Utility functions for finite projective planes.
 
-This module provides functions for computing incidence matrices for finite projective planes.
+This module provides functions for computing incidence matrices for
+finite projective planes.
 
 Functions:
     - _is_prime: Check if a number is prime.
     - _is_prime_power: Check if a number is a prime power.
-    - compute_incidence_matrix: Compute the incidence matrix of a finite projective plane.
+    - compute_incidence_matrix: Compute the incidence matrix of a finite
+        projective plane.
 """
 
 # Standard Library Imports
@@ -59,13 +61,15 @@ def _is_prime_power(num: float) -> bool:
 
 
 def compute_incidence_matrix(order: int) -> np.ndarray:
-    """Compute the incidence matrix of a finite projective plane with specified order.
+    """Compute the incidence matrix of a finite projective plane with
+       specified order.
 
     Args:
         order (int): The order of the finite projective plane.
 
     Returns:
-        np.ndarray: The computed incidence matrix.  Rows correspond to lines and columns correspond to points.
+        np.ndarray: The computed incidence matrix.  Rows correspond to
+            lines and columns correspond to points.
 
     Raises:
         ValueError: If the argument order is not a prime power.
@@ -97,7 +101,7 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
     # Determine which points are on the next n lines
     for line in range(order):
         which_line += 1
-        # The first n + 1 lines will all share point '0'
+        # The first n + 1 lines will all share point "0"
         which_pts = [0]
         start = (line + 1) * order + 1
         end = start + order

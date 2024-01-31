@@ -1,9 +1,11 @@
 # pylint: disable=protected-access, missing-function-docstring
 
-"""Unit tests for the utility functions in the 'dobble' package.
+"""Unit tests for the utility functions in the "dobble" package.
 
-The tests cover all the functions from the 'dobble.utils' module. Each function in this module represents a test case,
-and uses the pytest framework for setting up the test, executing it, and checking the results.
+The tests cover all the functions from the "dobble.utils" module. Each
+function in this module represents a test case, and uses the pytest
+framework for setting up the test, executing it, and checking the
+results.
 """
 
 # Third-Party Library Imports
@@ -106,11 +108,13 @@ def test_compute_incidence_matrix_with_small_prime_power():
                                 [0, 0, 1, 1, 0, 0, 1],
                                 [0, 0, 1, 0, 1, 1, 0]], dtype=np.uint8)
 
-    np.testing.assert_array_equal(utils.compute_incidence_matrix(SMALL_PRIME_POWER), expected_matrix)
+    np.testing.assert_array_equal(
+        utils.compute_incidence_matrix(SMALL_PRIME_POWER), expected_matrix
+    )
 
 
 def test_compute_incidence_matrix_with_large_prime_power():
-    # This test is more of a performance test, as we don't check the result
+    # Performance test
     utils.compute_incidence_matrix(LARGE_PRIME_POWER)
 
 
