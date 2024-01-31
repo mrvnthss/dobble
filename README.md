@@ -37,5 +37,6 @@ Under the following terms:
 
 
 ## Coding Style
+
 - 120 character line length
 - PEP8 formatting
