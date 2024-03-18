@@ -25,9 +25,9 @@ valid Dobble deck.
 # Standard Library Imports
 import csv
 import io
-import os
 import random
 from importlib import resources
+from pathlib import Path
 
 # Third-Party Library Imports
 from PIL import Image, ImageDraw
@@ -40,7 +40,9 @@ from . import packing
 from . import utils
 
 
-def _create_empty_card(image_size: int, return_pil: bool = True) -> Image.Image | np.ndarray:
+def _create_empty_card(
+        image_size: int,
+        return_pil: bool = True) -> Image.Image | np.ndarray:
     """Create a square image of a white disk w/ transparent background.
 
     Args:
@@ -62,7 +64,9 @@ def _create_empty_card(image_size: int, return_pil: bool = True) -> Image.Image 
     return image if return_pil else np.array(image)
 
 
-def _get_hex_codes(mode: str, group: str) -> list[str]:
+def _get_hex_codes(
+        mode: str,
+        group: str) -> list[str]:
     """Retrieve the hex codes of all emojis in a group.
 
     Args:
@@ -83,7 +87,7 @@ def _get_hex_codes(mode: str, group: str) -> list[str]:
     for file in resources.contents(package):
         if file.endswith(".png"):
             # Extract the base name without extension (i.e., without ".png")
-            hex_code = os.path.splitext(file)[0]
+            hex_code = Path(file).stem
             hex_codes.append(hex_code)
     hex_codes.sort()
 
@@ -91,7 +95,9 @@ def _get_hex_codes(mode: str, group: str) -> list[str]:
 
 
 def _load_emoji(
-        mode: str, group: str, hex_code: str,
+        mode: str,
+        group: str,
+        hex_code: str,
         return_pil: bool = False) -> Image.Image | np.ndarray:
     """Load an emoji into memory.
 
@@ -124,7 +130,8 @@ def _load_emoji(
         emoji_image = Image.open(data_io)
 
         # Convert to RGBA mode if necessary
-        emoji_image = emoji_image.convert("RGBA") if emoji_image.mode != "RGBA" else emoji_image
+        if emoji_image.mode != "RGBA":
+            emoji_image = emoji_image.convert("RGBA")
 
         return emoji_image if return_pil else np.array(emoji_image)
 
@@ -133,7 +140,8 @@ def _load_emoji(
 
 
 def _rescale_emoji(
-        emoji_image: np.ndarray, padding: float,
+        emoji_image: np.ndarray,
+        padding: float,
         return_pil: bool = True) -> Image.Image | np.ndarray:
     """Rescale an emoji so that it fits inside the circle inscribed in a
        square image.
@@ -210,7 +218,8 @@ def _rescale_emoji(
 
 
 def _place_emoji(
-        card_image: Image.Image, emoji_image: Image.Image,
+        card_image: Image.Image,
+        emoji_image: Image.Image,
         placement: dict[str, int | np.ndarray | float],
         return_pil: bool = True) -> Image.Image | np.ndarray:
     """Place an emoji on a card image at specified coordinates with the
@@ -410,11 +419,11 @@ def create_dobble_deck(
     # Construct the path to the directory in which to save the images
     if "save_dir" not in deck_params or deck_params["save_dir"] is None:
         # If no "save_dir" was provided, save the images in the current working directory
-        deck_dir = os.path.join(os.getcwd(), deck_params["name"])
+        deck_dir = Path.cwd() / deck_params["name"]
     else:
         # If a "save_dir" was provided, check if it exists and is a directory
-        if os.path.isdir(deck_params["save_dir"]):
-            deck_dir = os.path.join(deck_params["save_dir"], deck_params["name"])
+        if Path(deck_params["save_dir"]).is_dir():
+            deck_dir = Path(deck_params["save_dir"]) / deck_params["name"]
         else:
             raise ValueError(
                 f"Invalid 'save_dir': '{deck_params['save_dir']}' does not exist"
@@ -422,7 +431,7 @@ def create_dobble_deck(
             )
 
     # If the "deck_dir" already exists, abort the function and inform the user
-    if os.path.exists(deck_dir):
+    if deck_dir.exists():
         raise ValueError(
             f"Invalid 'deck_name': '{deck_params['name']}' already exists in the specified"
             f"'save_dir'."
@@ -457,13 +466,14 @@ def create_dobble_deck(
     # in a subdirectory called "info".  The CSV files contain information about the individual
     # cards (i.e., which emojis are placed on which card) and the emojis themselves (i.e., the hex
     # code of each emoji and its corresponding label).
-    os.makedirs(deck_dir)
-    os.makedirs(os.path.join(deck_dir, "info"))
+    deck_dir.mkdir(parents=True, exist_ok=True)
+    info_dir = deck_dir / "info"
+    info_dir.mkdir(parents=True, exist_ok=True)
 
     # Create the filepaths pointing to the CSV files
     csv_files = {
-        "deck": os.path.join(deck_dir, "info", "deck.csv"),
-        "emojis": os.path.join(deck_dir, "info", "emojis.csv")
+        "deck": str(info_dir / "deck.csv"),
+        "emojis": str(info_dir / "emojis.csv")
     }
 
     # Create a CSV file containing the hex code of each emoji along with a counter from 1 to
@@ -473,9 +483,11 @@ def create_dobble_deck(
 
     # Set up a CSV file to store information about the individual cards
     with open(csv_files["deck"], "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow(
-            ["FilePath"] + ["Emoji" + str(i + 1) for i in range(deck_params["emojis_per_card"])]
+        csv.writer(f).writerow(
+            ["FilePath"]
+            + ["Emoji" + str(i + 1)
+               for i in range(deck_params["emojis_per_card"])
+               ]
         )
 
     # Compute incidence matrix of corresponding finite projective plane.  This determines which
@@ -495,12 +507,13 @@ def create_dobble_deck(
 
         # Create playing card and save in directory
         dobble_card = create_dobble_card(which_emojis, card_params)
-        file_path = os.path.join(deck_dir, f"{deck_params['name']}_{card + 1:03d}.png")
+        file_path = deck_dir / f"{deck_params['name']}_{card + 1:03d}.png"
         dobble_card.save(file_path)
 
         # Write card information to the CSV file
         with open(csv_files["deck"], "a", newline="", encoding="utf-8") as f:
-            writer = csv.writer(f)
-            writer.writerow([file_path] + [emoji["hex"] for emoji in which_emojis])
+            csv.writer(f).writerow(
+                [file_path] + [emoji["hex"] for emoji in which_emojis]
+            )
 
     return csv_files

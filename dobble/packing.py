@@ -31,7 +31,9 @@ import numpy as np
 from . import constants
 
 
-def _read_coordinates_from_file(num_circles: int, packing_type: str) -> np.ndarray:
+def _read_coordinates_from_file(
+        num_circles: int,
+        packing_type: str) -> np.ndarray:
     """Read coordinates of a specified circle packing from a text file.
 
     Args:
@@ -63,7 +65,9 @@ def _read_coordinates_from_file(num_circles: int, packing_type: str) -> np.ndarr
         ) from exc
 
 
-def _read_radius_from_file(num_circles: int, packing_type: str) -> float:
+def _read_radius_from_file(
+        num_circles: int,
+        packing_type: str) -> float:
     """Read the radius of the largest circle of a specified circle
        packing from a text file.
 
@@ -95,7 +99,10 @@ def _read_radius_from_file(num_circles: int, packing_type: str) -> float:
         raise FileNotFoundError(f"Radius file for '{packing_type}' packing not found.") from exc
 
 
-def _compute_radii(num_circles: int, packing_type: str, largest_radius: float) -> np.ndarray:
+def _compute_radii(
+        num_circles: int,
+        packing_type: str,
+        largest_radius: float) -> np.ndarray:
     """Compute the radii of all circles in a packing.
 
     Args:
@@ -121,7 +128,9 @@ def _compute_radii(num_circles: int, packing_type: str, largest_radius: float) -
     return radii
 
 
-def _convert_coordinates_to_pixels(rel_coordinates: np.ndarray, image_size: int) -> np.ndarray:
+def _convert_coordinates_to_pixels(
+        rel_coordinates: np.ndarray,
+        image_size: int) -> np.ndarray:
     """Convert relative coordinates to pixel values based on the size of
        a square image.
 
@@ -159,7 +168,9 @@ def _convert_coordinates_to_pixels(rel_coordinates: np.ndarray, image_size: int)
     return coordinates
 
 
-def _convert_radii_to_pixels(rel_radii: np.ndarray, image_size: int) -> np.ndarray:
+def _convert_radii_to_pixels(
+        rel_radii: np.ndarray,
+        image_size: int) -> np.ndarray:
     """Convert relative radii to pixel values based on the size of a
        square image.
 
@@ -184,7 +195,9 @@ def _convert_radii_to_pixels(rel_radii: np.ndarray, image_size: int) -> np.ndarr
 
 
 def get_packing_data(
-        num_circles: int, packing_type: str, image_size: int) -> dict[str, np.ndarray]:
+        num_circles: int,
+        packing_type: str,
+        image_size: int) -> dict[str, np.ndarray]:
     """Get data (coordinates and radii) of a specified packing in pixel
        values.
 
