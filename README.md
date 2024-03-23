@@ -23,21 +23,21 @@ The data on circle packings used in this project are made available by [**Prof. 
 
 ## License
 
-This project is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html) (GPLv3) - see the [LICENSE](LICENSE) file for details.
+This project is open source and available under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html) (GPLv3). The GPLv3 is a copyleft license that allows for the free distribution, modification, and use of this software, ensuring that all derivatives of this work are also available under the same license. Here’s a summary of the license’s main points:
 
-You are free to:
+- **Freedom to Use**: You are free to use this software for any purpose, including commercial applications, in accordance with the license terms.
 
-- **Share**: Copy and redistribute the material in any medium or format.
+- **Freedom to Modify**: You can modify the source code of this software, allowing you to tailor it to your needs or improve upon it. Your modifications must also be licensed under GPLv3.
 
-- **Adapt**: Remix, transform, and build upon the material for any purpose, even commercially.
+- **Freedom to Share**: You can distribute this software freely, whether in its original form or with your modifications, as long as you also make the source code available under the same license terms.
 
-Under the following terms:
+- **Share Alike**: If you distribute modified versions of this software, you must also do so under the GPLv3, ensuring that all derivatives remain free and open source under the same terms.
 
-- **Attribution**: You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+- **Attribution and Notices**: When distributing or modifying the project's software, you must retain all copyright notices and author attributions found in the original work, as well as provide notices that you have modified the work. This ensures transparency and respects the original creators' contributions.
 
-- **ShareAlike**: If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
+- **No Additional Restrictions**: You may not impose any further restrictions on the recipients' exercise of the rights granted under the license. This includes not using legal terms or technological measures that legally restrict others from doing anything the license permits.
 
-- **No additional restrictions**: You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
+For more detailed information, please review the full [LICENSE](LICENSE) text. By using, distributing, or contributing to this project, you agree to abide by the terms of the GNU GPLv3.
 
 ## Coding Style
 
