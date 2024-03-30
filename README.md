@@ -16,10 +16,8 @@
 ## Acknowledgments
 
 The emojis used in this project are designed by [**OpenMoji**](https://openmoji.org/) - the open-source emoji and icon project.
-Precisely, the emojis are taken from Release [14.0.0](https://github.com/hfg-gmuend/openmoji/releases/tag/14.0.0).
-License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/#)
 
-The data on circle packings used in this project are made available by [**Prof. Dr.-Ing. Eckehard Specht**](https://www.ltv.ovgu.de/Mitarbeiter/Lehrstuhlinhaber/Prof_+Eckehard+Specht-p-210.html) on his website [**packomania.com**](http://www.packomania.com).
+The data on circle packings used in this project is taken from [**packomania.com**](http://www.packomania.com), made available by [**Prof. Dr.-Ing. Eckehard Specht**](https://www.ltv.ovgu.de/Mitarbeiter/Lehrstuhlinhaber/Prof_+Eckehard+Specht-p-210.html).
 
 ## License
 
