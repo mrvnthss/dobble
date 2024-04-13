@@ -8,8 +8,8 @@ Functions:
     - _is_prime_power: Check if a number is a prime power.
     - _get_permutation_matrix: Return the permutation matrix
         corresponding to the permutation.
-    - compute_incidence_matrix: Compute the incidence matrix of a finite
-        projective plane.
+    - compute_incidence_matrix: Compute the canonical incidence matrix
+        of a finite projective plane.
 """
 
 # Standard Library Imports
@@ -92,8 +92,9 @@ def _get_permutation_matrix(permutation: np.ndarray) -> np.ndarray:
 
 
 def compute_incidence_matrix(order: int) -> np.ndarray:
-    """Compute the incidence matrix of a finite projective plane with
-       specified order.
+    """Compute the canonical incidence matrix of a finite projective
+       plane with prime order based on the construction by
+       Paige and Wexler (1953).
 
     Args:
         order (int): The order of the finite projective plane.
@@ -103,7 +104,7 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
             lines and columns correspond to points.
 
     Raises:
-        ValueError: If the argument order is not a prime.
+        ValueError: If the argument order is not a prime number.
 
     Example:
         >>> compute_incidence_matrix(2)
@@ -118,45 +119,47 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
     if not _is_prime(order):
         raise ValueError("The argument 'order' must be a prime.")
 
-    # Number of points/lines of a finite projective plane of order n is given by n^2 + n + 1
+    # Number of points/lines of an FPP of order n
     size = order ** 2 + order + 1
 
-    # Preallocate incidence matrix
+    # Set up incidence matrix
     #   - rows correspond to lines
     #   - columns correspond to points
     incidence_matrix = np.zeros((size, size), dtype=np.uint8)
 
-    # Place 1s in upper left block
+    # a) P_1, P_2, ..., P_{n+1} are the points of L_1
     incidence_matrix[0, : order + 1] = 1
+
+    # b) L_1, L_2, ..., L_{n+1} are the lines through P_1
     incidence_matrix[: order + 1, 0] = 1
 
-    # Place 1s in remaining boundary blocks (i.e., top row & leftmost column of blocks)
     start = order + 1
     for block in range(1, order + 1):
         stop = start + order
-        # top row of blocks
+
+        # c) P_{kn+2}, P_{kn+3}, ..., P_{kn+n+1} lie on L_{k+1}, k = 1, 2, ..., n
         incidence_matrix[block, start:stop] = 1
-        # leftmost column of blocks
+
+        # d) L_{kn+2}, L_{kn+3}, ..., L_{kn+n+1} lie on P_{k+1}, k = 1, 2, ..., n
         incidence_matrix[start:stop, block] = 1
         start = stop
 
-    # Place 1s in remaining n x n block matrix
-    # NOTE: Each block is an n x n permutation matrix
-    for row, col in np.ndindex(order, order):
-        # Determine permutation matrix
-        if row == 0 or col == 0:
+    # Kernel of the incidence matrix (i.e., n^2 permutation matrices C_{ij})
+    for i, j in np.ndindex(order, order):
+        # Determine permutation matrix C_{ij}
+        if i == 0 or j == 0:
             permutation_matrix = np.eye(order, dtype=np.uint8)
         else:
-            leading_entry = (1 + row * col) % order
+            leading_entry = (1 + i * j) % order
             if leading_entry == 0:
                 leading_entry = order
             permutation = (np.array(range(0, order)) + leading_entry) % order
             permutation[permutation == 0] = order
             permutation_matrix = _get_permutation_matrix(permutation)
 
-        # Place permutation matrix in incidence matrix
-        start_row = order + 1 + row * order
-        start_col = order + 1 + col * order
+        # Place permutation matrix C_{ij} in incidence matrix
+        start_row = order + 1 + i * order
+        start_col = order + 1 + j * order
         end_row = start_row + order
         end_col = start_col + order
         incidence_matrix[start_row:end_row, start_col:end_col] = permutation_matrix
