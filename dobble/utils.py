@@ -74,7 +74,7 @@ def _get_permutation_matrix(permutation: np.ndarray) -> np.ndarray:
             permutation.
 
     Raises:
-        ValueError: If the passed argument is not a valid permutation.
+        ValueError: If the argument is not a valid permutation.
     """
     # Check if the permutation is valid
     if (not isinstance(permutation, np.ndarray)
