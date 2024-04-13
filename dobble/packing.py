@@ -31,9 +31,26 @@ import numpy as np
 from . import constants
 
 
+def _is_valid_packing_type(packing_type: str) -> bool:
+    """Check if the provided packing type is valid.
+
+    Args:
+        packing_type (str): Type of circle packing.
+
+    Returns:
+        bool: True if the packing type is valid, False otherwise.
+    """
+    is_str = isinstance(packing_type, str)
+    packing_type_exists = packing_type.lower() in constants.PACKING_TYPES_DICT
+    is_valid_packing_type = is_str and packing_type_exists
+
+    return is_valid_packing_type
+
+
 def _read_coordinates_from_file(
         num_circles: int,
-        packing_type: str) -> np.ndarray:
+        packing_type: str
+) -> np.ndarray:
     """Read coordinates of a specified circle packing from a text file.
 
     Args:
@@ -45,9 +62,22 @@ def _read_coordinates_from_file(
             (n x 2)-array, where n = "num_circles".
 
     Raises:
+        ValueError: If the packing type is not one of the supported
+            packing types or if the number of circles is not a positive
+            integer.
         FileNotFoundError: If the text file for the specified packing
             type and number of circles is not found.
     """
+    # Check if a valid packing type is provided
+    if not _is_valid_packing_type(packing_type):
+        raise ValueError(f"Invalid packing type: '{packing_type}' is not supported.")
+
+    # Check if the number of circles is a positive integer
+    if not isinstance(num_circles, int) or num_circles < 1:
+        raise ValueError("Number of circles must be a positive integer.")
+
+    # Construct the file name based on the packing type and number of circles
+    packing_type = packing_type.lower()
     file_name = packing_type + str(num_circles) + ".txt"
 
     try:
@@ -67,7 +97,8 @@ def _read_coordinates_from_file(
 
 def _read_radius_from_file(
         num_circles: int,
-        packing_type: str) -> float:
+        packing_type: str
+) -> float:
     """Read the radius of the largest circle of a specified circle
        packing from a text file.
 
@@ -79,11 +110,21 @@ def _read_radius_from_file(
         float: The radius of the largest circle of the packing.
 
     Raises:
+        ValueError: If either the packing type or the number of circles
+            are invalid, or if no radius is found for the specified
+            combination of packing type and number of circles.
         FileNotFoundError: If the text file for the specified packing
             type is not found.
-        ValueError: If no radius is found for the specified packing type
-            and number of circles.
     """
+    # Check if a valid packing type is provided
+    if not _is_valid_packing_type(packing_type):
+        raise ValueError(f"Invalid packing type: '{packing_type}' is not supported.")
+
+    # Check if the number of circles is a positive integer
+    if not isinstance(num_circles, int) or num_circles < 1:
+        raise ValueError("Number of circles must be a positive integer.")
+
+    packing_type = packing_type.lower()
     file_name = constants.RADIUS_TXT
 
     try:
@@ -102,7 +143,8 @@ def _read_radius_from_file(
 def _compute_radii(
         num_circles: int,
         packing_type: str,
-        largest_radius: float) -> np.ndarray:
+        largest_radius: float
+) -> np.ndarray:
     """Compute the radii of all circles in a packing.
 
     Args:
@@ -113,12 +155,26 @@ def _compute_radii(
 
     Returns:
         np.ndarray: The computed radii of the circles in the packing.
+
+    Raises:
+        ValueError: If the packing type is not one of the supported
+            packing types or if the number of circles is not a positive
+            integer.
     """
+    # Check if a valid packing type is provided
+    if not _is_valid_packing_type(packing_type):
+        raise ValueError(f"Invalid packing type: '{packing_type}' is not supported.")
+
+    # Check if the number of circles is a positive integer
+    if not isinstance(num_circles, int) or num_circles < 1:
+        raise ValueError("Number of circles must be a positive integer.")
+
+    packing_type = packing_type.lower()
     radius_function, monotonicity = constants.PACKING_TYPES_DICT[packing_type]
     function_values = np.array([radius_function(n + 1) for n in range(num_circles)])
 
-    # If the function "radius_function" is decreasing, we reverse the order of "function_values" so
-    # that the values are listed in increasing order
+    # If the function "radius_function" is decreasing, we reverse the order of
+    # "function_values" so that the values are listed in increasing order
     if monotonicity == "decreasing":
         function_values.sort()
 
@@ -130,7 +186,8 @@ def _compute_radii(
 
 def _convert_coordinates_to_pixels(
         rel_coordinates: np.ndarray,
-        image_size: int) -> np.ndarray:
+        image_size: int
+) -> np.ndarray:
     """Convert relative coordinates to pixel values based on the size of
        a square image.
 
@@ -153,11 +210,15 @@ def _convert_coordinates_to_pixels(
 
     Raises:
         ValueError: If the relative coordinates are outside the range of
-            [-1, 1].
+            [-1, 1] or if the image size is not a positive integer.
     """
     # Check if the relative coordinates are within the range of [-1, 1]
     if np.any((rel_coordinates < -1) | (rel_coordinates > 1)):
         raise ValueError("Relative coordinates must be in the range of [-1, 1].")
+
+    # Check if the image size is a positive integer
+    if not isinstance(image_size, int) or image_size < 1:
+        raise ValueError("Image size must be a positive integer.")
 
     # Shift coordinates from [-1, 1] to [0, 1]
     rel_coordinates = rel_coordinates / 2 + 0.5
@@ -170,7 +231,8 @@ def _convert_coordinates_to_pixels(
 
 def _convert_radii_to_pixels(
         rel_radii: np.ndarray,
-        image_size: int) -> np.ndarray:
+        image_size: int
+) -> np.ndarray:
     """Convert relative radii to pixel values based on the size of a
        square image.
 
@@ -184,10 +246,15 @@ def _convert_radii_to_pixels(
 
     Raises:
         ValueError: If the relative radius is outside the valid range of
-            [0, 1].
+            [0, 1] or if the image size is not a positive integer.
     """
+    # Check if the relative radii are within the range of [0, 1]
     if np.any((rel_radii < -1) | (rel_radii > 1)):
         raise ValueError("Relative radii must be in the range of [0, 1].")
+
+    # Check if the image size is a positive integer
+    if not isinstance(image_size, int) or image_size < 1:
+        raise ValueError("Image size must be a positive integer.")
 
     radii = np.floor(rel_radii * image_size).astype("int")
 
@@ -197,7 +264,8 @@ def _convert_radii_to_pixels(
 def get_packing_data(
         num_circles: int,
         packing_type: str,
-        image_size: int) -> dict[str, np.ndarray]:
+        image_size: int
+) -> dict[str, np.ndarray]:
     """Get data (coordinates and radii) of a specified packing in pixel
        values.
 
@@ -210,20 +278,13 @@ def get_packing_data(
     Returns:
         dict[str, np.ndarray]: A dictionary containing the coordinates
             and radii in pixel values.
-
-    Raises:
-        ValueError: If the packing type is not one of the supported
-            packing types.
     """
-    if packing_type not in constants.PACKING_TYPES_DICT:
-        raise ValueError(f"Invalid packing type: '{packing_type}' is not supported.")
-
-    # Coordinates
+    # Get coordinates
     coordinates = _convert_coordinates_to_pixels(
         _read_coordinates_from_file(num_circles, packing_type), image_size
     )
 
-    # Radii (i.e., sizes of the circles in pixels)
+    # Get radii (i.e., sizes of the circles in pixels)
     largest_radius = _read_radius_from_file(num_circles, packing_type)
     radii = _convert_radii_to_pixels(
         _compute_radii(num_circles, packing_type, largest_radius), image_size
