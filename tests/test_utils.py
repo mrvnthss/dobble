@@ -15,6 +15,7 @@ import pytest
 # Local Imports
 from dobble import utils
 
+
 # Constants for Testing
 NEGATIVE_NUMBER = -7
 
@@ -33,6 +34,27 @@ LARGE_PRIME_POWER = 3 ** 5
 
 INVALID_PERMUTATION = np.array([2, 1, 4])
 VALID_PERMUTATION = np.array([2, 4, 1, 3])
+
+
+def is_incidence_matrix_of_fpp(matrix: np.ndarray, order: int) -> bool:
+    """Check if the matrix is an incidence matrix of a finite projective
+    plane.
+
+    Args:
+        matrix (np.ndarray): The square matrix to be checked.
+        order (int): The order of the finite projective plane.
+
+    Returns:
+        bool: True if the matrix is an incidence matrix of a finite
+                projective plane, False otherwise.
+    """
+    size = order ** 2 + order + 1
+    all_ones = np.ones((size, size), dtype=np.uint8)
+    identity = np.eye(size, dtype=np.uint8)
+
+    is_incidence_matrix = np.all(matrix @ matrix.T == order * identity + all_ones)
+
+    return is_incidence_matrix
 
 
 def test_is_prime_with_zero():
@@ -140,6 +162,13 @@ def test_compute_incidence_matrix_with_small_prime_number():
                                 [0, 0, 1, 1, 0, 0, 1],
                                 [0, 0, 1, 0, 1, 1, 0]], dtype=np.uint8)
 
-    np.testing.assert_array_equal(
-        utils.compute_incidence_matrix(SMALL_PRIME_NUMBER), expected_matrix
-    )
+    result = utils.compute_incidence_matrix(SMALL_PRIME_NUMBER)
+    np.testing.assert_array_equal(result, expected_matrix)
+    assert is_incidence_matrix_of_fpp(result, SMALL_PRIME_NUMBER)
+
+
+def test_compute_incidence_matrix_with_primes_up_to_50():
+    for num in range(1, 51):
+        if utils._is_prime(num):
+            result = utils.compute_incidence_matrix(num)
+            assert is_incidence_matrix_of_fpp(result, num)
