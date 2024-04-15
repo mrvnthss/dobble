@@ -4,6 +4,7 @@ This module provides functions to read circle packing data from files,
 and convert relative coordinates to pixel values for rendering images.
 
 Functions:
+    - _is_valid_packing_type: Check if a packing type is valid.
     - _read_coordinates_from_file: Read coordinates of a specified
         circle packing from a text file.
     - _read_radius_from_file: Read the radius of the largest circle of a
@@ -17,12 +18,12 @@ Functions:
         packing in pixel values.
 
 The module uses the "constants" module from the "dobble" package to
-access the project-level constants, and in particular, the paths to the
+access project-level constants, and in particular, the paths to the
 packing data files.
 """
 
 # Standard Library Imports
-from importlib import resources
+from importlib.resources import files
 
 # Third-Party Library Imports
 import numpy as np
@@ -68,20 +69,21 @@ def _read_coordinates_from_file(
         FileNotFoundError: If the text file for the specified packing
             type and number of circles is not found.
     """
-    # Check if a valid packing type is provided
-    if not _is_valid_packing_type(packing_type):
-        raise ValueError(f"Invalid packing type: '{packing_type}' is not supported.")
-
     # Check if the number of circles is a positive integer
     if not isinstance(num_circles, int) or num_circles < 1:
         raise ValueError("Number of circles must be a positive integer.")
+
+    # Check if a valid packing type is provided
+    if not _is_valid_packing_type(packing_type):
+        raise ValueError(f"Invalid packing type: '{packing_type}' is not supported.")
 
     # Construct the file name based on the packing type and number of circles
     packing_type = packing_type.lower()
     file_name = packing_type + str(num_circles) + ".txt"
 
     try:
-        with resources.open_text(f"{constants.PACKING_DIR}.{packing_type}", file_name) as file:
+        file_path = files(constants.PACKING_DIR).joinpath(packing_type).joinpath(file_name)
+        with file_path.open("r") as file:
             # Read the text file line by line
             lines = file.readlines()
             # Strip extra spaces from each line and split into columns
@@ -116,19 +118,20 @@ def _read_radius_from_file(
         FileNotFoundError: If the text file for the specified packing
             type is not found.
     """
-    # Check if a valid packing type is provided
-    if not _is_valid_packing_type(packing_type):
-        raise ValueError(f"Invalid packing type: '{packing_type}' is not supported.")
-
     # Check if the number of circles is a positive integer
     if not isinstance(num_circles, int) or num_circles < 1:
         raise ValueError("Number of circles must be a positive integer.")
+
+    # Check if a valid packing type is provided
+    if not _is_valid_packing_type(packing_type):
+        raise ValueError(f"Invalid packing type: '{packing_type}' is not supported.")
 
     packing_type = packing_type.lower()
     file_name = constants.RADIUS_TXT
 
     try:
-        with resources.open_text(f"{constants.PACKING_DIR}.{packing_type}", file_name) as file:
+        file_path = files(constants.PACKING_DIR).joinpath(packing_type).joinpath(file_name)
+        with file_path.open("r") as file:
             for line in file:
                 values = line.strip().split()
                 if len(values) == 2 and int(values[0]) == num_circles:
@@ -161,13 +164,13 @@ def _compute_radii(
             packing types or if the number of circles is not a positive
             integer.
     """
-    # Check if a valid packing type is provided
-    if not _is_valid_packing_type(packing_type):
-        raise ValueError(f"Invalid packing type: '{packing_type}' is not supported.")
-
     # Check if the number of circles is a positive integer
     if not isinstance(num_circles, int) or num_circles < 1:
         raise ValueError("Number of circles must be a positive integer.")
+
+    # Check if a valid packing type is provided
+    if not _is_valid_packing_type(packing_type):
+        raise ValueError(f"Invalid packing type: '{packing_type}' is not supported.")
 
     packing_type = packing_type.lower()
     radius_function, monotonicity = constants.PACKING_TYPES_DICT[packing_type]
