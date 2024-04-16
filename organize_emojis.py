@@ -1,32 +1,32 @@
-"""Module for organizing emojis into subdirectories.
+"""This script organizes the OpenMoji emojis into subdirectories.
 
-This module is used to organize the emojis into subdirectories based on
-their OpenMoji "group" attribute.
+This script reads the JSON file provided by OpenMoji and organizes the
+emojis into subdirectories based on their "group" attribute in the JSON
+file.
 
-Functions:
-    - organize_emojis: Organize emojis into subdirectories based on
-        their OpenMoji "group" attribute.
+Typical usage example:
+
+  python organize_emojis.py
 """
 
-# Standard Library Imports
 import json
 import shutil
 from pathlib import Path
 
-# File path to OpenMoji JSON file
+
 OPENMOJI_JSON = Path("data/openmoji/openmoji.json")
 
 
 def organize_emojis(directory: str) -> None:
-    """Organize emojis into subdirectories based on their OpenMoji
-       "group" attribute.
+    """Organize OpenMoji emojis into subdirectories.
+
+    This function organizes the OpenMoji emojis into subdirectories
+    based on their "group" attribute in the JSON file provided by
+    OpenMoji.
 
     Args:
-        directory (str): The initial subdirectory containing the emojis.
-            Either "color" or "black".
-
-    Returns:
-        None
+        directory: The initial subdirectory containing the emojis.
+          Either "color" or "black".
     """
     # Read JSON file provided by OpenMoji
     with OPENMOJI_JSON.open("r", encoding="utf-8") as json_file:

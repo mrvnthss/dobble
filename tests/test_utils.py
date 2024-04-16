@@ -1,16 +1,11 @@
-# pylint: disable=protected-access, missing-function-docstring
+# pylint: disable=protected-access, missing-function-docstring, missing-module-docstring
 
-"""Unit tests for the "utils" module of the "dobble" package."""
-
-# Third-Party Library Imports
 import numpy as np
 import pytest
 
-# Local Imports
 from dobble import utils
 
 
-# Constants for Testing
 NEGATIVE_NUMBER = -7
 
 NON_PRIME_NUMBER = 2 * 7
@@ -31,16 +26,15 @@ VALID_PERMUTATION = np.array([2, 4, 1, 3])
 
 
 def is_incidence_matrix_of_fpp(matrix: np.ndarray, order: int) -> bool:
-    """Check if the matrix is an incidence matrix of a finite projective
-    plane.
+    """Check if a square matrix is an incidence matrix of an FPP.
 
     Args:
-        matrix (np.ndarray): The square matrix to be checked.
-        order (int): The order of the finite projective plane.
+        matrix: The square matrix to be checked.
+        order: The order of the finite projective plane.
 
     Returns:
-        bool: True if the matrix is an incidence matrix of a finite
-                projective plane, False otherwise.
+        True if the matrix is an incidence matrix of a finite projective
+          plane, False otherwise.
     """
     size = order ** 2 + order + 1
     all_ones = np.ones((size, size), dtype=np.uint8)

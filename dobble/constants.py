@@ -1,4 +1,4 @@
-"""Module defining project-level constants for the "dobble" package.
+"""This module defines project-level constants for the "dobble" package.
 
 This module provides names of directories and specific files used in the
 project.  Further, it defines a dictionary that maps packing types to
@@ -7,27 +7,25 @@ parameters for playing cards and decks, and a list of emojis to resemble
 the classic Dobble game.
 
 Constants:
-    - EMOJIS_DIR: The directory where emojis are stored.
-    - PACKING_DIR: The directory where packing data files are stored.
-    - RADIUS_TXT: The name of the text file containing the radius of the
-        largest circle in a packing.
-    - PACKING_TYPES_DICT: A dictionary mapping packing types to their
-        associated radii functions.
-    - DEFAULT_CARD_PARAMS: A dictionary of default playing card
-        parameters.
-    - DEFAULT_DECK_PARAMS: A dictionary of default deck parameters.
-    - CLASSIC_DOBBLE_EMOJIS: A list of emojis to resemble the classic
-        Dobble game.
+    EMOJIS_DIR: The directory where emojis are stored.
+    PACKING_DIR: The directory where packing data files are stored.
+    RADIUS_TXT: The name of the text file containing the radius of the
+      largest circle in a packing.
+    PACKING_TYPES_DICT: A dictionary mapping packing types to their
+      associated radii functions.
+    DEFAULT_CARD_PARAMS: A dictionary of default playing card
+      parameters.
+    DEFAULT_DECK_PARAMS: A dictionary of default deck parameters.
+    CLASSIC_DOBBLE_EMOJIS: A list of emojis to resemble the classic
+      Dobble game.
 """
 
-# Names of directories
+
 EMOJIS_DIR = "data.openmoji"
 PACKING_DIR = "data.packing_data"
 
-# Names of specific files
 RADIUS_TXT = "radius.txt"
 
-# Packing types dictionary
 PACKING_TYPES_DICT = {
     "cci": (lambda n: 1, "increasing"),
     "ccib": (lambda n: n ** (-1 / 5), "decreasing"),
@@ -36,21 +34,18 @@ PACKING_TYPES_DICT = {
     "ccis": (lambda n: n ** (-1/2), "decreasing")
 }
 
-# Default playing card parameters
 DEFAULT_CARD_PARAMS = {
     "size": 1024,
     "packing": None,
     "padding": 0.1
 }
 
-# Default deck parameters
 DEFAULT_DECK_PARAMS = {
     "name": "my-dobble-deck",
     "emojis_per_card": 8,
     "save_dir": None
 }
 
-# Emojis to resemble the classic Dobble game
 CLASSIC_DOBBLE_EMOJIS = [
     {"mode": "color", "group": "travel-places", "hex": "2693"},     # anchor
     {"mode": "color", "group": "food-drink", "hex": "1F37C"},       # baby bottle

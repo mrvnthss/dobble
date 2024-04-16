@@ -1,21 +1,17 @@
-"""Utility functions for finite projective planes.
-
-This module provides functions for computing incidence matrices for
-finite projective planes.
+"""This module provides utility functions for finite projective planes.
 
 Functions:
-    - _is_prime: Check if a number is prime.
-    - _is_prime_power: Check if a number is a prime power.
-    - _get_permutation_matrix: Return the permutation matrix
-        corresponding to the permutation.
-    - compute_incidence_matrix: Compute the canonical incidence matrix
-        of a finite projective plane.
+    _is_prime: Check if a number is prime.
+    _is_prime_power: Check if a number is a prime power.
+    _get_permutation_matrix: Return the permutation matrix corresponding
+      to the permutation.
+    compute_incidence_matrix: Compute the canonical incidence matrix of
+      a finite projective plane.
 """
 
-# Standard Library Imports
+
 import math
 
-# Third-Party Library Imports
 import numpy as np
 
 
@@ -23,10 +19,10 @@ def _is_prime(num: float) -> bool:
     """Check if a number is prime.
 
     Args:
-        num (float): The number to be checked.
+        num: The number to be checked.
 
     Returns:
-        bool: True if the number is prime, False otherwise.
+        True if num is a prime number, False otherwise.
     """
     is_integer = isinstance(num, int) or (isinstance(num, float) and num.is_integer())
 
@@ -44,10 +40,10 @@ def _is_prime_power(num: float) -> bool:
     """Check if a number is a prime power.
 
     Args:
-        num (float): The number to be checked.
+        num: The number to be checked.
 
     Returns:
-        bool: True if the number is a prime power, False otherwise.
+        True if num is a prime power, False otherwise.
     """
     is_integer = isinstance(num, int) or (isinstance(num, float) and num.is_integer())
 
@@ -66,12 +62,11 @@ def _get_permutation_matrix(permutation: np.ndarray) -> np.ndarray:
     """Return the permutation matrix corresponding to the permutation.
 
     Args:
-        permutation (np.ndarray): The permutation to be converted to a
-            permutation matrix.
+        permutation: The permutation to be converted to a permutation
+          matrix.
 
     Returns:
-        np.ndarray: The permutation matrix corresponding to the
-            permutation.
+        The permutation matrix corresponding to the permutation.
 
     Raises:
         ValueError: If the argument is not a valid permutation.
@@ -92,16 +87,19 @@ def _get_permutation_matrix(permutation: np.ndarray) -> np.ndarray:
 
 
 def compute_incidence_matrix(order: int) -> np.ndarray:
-    """Compute the canonical incidence matrix of a finite projective
-       plane with prime order based on the construction by
-       Paige and Wexler (1953).
+    """Compute the canonical incidence matrix of an FPP.
+
+    This function computes the canonical incidence matrix of a finite
+    projective plane (FPP) of prime order based on the construction by
+    Paige and Wexler (1953).  The incidence matrix is a square matrix
+    with rows corresponding to lines and columns corresponding to
+    points.
 
     Args:
-        order (int): The order of the finite projective plane.
+        order: The order of the finite projective plane.
 
     Returns:
-        np.ndarray: The computed incidence matrix.  Rows correspond to
-            lines and columns correspond to points.
+        The computed incidence matrix.
 
     Raises:
         ValueError: If the argument order is not a prime number.
@@ -122,9 +120,7 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
     # Number of points/lines of an FPP of order n
     size = order ** 2 + order + 1
 
-    # Set up incidence matrix
-    #   - rows correspond to lines
-    #   - columns correspond to points
+    # Set up incidence matrix, where rows correspond to lines, and columns correspond to points
     incidence_matrix = np.zeros((size, size), dtype=np.uint8)
 
     # a) P_1, P_2, ..., P_{n+1} are the points of L_1

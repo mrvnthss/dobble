@@ -1,17 +1,12 @@
-# pylint: disable=protected-access, missing-function-docstring
+# pylint: disable=protected-access, missing-function-docstring, missing-module-docstring
 
-"""Unit tests for the "packing" module of the "dobble" package."""
-
-# Third-Party Library Imports
 import numpy as np
 import pytest
 
-# Local Imports
 from dobble import constants
 from dobble import packing
 
 
-# Constants for Testing
 INVALID_PACKING_TYPE = "ccid"
 VALID_PACKING_TYPE = "ccir"
 
