@@ -123,18 +123,15 @@ def _read_radius_from_file(
     packing_type = packing_type.lower()
     file_name = constants.RADIUS_TXT
 
-    try:
-        file_path = files(constants.PACKING_DIR).joinpath(packing_type).joinpath(file_name)
-        with file_path.open("r") as file:
-            for line in file:
-                values = line.strip().split()
-                if len(values) == 2 and int(values[0]) == num_circles:
-                    return float(values[1])
-        raise ValueError(
-            f"No radius found for packing type '{packing_type}' with {num_circles} circles."
-        )
-    except FileNotFoundError as exc:
-        raise FileNotFoundError(f"Radius file for '{packing_type}' packing not found.") from exc
+    file_path = files(constants.PACKING_DIR).joinpath(packing_type).joinpath(file_name)
+    with file_path.open("r") as file:
+        for line in file:
+            values = line.strip().split()
+            if len(values) == 2 and int(values[0]) == num_circles:
+                return float(values[1])
+    raise ValueError(
+        f"No radius found for packing type '{packing_type}' with {num_circles} circles."
+    )
 
 
 def _compute_radii(
