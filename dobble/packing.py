@@ -164,7 +164,7 @@ def _compute_radii(
         raise ValueError(f"Invalid packing type: '{packing_type}' is not supported.")
 
     # Check if the largest radius is within the range of (0, 1]
-    if not (0 < largest_radius <= 1):
+    if not 0 < largest_radius <= 1:
         raise ValueError("Largest radius must be in the range of (0, 1].")
 
     packing_type = packing_type.lower()
