@@ -145,6 +145,7 @@ def _compute_radii(
         num_circles: Total number of circles in the packing.
         packing_type: Type of circle packing.
         largest_radius: Radius of the largest circle in the packing.
+          Must be in the range of (0, 1].
 
     Returns:
         The computed radii of all the circles in the packing.
@@ -161,6 +162,10 @@ def _compute_radii(
     # Check if a valid packing type is provided
     if not _is_valid_packing_type(packing_type):
         raise ValueError(f"Invalid packing type: '{packing_type}' is not supported.")
+
+    # Check if the largest radius is within the range of (0, 1]
+    if not (0 < largest_radius <= 1):
+        raise ValueError("Largest radius must be in the range of (0, 1].")
 
     packing_type = packing_type.lower()
     radius_function, monotonicity = constants.PACKING_TYPES_DICT[packing_type]
@@ -203,8 +208,8 @@ def _convert_coordinates_to_pixels(
           [-1, 1] or if the image size is not a positive integer.
     """
     # Check if the relative coordinates are within the range of [-1, 1]
-    if np.any((rel_coordinates < -1) | (rel_coordinates > 1)):
-        raise ValueError("Relative coordinates must be in the range of [-1, 1].")
+    if not np.all(-1 <= rel_coordinates <= 1):
+        raise ValueError("All relative coordinates must be in the range of [-1, 1].")
 
     # Check if the image size is a positive integer
     if not isinstance(image_size, int) or image_size < 1:
@@ -226,7 +231,7 @@ def _convert_radii_to_pixels(
     """Convert relative radii to pixel values.
 
     Args:
-        rel_radii: Relative radii in the range of [0, 1].
+        rel_radii: Relative radii in the range of (0, 1].
         image_size: Size of the square image that radii are to be based
           on.
 
@@ -234,12 +239,12 @@ def _convert_radii_to_pixels(
         Pixel values corresponding to the relative radii.
 
     Raises:
-        ValueError: If the relative radius is outside the valid range of
-          [0, 1] or if the image size is not a positive integer.
+        ValueError: If any relative radius is outside the valid range of
+          (0, 1] or if the image size is not a positive integer.
     """
-    # Check if the relative radii are within the range of [0, 1]
-    if np.any((rel_radii < -1) | (rel_radii > 1)):
-        raise ValueError("Relative radii must be in the range of [0, 1].")
+    # Check if all relative radii are within the range of (0, 1]
+    if not np.all(0 < rel_radii <= 1):
+        raise ValueError("All relative radii must be in the range of (0, 1].")
 
     # Check if the image size is a positive integer
     if not isinstance(image_size, int) or image_size < 1:
