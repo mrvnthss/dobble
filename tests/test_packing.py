@@ -291,3 +291,21 @@ def test_convert_radii_to_pixels_with_valid_parameters_ccis():
         packing._convert_radii_to_pixels(CCIS5_REL_RADII, VALID_IMAGE_SIZE),
         CCIS5_RADII
     )
+
+
+def test_get_packing_data_with_valid_parameters_cci():
+    packing_data = packing.get_packing_data(*VALID_COMBO_CCI, VALID_IMAGE_SIZE)
+    np.testing.assert_array_equal(packing_data["coordinates"], CCI3_COORDINATES)
+    np.testing.assert_array_equal(packing_data["radii"], CCI3_RADII)
+
+
+def test_get_packing_data_with_valid_parameters_ccir():
+    packing_data = packing.get_packing_data(*VALID_COMBO_CCIR, VALID_IMAGE_SIZE)
+    np.testing.assert_array_equal(packing_data["coordinates"], CCIR5_COORDINATES)
+    np.testing.assert_array_equal(packing_data["radii"], CCIR5_RADII)
+
+
+def test_get_packing_data_with_valid_parameters_ccis():
+    packing_data = packing.get_packing_data(*VALID_COMBO_CCIS, VALID_IMAGE_SIZE)
+    np.testing.assert_array_equal(packing_data["coordinates"], CCIS5_COORDINATES)
+    np.testing.assert_array_equal(packing_data["radii"], CCIS5_RADII)
