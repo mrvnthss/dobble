@@ -8,15 +8,16 @@ readme = "README.md"
 include = ["data/*"]
 
 [tool.poetry.dependencies]
-python = "^3.11"
 numpy = "^1.26.2"
-pillow = "^10.1.0"
 pandas = "^2.1.4"
+pillow = "^10.1.0"
+python = "^3.11"
 
 [tool.poetry.group.dev.dependencies]
+complexipy = "^0.3.3"
+coverage = "^7.3.3"
 pylint = "^3.0.3"
 pytest = "^7.4.3"
-coverage = "^7.3.3"
 
 [build-system]
 requires = ["poetry-core"]
