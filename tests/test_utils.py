@@ -3,6 +3,7 @@
 import numpy as np
 import pytest
 
+from dobble import constants
 from dobble import utils
 
 
@@ -176,3 +177,9 @@ def test_compute_incidence_matrix_with_primes_up_to_50():
         if utils._is_prime(num):
             result = utils.compute_incidence_matrix(num)
             assert is_incidence_matrix_of_fpp(result, num)
+
+
+def test_compute_incidence_matrix_with_implemented_prime_powers():
+    for num in constants.PERMUTATIONS:
+        result = utils.compute_incidence_matrix(num)
+        assert is_incidence_matrix_of_fpp(result, num)

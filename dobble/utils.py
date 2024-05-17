@@ -15,6 +15,8 @@ import math
 
 import numpy as np
 
+from . import constants
+
 
 def _is_integer(num: int | float) -> bool:
     """Check if a number is an integer.
@@ -127,14 +129,19 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
                [0, 0, 1, 1, 0, 0, 1],
                [0, 0, 1, 0, 1, 1, 0]], dtype=uint8)
     """
-    if not _is_prime(order):
-        raise ValueError("The argument 'order' must be a prime.")
+    is_prime_order = _is_prime(order)
 
-    # Number of points/lines of an FPP of order n
-    size = order ** 2 + order + 1
+    if not (is_prime_order or order in list(constants.PERMUTATIONS)):
+        raise ValueError(
+            "The argument 'order' must be a prime or one of: "
+            + ", ".join(map(str, list(constants.PERMUTATIONS)))
+        )
 
     # Set up incidence matrix, where rows correspond to lines, and columns correspond to points
-    incidence_matrix = np.zeros((size, size), dtype=np.uint8)
+    incidence_matrix = np.zeros(
+        (order ** 2 + order + 1, order ** 2 + order + 1),
+        dtype=np.uint8
+    )
 
     # a) P_1, P_2, ..., P_{n+1} are the points of L_1
     incidence_matrix[0, : order + 1] = 1
@@ -159,11 +166,14 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
         if i == 0 or j == 0:
             permutation_matrix = np.eye(order, dtype=np.uint8)
         else:
-            leading_entry = (1 + i * j) % order
-            if leading_entry == 0:
-                leading_entry = order
-            permutation = (np.array(range(0, order)) + leading_entry) % order
-            permutation[permutation == 0] = order
+            if is_prime_order:
+                leading_entry = (1 + i * j) % order
+                if leading_entry == 0:
+                    leading_entry = order
+                permutation = (np.array(range(0, order)) + leading_entry) % order
+                permutation[permutation == 0] = order
+            else:
+                permutation = constants.PERMUTATIONS[order][i - 1, j - 1, :]
             permutation_matrix = _get_permutation_matrix(permutation)
 
         # Place permutation matrix C_{ij} in incidence matrix

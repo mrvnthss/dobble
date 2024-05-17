@@ -18,7 +18,13 @@ Constants:
     DEFAULT_DECK_PARAMS: A dictionary of default deck parameters.
     CLASSIC_DOBBLE_EMOJIS: A list of emojis to resemble the classic
       Dobble game.
+    PERMUTATIONS: A dictionary of permutations needed to create
+      incidence matrices for finite projective planes whose order is a
+      prime power.
 """
+
+
+import numpy as np
 
 
 EMOJIS_DIR = "data.openmoji"
@@ -105,3 +111,13 @@ CLASSIC_DOBBLE_EMOJIS = [
     {"mode": "color", "group": "symbols", "hex": "262F"},           # yin yang
     {"mode": "color", "group": "animals-nature", "hex": "1F993"}    # zebra
 ]
+
+_PERMUTATIONS_4 = np.array([
+    [[2, 1, 4, 3], [3, 4, 1, 2], [4, 3, 2, 1]],
+    [[3, 4, 1, 2], [4, 3, 2, 1], [2, 1, 4, 3]],
+    [[4, 3, 2, 1], [2, 1, 4, 3], [3, 4, 1, 2]]
+])
+
+PERMUTATIONS = {
+    4: _PERMUTATIONS_4
+}
