@@ -19,6 +19,10 @@ VALID_COMBO_CCI = (3, "cci")
 VALID_COMBO_CCIR = (5, "ccir")
 VALID_COMBO_CCIS = (5, "ccis")
 
+NEGATIVE_IMAGE_SIZE = -256
+FLOAT_IMAGE_SIZE = 256.5
+VALID_IMAGE_SIZE = 256
+
 CCI3_REL_COORDINATES = np.array([
     [-0.464101615137754587054892683011, -0.267949192431122706472553658494],
     [0.464101615137754587054892683011, -0.267949192431122706472553658494],
@@ -37,27 +41,6 @@ CCIS5_REL_COORDINATES = np.array([
     [0.557320022845714939998766546600, 0.372560089022691612125001453910],
     [0.478020143114896574351640499785, -0.356464571708361592424519255313],
     [-0.429077903380960672427751459318, -0.000000000000000000000000000000]
-])
-
-# Based on an image size of 256x256 (cf. VALID_IMAGE_SIZE below)
-CCI3_COORDINATES = np.array([
-    [68,  93],
-    [187,  93],
-    [128, 196]
-])
-CCIR5_COORDINATES = np.array([
-    [83, 38],
-    [118, 215],
-    [159, 55],
-    [193, 155],
-    [63, 128]
-])
-CCIS5_COORDINATES = np.array([
-    [120, 33],
-    [133, 219],
-    [199, 175],
-    [189, 82],
-    [73, 128]
 ])
 
 CCI3_LARGEST_REL_RADIUS = 0.464101615137754587054892683012
@@ -84,9 +67,31 @@ CCIS5_REL_RADII = np.array([
     0.57092209661903940
 ])
 
-NEGATIVE_IMAGE_SIZE = -256
-FLOAT_IMAGE_SIZE = 256.5
-VALID_IMAGE_SIZE = 256
+# Based on an image size of 256x256 (cf. VALID_IMAGE_SIZE above)
+CCI3_COORDINATES = np.array([
+    [68,  93],
+    [187,  93],
+    [128, 196]
+])
+CCIR5_COORDINATES = np.array([
+    [83, 38],
+    [118, 215],
+    [159, 55],
+    [193, 155],
+    [63, 128]
+])
+CCIS5_COORDINATES = np.array([
+    [120, 33],
+    [133, 219],
+    [199, 175],
+    [189, 82],
+    [73, 128]
+])
+
+# Based on an image size of 256x256 (cf. VALID_IMAGE_SIZE above)
+CCI3_RADII = np.array([118, 118, 118])
+CCIR5_RADII = np.array([56, 80, 98, 113, 126])
+CCIS5_RADII = np.array([65, 73, 84, 103, 146])
 
 
 def test_is_valid_packing_type_with_invalid_packing_type():
@@ -221,14 +226,14 @@ def test_convert_coordinates_to_pixels_with_invalid_coordinates():
         packing._convert_coordinates_to_pixels(CCI3_REL_COORDINATES + 1, VALID_IMAGE_SIZE)
 
 
-def test_convert_coordinates_to_pixels_with_negative_image_size():
-    with pytest.raises(ValueError):
-        packing._convert_coordinates_to_pixels(CCI3_REL_COORDINATES, NEGATIVE_IMAGE_SIZE)
-
-
 def test_convert_coordinates_to_pixels_with_float_image_size():
     with pytest.raises(ValueError):
         packing._convert_coordinates_to_pixels(CCI3_REL_COORDINATES, FLOAT_IMAGE_SIZE)
+
+
+def test_convert_coordinates_to_pixels_with_negative_image_size():
+    with pytest.raises(ValueError):
+        packing._convert_coordinates_to_pixels(CCI3_REL_COORDINATES, NEGATIVE_IMAGE_SIZE)
 
 
 def test_convert_coordinates_to_pixels_with_valid_parameters_cci():
@@ -249,4 +254,40 @@ def test_convert_coordinates_to_pixels_with_valid_parameters_ccis():
     np.testing.assert_array_equal(
         packing._convert_coordinates_to_pixels(CCIS5_REL_COORDINATES, VALID_IMAGE_SIZE),
         CCIS5_COORDINATES
+    )
+
+
+def test_convert_radii_to_pixels_with_invalid_radii():
+    with pytest.raises(ValueError):
+        packing._convert_radii_to_pixels(CCI3_REL_RADII + 1, VALID_IMAGE_SIZE)
+
+
+def test_convert_radii_to_pixels_with_float_image_size():
+    with pytest.raises(ValueError):
+        packing._convert_radii_to_pixels(CCI3_REL_RADII, FLOAT_IMAGE_SIZE)
+
+
+def test_convert_radii_to_pixels_with_negative_image_size():
+    with pytest.raises(ValueError):
+        packing._convert_radii_to_pixels(CCI3_REL_RADII, NEGATIVE_IMAGE_SIZE)
+
+
+def test_convert_radii_to_pixels_with_valid_parameters_cci():
+    np.testing.assert_array_equal(
+        packing._convert_radii_to_pixels(CCI3_REL_RADII, VALID_IMAGE_SIZE),
+        CCI3_RADII
+    )
+
+
+def test_convert_radii_to_pixels_with_valid_parameters_ccir():
+    np.testing.assert_array_equal(
+        packing._convert_radii_to_pixels(CCIR5_REL_RADII, VALID_IMAGE_SIZE),
+        CCIR5_RADII
+    )
+
+
+def test_convert_radii_to_pixels_with_valid_parameters_ccis():
+    np.testing.assert_array_equal(
+        packing._convert_radii_to_pixels(CCIS5_REL_RADII, VALID_IMAGE_SIZE),
+        CCIS5_RADII
     )
