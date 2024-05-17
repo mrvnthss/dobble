@@ -208,7 +208,7 @@ def _convert_coordinates_to_pixels(
           [-1, 1] or if the image size is not a positive integer.
     """
     # Check if the relative coordinates are within the range of [-1, 1]
-    if not np.all(-1 <= rel_coordinates <= 1):
+    if not np.logical_and(-1 <= rel_coordinates, rel_coordinates <= 1).all():
         raise ValueError("All relative coordinates must be in the range of [-1, 1].")
 
     # Check if the image size is a positive integer
@@ -243,7 +243,7 @@ def _convert_radii_to_pixels(
           (0, 1] or if the image size is not a positive integer.
     """
     # Check if all relative radii are within the range of (0, 1]
-    if not np.all(0 < rel_radii <= 1):
+    if not np.logical_and(0 < rel_radii, rel_radii <= 1).all():
         raise ValueError("All relative radii must be in the range of (0, 1].")
 
     # Check if the image size is a positive integer
