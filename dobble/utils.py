@@ -1,6 +1,7 @@
 """This module provides utility functions for finite projective planes.
 
 Functions:
+    _is_integer: Check if a number is an integer.
     _is_prime: Check if a number is prime.
     _is_prime_power: Check if a number is a prime power.
     _get_permutation_matrix: Return the permutation matrix corresponding
@@ -15,7 +16,19 @@ import math
 import numpy as np
 
 
-def _is_prime(num: float) -> bool:
+def _is_integer(num: int | float) -> bool:
+    """Check if a number is an integer.
+
+    Args:
+        num: The number to be checked.
+
+    Returns:
+        True if num is an integer, False otherwise.
+    """
+    return isinstance(num, int) or (isinstance(num, float) and num.is_integer())
+
+
+def _is_prime(num: int | float) -> bool:
     """Check if a number is prime.
 
     Args:
@@ -24,19 +37,20 @@ def _is_prime(num: float) -> bool:
     Returns:
         True if num is a prime number, False otherwise.
     """
-    is_integer = isinstance(num, int) or (isinstance(num, float) and num.is_integer())
+    is_prime = True
 
-    if not is_integer or num <= 1:
-        return False
+    if not _is_integer(num) or num <= 1:
+        is_prime = False
+    else:
+        # Check for non-trivial factors
+        for i in range(2, int(num ** 0.5) + 1):
+            if num % i == 0:
+                is_prime = False
+                break
+    return is_prime
 
-    # Check for non-trivial factors
-    for i in range(2, int(num ** 0.5) + 1):
-        if num % i == 0:
-            return False
-    return True
 
-
-def _is_prime_power(num: float) -> bool:
+def _is_prime_power(num: int | float) -> bool:
     """Check if a number is a prime power.
 
     Args:
@@ -45,17 +59,16 @@ def _is_prime_power(num: float) -> bool:
     Returns:
         True if num is a prime power, False otherwise.
     """
-    is_integer = isinstance(num, int) or (isinstance(num, float) and num.is_integer())
+    is_prime_power = False
 
-    if not is_integer or num <= 1:
-        return False
-
-    # Compute the i-th root of num and check if it's prime
-    for i in range(1, int(math.log2(num)) + 1):
-        root = num ** (1 / i)
-        if root.is_integer() and _is_prime(root):
-            return True
-    return False
+    if _is_integer(num) and num > 1:
+        # Compute the i-th root of num and check if it's prime
+        for i in range(1, int(math.log2(num)) + 1):
+            root = num ** (1 / i)
+            if _is_integer(root) and _is_prime(root):
+                is_prime_power = True
+                break
+    return is_prime_power
 
 
 def _get_permutation_matrix(permutation: np.ndarray) -> np.ndarray:

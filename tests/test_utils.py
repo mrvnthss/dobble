@@ -6,6 +6,10 @@ import pytest
 from dobble import utils
 
 
+INTEGER = 41
+INTEGER_AS_FLOAT = 41.0
+NON_INTEGER = 41.5
+
 NEGATIVE_NUMBER = -7
 
 NON_PRIME_NUMBER = 2 * 7
@@ -43,6 +47,18 @@ def is_incidence_matrix_of_fpp(matrix: np.ndarray, order: int) -> bool:
     is_incidence_matrix = np.all(matrix @ matrix.T == order * identity + all_ones)
 
     return is_incidence_matrix
+
+
+def test_is_integer_with_integer():
+    assert utils._is_integer(INTEGER)
+
+
+def test_is_integer_with_integer_as_float():
+    assert utils._is_integer(INTEGER_AS_FLOAT)
+
+
+def test_is_integer_with_non_integer():
+    assert not utils._is_integer(NON_INTEGER)
 
 
 def test_is_prime_with_zero():
