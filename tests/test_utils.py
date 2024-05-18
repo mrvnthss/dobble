@@ -33,6 +33,11 @@ VALID_PERMUTATION = np.array([2, 4, 1, 3])
 def is_incidence_matrix_of_fpp(matrix: np.ndarray, order: int) -> bool:
     """Check if a square matrix is an incidence matrix of an FPP.
 
+    By Theorem 3 of Bruck & Ryser (1949), a square matrix A is an
+    incidence matrix of a finite projective plane of order n if it
+    satisfies the identity A A^T = n I + J, where I is the identity
+    matrix and J is a matrix of all ones.
+
     Args:
         matrix: The square matrix to be checked.
         order: The order of the finite projective plane.
