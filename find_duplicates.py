@@ -52,7 +52,7 @@ def find_duplicates() -> None:
     for annotation, emoji_data in duplicates.items():
         print(annotation)
         for emoji in emoji_data:
-            print(f'  ("{emoji['hexcode']}", "{emoji['group']}")')
+            print(f'  ("{emoji["hexcode"]}", "{emoji["group"]}")')
 
 
 if __name__ == "__main__":
