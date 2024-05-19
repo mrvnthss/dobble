@@ -2,9 +2,11 @@
 
 This module provides names of directories and specific files used in the
 project.  Further, it defines a dictionary that maps packing types to
-their associated radii functions.  Finally, it defines default
-parameters for playing cards and decks, and a list of emojis to resemble
-the classic Dobble game.
+their associated radii functions, and it defines default
+parameters for playing cards and decks as well as a list of emojis to
+resemble the classic Dobble game.  Finally, it provides a dictionary of
+permutations needed to create incidence matrices for finite projective
+planes whose order is a prime power.
 
 Constants:
     EMOJIS_DIR: The directory where emojis are stored.

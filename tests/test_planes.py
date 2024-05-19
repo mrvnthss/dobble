@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from dobble import constants
-from dobble import utils
+from dobble import planes
 
 
 INTEGER = 41
@@ -56,81 +56,81 @@ def is_incidence_matrix_of_fpp(matrix: np.ndarray, order: int) -> bool:
 
 
 def test_is_integer_with_integer():
-    assert utils._is_integer(INTEGER)
+    assert planes._is_integer(INTEGER)
 
 
 def test_is_integer_with_integer_as_float():
-    assert utils._is_integer(INTEGER_AS_FLOAT)
+    assert planes._is_integer(INTEGER_AS_FLOAT)
 
 
 def test_is_integer_with_non_integer():
-    assert not utils._is_integer(NON_INTEGER)
+    assert not planes._is_integer(NON_INTEGER)
 
 
 def test_is_prime_with_zero():
-    assert not utils._is_prime(0)
+    assert not planes._is_prime(0)
 
 
 def test_is_prime_with_one():
-    assert not utils._is_prime(1)
+    assert not planes._is_prime(1)
 
 
 def test_is_prime_with_negative_number():
-    assert not utils._is_prime(NEGATIVE_NUMBER)
+    assert not planes._is_prime(NEGATIVE_NUMBER)
 
 
 def test_is_prime_with_non_prime_number():
-    assert not utils._is_prime(NON_PRIME_NUMBER)
+    assert not planes._is_prime(NON_PRIME_NUMBER)
 
 
 def test_is_prime_with_large_non_prime_number():
-    assert not utils._is_prime(LARGE_NON_PRIME_NUMBER)
+    assert not planes._is_prime(LARGE_NON_PRIME_NUMBER)
 
 
 def test_is_prime_with_prime_number():
-    assert utils._is_prime(PRIME_NUMBER)
+    assert planes._is_prime(PRIME_NUMBER)
 
 
 def test_is_prime_with_large_prime_number():
-    assert utils._is_prime(LARGE_PRIME_NUMBER)
+    assert planes._is_prime(LARGE_PRIME_NUMBER)
 
 
 def test_is_prime_power_with_zero():
-    assert not utils._is_prime_power(0)
+    assert not planes._is_prime_power(0)
 
 
 def test_is_prime_power_with_one():
-    assert not utils._is_prime_power(1)
+    assert not planes._is_prime_power(1)
 
 
 def test_is_prime_power_with_negative_number():
-    assert not utils._is_prime_power(NEGATIVE_NUMBER)
+    assert not planes._is_prime_power(NEGATIVE_NUMBER)
 
 
 def test_is_prime_power_with_non_prime_power():
-    assert not utils._is_prime_power(NON_PRIME_POWER)
+    assert not planes._is_prime_power(NON_PRIME_POWER)
 
 
 def test_is_prime_power_with_large_non_prime_power():
-    assert not utils._is_prime_power(LARGE_NON_PRIME_POWER)
+    assert not planes._is_prime_power(LARGE_NON_PRIME_POWER)
 
 
 def test_is_prime_power_with_prime_power():
-    assert utils._is_prime_power(PRIME_POWER)
+    assert planes._is_prime_power(PRIME_POWER)
 
 
 def test_is_prime_power_with_large_prime_power():
-    assert utils._is_prime_power(LARGE_PRIME_POWER)
+    assert planes._is_prime_power(LARGE_PRIME_POWER)
 
 
 def test_get_permutation_matrix_with_empty_permutation():
     with pytest.raises(ValueError):
-        utils._get_permutation_matrix(np.array([], dtype=np.uint8))
+        planes._get_permutation_matrix(np.array([], dtype=np.uint8))
 
 
 def test_get_permutation_matrix_with_invalid_permutation():
     with pytest.raises(ValueError):
-        utils._get_permutation_matrix(INVALID_PERMUTATION)
+        planes._get_permutation_matrix(INVALID_PERMUTATION)
 
 
 def test_get_permutation_matrix_with_valid_permutation():
@@ -139,28 +139,28 @@ def test_get_permutation_matrix_with_valid_permutation():
                                 [1, 0, 0, 0],
                                 [0, 0, 1, 0]], dtype=np.uint8)
     np.testing.assert_array_equal(
-        utils._get_permutation_matrix(VALID_PERMUTATION), expected_matrix
+        planes._get_permutation_matrix(VALID_PERMUTATION), expected_matrix
     )
 
 
 def test_compute_incidence_matrix_with_zero():
     with pytest.raises(ValueError):
-        utils.compute_incidence_matrix(0)
+        planes.compute_incidence_matrix(0)
 
 
 def test_compute_incidence_matrix_with_one():
     with pytest.raises(ValueError):
-        utils.compute_incidence_matrix(1)
+        planes.compute_incidence_matrix(1)
 
 
 def test_compute_incidence_matrix_with_negative_number():
     with pytest.raises(ValueError):
-        utils.compute_incidence_matrix(NEGATIVE_NUMBER)
+        planes.compute_incidence_matrix(NEGATIVE_NUMBER)
 
 
 def test_compute_incidence_matrix_with_non_prime_number():
     with pytest.raises(ValueError):
-        utils.compute_incidence_matrix(NON_PRIME_NUMBER)
+        planes.compute_incidence_matrix(NON_PRIME_NUMBER)
 
 
 def test_compute_incidence_matrix_with_small_prime_number():
@@ -172,19 +172,19 @@ def test_compute_incidence_matrix_with_small_prime_number():
                                 [0, 0, 1, 1, 0, 0, 1],
                                 [0, 0, 1, 0, 1, 1, 0]], dtype=np.uint8)
 
-    result = utils.compute_incidence_matrix(SMALL_PRIME_NUMBER)
+    result = planes.compute_incidence_matrix(SMALL_PRIME_NUMBER)
     np.testing.assert_array_equal(result, expected_matrix)
     assert is_incidence_matrix_of_fpp(result, SMALL_PRIME_NUMBER)
 
 
 def test_compute_incidence_matrix_with_primes_up_to_50():
     for num in range(1, 51):
-        if utils._is_prime(num):
-            result = utils.compute_incidence_matrix(num)
+        if planes._is_prime(num):
+            result = planes.compute_incidence_matrix(num)
             assert is_incidence_matrix_of_fpp(result, num)
 
 
 def test_compute_incidence_matrix_with_implemented_prime_powers():
     for num in constants.PERMUTATIONS:
-        result = utils.compute_incidence_matrix(num)
+        result = planes.compute_incidence_matrix(num)
         assert is_incidence_matrix_of_fpp(result, num)

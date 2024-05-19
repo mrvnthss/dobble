@@ -29,7 +29,7 @@ import pandas as pd
 
 from . import constants
 from . import packing
-from . import utils
+from . import planes
 
 
 def _create_empty_card(
@@ -479,7 +479,7 @@ def create_dobble_deck(
     # emojis are placed on which cards.
     # NOTE: The number of emojis per card has to be one more than some prime number. Otherwise,
     #       the incidence matrix cannot be computed and an error is raised.
-    incidence_matrix = utils.compute_incidence_matrix(deck_params["emojis_per_card"] - 1)
+    incidence_matrix = planes.compute_incidence_matrix(deck_params["emojis_per_card"] - 1)
 
     # Create playing cards one-by-one using the incidence matrix to decide which emojis to put on
     # which card
