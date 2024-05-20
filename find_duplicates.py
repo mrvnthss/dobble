@@ -36,17 +36,14 @@ def find_duplicates() -> None:
         annotation_counts[emoji["annotation"]] += 1
 
     # Collect emojis with duplicate annotations
-    duplicates = {}
+    duplicates = defaultdict(list)
     for emoji in emojis_data:
         if annotation_counts[emoji["annotation"]] > 1:
             emoji_data = {
                 "hexcode": emoji["hexcode"],
                 "group": emoji["group"]
             }
-            if emoji["annotation"] in duplicates:
-                duplicates[emoji["annotation"]].append(emoji_data)
-            else:
-                duplicates[emoji["annotation"]] = [emoji_data]
+            duplicates[emoji["annotation"]].append(emoji_data)
 
     # Print emojis with duplicate annotations
     for annotation, emoji_data in duplicates.items():
