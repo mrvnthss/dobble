@@ -9,13 +9,22 @@
 
 ## Table of Contents
 
+- [References](#references)
 - [Acknowledgments](#acknowledgments)
 - [License](#license)
 - [Coding Style](#coding-style)
 
+## References
+
+- Bruck, R. H., & Ryser, H. J. (1949). The nonexistence of certain finite projective planes. *Canadian Journal of Mathematics, 1*(1), 88–93. [https://doi.org/10.4153/CJM-1949-009-2](https://doi.org/10.4153/CJM-1949-009-2)
+
+- Montaron, B. (1985). On incidence matrices of finite projective planes. *Discrete Mathematics, 56*(2-3), 227-237. [https://doi.org/10.1016/0012-365X(85)90029-9](https://doi.org/10.1016/0012-365X(85)90029-9)
+
+- Paige, L. J., & Wexler, C. (1953). A canonical form for incidence matrices of finite projective planes and their associated latin squares. *Portugaliae Mathematica, 12*, 105-112.
+
 ## Acknowledgments
 
-The emojis used in this project are designed by [**OpenMoji**](https://openmoji.org/) - the open-source emoji and icon project.
+All emojis used in this project designed by [**OpenMoji**](https://openmoji.org/) - the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)
 
 The data on circle packings used in this project is taken from [**packomania.com**](http://www.packomania.com), made available by [**Prof. Dr.-Ing. Eckehard Specht**](https://www.ltv.ovgu.de/Mitarbeiter/Lehrstuhlinhaber/Prof_+Eckehard+Specht-p-210.html).
 
