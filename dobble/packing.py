@@ -36,11 +36,7 @@ def _is_valid_packing_type(packing_type: str) -> bool:
     Returns:
         True if the packing type is valid, False otherwise.
     """
-    is_str = isinstance(packing_type, str)
-    packing_type_exists = packing_type.lower() in constants.PACKING_TYPES_DICT
-    is_valid_packing_type = is_str and packing_type_exists
-
-    return is_valid_packing_type
+    return packing_type.lower() in constants.PACKING_TYPES_DICT
 
 
 def _read_coordinates_from_file(
