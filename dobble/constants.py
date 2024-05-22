@@ -30,7 +30,7 @@ import numpy as np
 
 
 EMOJIS_DIR = "data.openmoji"
-PACKING_DIR = "data.packing_data"
+PACKING_DIR = "data.packings"
 
 RADIUS_TXT = "radius.txt"
 
