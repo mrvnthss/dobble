@@ -18,6 +18,7 @@ complexipy = "^0.3.3"
 coverage = "^7.3.3"
 pylint = "^3.0.3"
 pytest = "^7.4.3"
+requests = "^2.32.2"
 
 [build-system]
 requires = ["poetry-core"]
