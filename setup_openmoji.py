@@ -2,7 +2,7 @@
 
 Typical usage example:
 
-  python setup_openmoji.py
+  >>> python setup_openmoji.py
 """
 
 
@@ -112,6 +112,13 @@ def find_duplicates() -> dict[str, list[dict[str, str]]]:
 
     This function finds emojis from the OpenMoji dataset that have a
     non-unique "annotation" in the JSON file provided by OpenMoji.
+
+    Returns:
+        A dictionary of emojis from the OpenMoji dataset that have a
+        non-unique "annotation" in the JSON file provided by OpenMoji.
+        The dictionary is indexed by the "annotation" and contains a
+        list of dictionaries of the emojis with that annotation.  Each
+        dictionary contains the "hexcode" and "group" of the emoji.
     """
     # Read JSON file provided by OpenMoji
     with OPENMOJI_JSON.open("r", encoding="utf-8") as json_file:
@@ -142,6 +149,11 @@ def print_duplicates(duplicates: dict[str, list[dict[str, str]]]) -> None:
     non-unique "annotation" in the JSON file provided by OpenMoji.  It
     prints the annotations along with the hexcodes and groups of all
     emojis with that annotation.
+
+    Args:
+        duplicates: A dictionary of emojis from the OpenMoji dataset
+          that have a non-unique "annotation" in the JSON file provided
+          by OpenMoji as returned by the `find_duplicates` function.
     """
     for annotation, emoji_data in duplicates.items():
         print(f"Annotation: {annotation}")
