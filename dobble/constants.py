@@ -1,10 +1,14 @@
 """Project-level constants.
 
 Constants:
-    EMOJIS_DIR: The directory where OpenMoji emojis are stored.
+    OPENMOJI_DIR: The directory where OpenMoji emojis are stored.
     PACKINGS_DIR: The directory where data on circle packings is stored.
     RADIUS_FILE: The name of the text file containing the radius of the
       largest circle of each packing.
+    OPENMOJI_LICENSE: The URL of the OpenMoji license.
+    OPENMOJI_JSON: The URL of the OpenMoji JSON file.
+    OPENMOJI_COLOR: The URL of the OpenMoji color emojis.
+    OPENMOJI_BLACK: The URL of the OpenMoji black-and-white emojis.
     PACKINGS_DICT: A dictionary mapping packings to their associated
       radii functions.
     CLASSIC_DOBBLE_EMOJIS: A list of OpenMoji emojis to resemble the
@@ -18,9 +22,19 @@ import numpy as np
 
 
 # Directories and files
-EMOJIS_DIR = "data.openmoji"
+OPENMOJI_DIR = "data.openmoji"
 PACKINGS_DIR = "data.packings"
 RADIUS_FILE = "radius.txt"
+
+# OpenMoji URLs (Release 15.0.0)
+_RELEASE_SHA = "13942cdd65134df8899ed5df62ccf47b36d643d7"
+_RAW_URL = "https://raw.githubusercontent.com/hfg-gmuend/openmoji/" + _RELEASE_SHA + "/"
+_DOWNLOAD_URL = "https://github.com/hfg-gmuend/openmoji/releases/download/15.0.0/"
+OPENMOJI_LICENSE = _RAW_URL + "LICENSE.txt"
+OPENMOJI_JSON = _RAW_URL + "data/openmoji.json"
+OPENMOJI_COLOR = _DOWNLOAD_URL + "openmoji-618x618-color.zip"
+OPENMOJI_BLACK = _DOWNLOAD_URL + "openmoji-618x618-black.zip"
+
 
 # Available packings and their radii functions
 PACKINGS_DICT = {
