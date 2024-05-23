@@ -2,11 +2,13 @@
 
 [![Python](https://img.shields.io/badge/Python-3.11_|_3.12-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
 [![GitHub License](https://img.shields.io/github/license/mrvnthss/dobble?color=ad2317)](https://www.gnu.org/licenses/gpl-3.0.html.en)
+[![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
+
+[![Python package](https://github.com/mrvnthss/dobble/actions/workflows/python-package.yml/badge.svg)](https://github.com/mrvnthss/dobble/actions/workflows/python-package.yml)
 [![codecov](https://codecov.io/gh/mrvnthss/dobble/graph/badge.svg?token=3H2JGP6L38)](https://codecov.io/gh/mrvnthss/dobble)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/794b38d9b11c4a9c944c4c508607d17c)](https://app.codacy.com/gh/mrvnthss/dobble/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Maintainability](https://api.codeclimate.com/v1/badges/0ffef4262adacd13c884/maintainability)](https://codeclimate.com/github/mrvnthss/dobble/maintainability)
-[![Python package](https://github.com/mrvnthss/dobble/actions/workflows/python-package.yml/badge.svg)](https://github.com/mrvnthss/dobble/actions/workflows/python-package.yml)
-[![Poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
+
 
 ## Table of Contents
 
