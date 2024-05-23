@@ -50,7 +50,9 @@ def is_incidence_matrix_of_fpp(matrix: np.ndarray, order: int) -> bool:
     all_ones = np.ones((size, size), dtype=np.uint8)
     identity = np.eye(size, dtype=np.uint8)
 
-    is_incidence_matrix = np.all(matrix @ matrix.T == order * identity + all_ones)
+    is_incidence_matrix = np.all(
+        matrix @ matrix.T == order * identity + all_ones
+    )
 
     return is_incidence_matrix
 
@@ -185,6 +187,6 @@ def test_compute_incidence_matrix_with_primes_up_to_50():
 
 
 def test_compute_incidence_matrix_with_implemented_prime_powers():
-    for num in constants.PERMUTATIONS:
+    for num in constants.FPP_KERNELS:
         result = planes.compute_incidence_matrix(num)
         assert is_incidence_matrix_of_fpp(result, num)

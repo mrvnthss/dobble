@@ -131,10 +131,10 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
     """
     is_prime_order = _is_prime(order)
 
-    if not (is_prime_order or order in list(constants.PERMUTATIONS)):
+    if not (is_prime_order or order in list(constants.FPP_KERNELS)):
         raise ValueError(
             "The argument 'order' must be a prime or one of: "
-            + ", ".join(map(str, list(constants.PERMUTATIONS)))
+            + ", ".join(map(str, list(constants.FPP_KERNELS)))
         )
 
     # Set up incidence matrix, where rows correspond to lines, and columns correspond to points
@@ -173,7 +173,7 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
                 permutation = (np.array(range(0, order)) + leading_entry) % order
                 permutation[permutation == 0] = order
             else:
-                permutation = constants.PERMUTATIONS[order][i - 1, j - 1, :]
+                permutation = constants.FPP_KERNELS[order][i - 1, j - 1, :]
             permutation_matrix = _get_permutation_matrix(permutation)
 
         # Place permutation matrix C_{ij} in incidence matrix
