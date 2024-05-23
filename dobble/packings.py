@@ -72,7 +72,7 @@ def _read_coordinates_from_file(
     file_name = packing + str(num_circles) + ".txt"
 
     try:
-        file_path = files(constants.PACKINGS_DIR).joinpath(packing).joinpath(file_name)
+        file_path = files(constants.PACKINGS_DIR) / packing / file_name
         with file_path.open("r") as file:
             # Read the text file line by line
             lines = file.readlines()
@@ -116,7 +116,7 @@ def _read_radius_from_file(
     packing = packing.lower()
     file_name = constants.RADIUS_FILE
 
-    file_path = files(constants.PACKINGS_DIR).joinpath(packing).joinpath(file_name)
+    file_path = files(constants.PACKINGS_DIR) / packing / file_name
     with file_path.open("r") as file:
         for line in file:
             values = line.strip().split()
