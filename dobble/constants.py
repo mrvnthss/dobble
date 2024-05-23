@@ -24,11 +24,11 @@ RADIUS_FILE = "radius.txt"
 
 # Available packings and their radii functions
 PACKINGS_DICT = {
-    "cci": (lambda n: 1, "increasing"),
-    "ccib": (lambda n: n ** (-1 / 5), "decreasing"),
-    "ccic": (lambda n: n ** (-2 / 3), "decreasing"),
-    "ccir": (lambda n: n ** (1 / 2), "increasing"),
-    "ccis": (lambda n: n ** (-1 / 2), "decreasing")
+    "cci": lambda n: 1,
+    "ccib": lambda n: n ** (-1 / 5),
+    "ccic": lambda n: n ** (-2 / 3),
+    "ccir": lambda n: n ** (1 / 2),
+    "ccis": lambda n: n ** (-1 / 2)
 }
 
 # OpenMoji emojis that (somewhat closely) resemble the classic Dobble game

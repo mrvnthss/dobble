@@ -160,13 +160,10 @@ def _compute_radii(
         raise ValueError("Largest radius must be in the range of (0, 1].")
 
     packing = packing.lower()
-    radius_function, monotonicity = constants.PACKINGS_DICT[packing]
-    function_values = np.array([radius_function(n + 1) for n in range(num_circles)])
-
-    # If the function "radius_function" is decreasing, we reverse the order of
-    # "function_values" so that the values are listed in increasing order
-    if monotonicity == "decreasing":
-        function_values.sort()
+    radius_function = constants.PACKINGS_DICT[packing]
+    function_values = np.sort(
+        np.array([radius_function(n + 1) for n in range(num_circles)])
+    )
 
     ratio = largest_radius / function_values[-1]
     radii = function_values * ratio
