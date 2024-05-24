@@ -1,4 +1,4 @@
-# pylint: disable=protected-access, missing-function-docstring, missing-module-docstring
+# pylint: disable=missing-function-docstring, missing-module-docstring
 
 from dobble import utils
 
