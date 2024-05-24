@@ -1,80 +1,21 @@
-"""This module provides utility functions for finite projective planes.
+"""Functions to compute incidence matrices of FPPs.
 
 Functions:
-    _is_integer: Check if a number is an integer.
-    _is_prime: Check if a number is prime.
-    _is_prime_power: Check if a number is a prime power.
     _get_permutation_matrix: Return the permutation matrix corresponding
-      to the permutation.
+      to a permutation.
     compute_incidence_matrix: Compute the canonical incidence matrix of
       a finite projective plane.
 """
 
 
-import math
-
 import numpy as np
 
 from . import constants
-
-
-def _is_integer(num: int | float) -> bool:
-    """Check if a number is an integer.
-
-    Args:
-        num: The number to be checked.
-
-    Returns:
-        True if num is an integer, False otherwise.
-    """
-    return isinstance(num, int) or (isinstance(num, float) and num.is_integer())
-
-
-def _is_prime(num: int | float) -> bool:
-    """Check if a number is prime.
-
-    Args:
-        num: The number to be checked.
-
-    Returns:
-        True if num is a prime number, False otherwise.
-    """
-    is_prime = True
-
-    if not _is_integer(num) or num <= 1:
-        is_prime = False
-    else:
-        # Check for non-trivial factors
-        for i in range(2, int(num ** 0.5) + 1):
-            if num % i == 0:
-                is_prime = False
-                break
-    return is_prime
-
-
-def _is_prime_power(num: int | float) -> bool:
-    """Check if a number is a prime power.
-
-    Args:
-        num: The number to be checked.
-
-    Returns:
-        True if num is a prime power, False otherwise.
-    """
-    is_prime_power = False
-
-    if _is_integer(num) and num > 1:
-        # Compute the i-th root of num and check if it's prime
-        for i in range(1, int(math.log2(num)) + 1):
-            root = num ** (1 / i)
-            if _is_integer(root) and _is_prime(root):
-                is_prime_power = True
-                break
-    return is_prime_power
+from . import utils
 
 
 def _get_permutation_matrix(permutation: np.ndarray) -> np.ndarray:
-    """Return the permutation matrix corresponding to the permutation.
+    """Return the permutation matrix corresponding to a permutation.
 
     Args:
         permutation: The permutation to be converted to a permutation
@@ -111,13 +52,15 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
     points.
 
     Args:
-        order: The order of the finite projective plane.
+        order: The order of the finite projective plane.  Must be prime
+          or one of the prime powers 4 and 8.
 
     Returns:
         The computed incidence matrix.
 
     Raises:
-        ValueError: If the argument order is not a prime number.
+        ValueError: If the argument order is neither a prime number nor
+          one of the prime powers 4 and 8.
 
     Example:
         >>> compute_incidence_matrix(2)
@@ -129,11 +72,11 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
                [0, 0, 1, 1, 0, 0, 1],
                [0, 0, 1, 0, 1, 1, 0]], dtype=uint8)
     """
-    is_prime_order = _is_prime(order)
+    is_prime = utils.is_prime(order)
 
-    if not (is_prime_order or order in list(constants.FPP_KERNELS)):
+    if not (is_prime or order in list(constants.FPP_KERNELS)):
         raise ValueError(
-            "The argument 'order' must be a prime or one of: "
+            "The argument 'order' must be a prime number or one of: "
             + ", ".join(map(str, list(constants.FPP_KERNELS)))
         )
 
@@ -166,7 +109,7 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
         if i == 0 or j == 0:
             permutation_matrix = np.eye(order, dtype=np.uint8)
         else:
-            if is_prime_order:
+            if is_prime:
                 leading_entry = (1 + i * j) % order
                 if leading_entry == 0:
                     leading_entry = order

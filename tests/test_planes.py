@@ -5,26 +5,12 @@ import pytest
 
 from dobble import constants
 from dobble import planes
+from dobble import utils
 
-
-INTEGER = 41
-INTEGER_AS_FLOAT = 41.0
-NON_INTEGER = 41.5
 
 NEGATIVE_NUMBER = -7
-
 NON_PRIME_NUMBER = 2 * 7
-LARGE_NON_PRIME_NUMBER = 10 * 792
-
 SMALL_PRIME_NUMBER = 2
-PRIME_NUMBER = 241
-LARGE_PRIME_NUMBER = 7919
-
-NON_PRIME_POWER = 2 * 5
-LARGE_NON_PRIME_POWER = (2 * 5) ** 4
-
-PRIME_POWER = 2 ** 3
-LARGE_PRIME_POWER = 3 ** 5
 
 INVALID_PERMUTATION = np.array([2, 1, 4])
 VALID_PERMUTATION = np.array([2, 4, 1, 3])
@@ -55,74 +41,6 @@ def is_incidence_matrix_of_fpp(matrix: np.ndarray, order: int) -> bool:
     )
 
     return is_incidence_matrix
-
-
-def test_is_integer_with_integer():
-    assert planes._is_integer(INTEGER)
-
-
-def test_is_integer_with_integer_as_float():
-    assert planes._is_integer(INTEGER_AS_FLOAT)
-
-
-def test_is_integer_with_non_integer():
-    assert not planes._is_integer(NON_INTEGER)
-
-
-def test_is_prime_with_zero():
-    assert not planes._is_prime(0)
-
-
-def test_is_prime_with_one():
-    assert not planes._is_prime(1)
-
-
-def test_is_prime_with_negative_number():
-    assert not planes._is_prime(NEGATIVE_NUMBER)
-
-
-def test_is_prime_with_non_prime_number():
-    assert not planes._is_prime(NON_PRIME_NUMBER)
-
-
-def test_is_prime_with_large_non_prime_number():
-    assert not planes._is_prime(LARGE_NON_PRIME_NUMBER)
-
-
-def test_is_prime_with_prime_number():
-    assert planes._is_prime(PRIME_NUMBER)
-
-
-def test_is_prime_with_large_prime_number():
-    assert planes._is_prime(LARGE_PRIME_NUMBER)
-
-
-def test_is_prime_power_with_zero():
-    assert not planes._is_prime_power(0)
-
-
-def test_is_prime_power_with_one():
-    assert not planes._is_prime_power(1)
-
-
-def test_is_prime_power_with_negative_number():
-    assert not planes._is_prime_power(NEGATIVE_NUMBER)
-
-
-def test_is_prime_power_with_non_prime_power():
-    assert not planes._is_prime_power(NON_PRIME_POWER)
-
-
-def test_is_prime_power_with_large_non_prime_power():
-    assert not planes._is_prime_power(LARGE_NON_PRIME_POWER)
-
-
-def test_is_prime_power_with_prime_power():
-    assert planes._is_prime_power(PRIME_POWER)
-
-
-def test_is_prime_power_with_large_prime_power():
-    assert planes._is_prime_power(LARGE_PRIME_POWER)
 
 
 def test_get_permutation_matrix_with_empty_permutation():
@@ -181,7 +99,7 @@ def test_compute_incidence_matrix_with_small_prime_number():
 
 def test_compute_incidence_matrix_with_primes_up_to_50():
     for num in range(1, 51):
-        if planes._is_prime(num):
+        if utils.is_prime(num):
             result = planes.compute_incidence_matrix(num)
             assert is_incidence_matrix_of_fpp(result, num)
 
