@@ -25,6 +25,7 @@ from importlib.resources import files
 import numpy as np
 
 from . import constants
+from . import utils
 
 
 def _is_valid_packing(packing: str) -> bool:
@@ -60,7 +61,7 @@ def _read_coordinates_from_file(
           type and number of circles is not found.
     """
     # Check if the number of circles is a positive integer
-    if not isinstance(num_circles, int) or num_circles < 1:
+    if not utils.is_integer(num_circles) or num_circles < 1:
         raise ValueError("Number of circles must be a positive integer.")
 
     # Check if a valid packing is provided
@@ -69,7 +70,7 @@ def _read_coordinates_from_file(
 
     # Construct the file name based on the packing type and number of circles
     packing = packing.lower()
-    file_name = packing + str(num_circles) + ".txt"
+    file_name = packing + str(int(num_circles)) + ".txt"
 
     try:
         fpath = files(constants.PACKINGS_DIR) / packing / file_name
@@ -106,7 +107,7 @@ def _read_radius_from_file(
           combination of packing type and number of circles.
     """
     # Check if the number of circles is a positive integer
-    if not isinstance(num_circles, int) or num_circles < 1:
+    if not utils.is_integer(num_circles) or num_circles < 1:
         raise ValueError("Number of circles must be a positive integer.")
 
     # Check if a valid packing is provided
@@ -123,7 +124,7 @@ def _read_radius_from_file(
             if len(values) == 2 and int(values[0]) == num_circles:
                 return float(values[1])
     raise ValueError(
-        f"No radius found for packing '{packing}' with {num_circles} circles."
+        f"No radius found for packing '{packing}' with {int(num_circles)} circles."
     )
 
 
@@ -148,7 +149,7 @@ def _compute_radii(
           or if the number of circles is not a positive integer.
     """
     # Check if the number of circles is a positive integer
-    if not isinstance(num_circles, int) or num_circles < 1:
+    if not utils.is_integer(num_circles) or num_circles < 1:
         raise ValueError("Number of circles must be a positive integer.")
 
     # Check if a valid packing is provided
@@ -162,7 +163,7 @@ def _compute_radii(
     packing = packing.lower()
     radius_function = constants.PACKINGS_DICT[packing]
     function_values = np.sort(
-        np.array([radius_function(n + 1) for n in range(num_circles)])
+        np.array([radius_function(n + 1) for n in range(int(num_circles))])
     )
 
     ratio = largest_radius / function_values[-1]
@@ -201,7 +202,7 @@ def _convert_coordinates_to_pixels(
         raise ValueError("All relative coordinates must be in the range of [-1, 1].")
 
     # Check if the image size is a positive integer
-    if not isinstance(img_size, int) or img_size < 1:
+    if not utils.is_integer(img_size) or img_size < 1:
         raise ValueError(f"Image size must be a positive integer, got {img_size}.")
 
     # Shift coordinates from [-1, 1] to [0, 1]
@@ -236,7 +237,7 @@ def _convert_radii_to_pixels(
         raise ValueError("All relative radii must be in the range of (0, 1].")
 
     # Check if the image size is a positive integer
-    if not isinstance(img_size, int) or img_size < 1:
+    if not utils.is_integer(img_size) or img_size < 1:
         raise ValueError(f"Image size must be a positive integer, got {img_size}.")
 
     radii = np.floor(rel_radii * img_size).astype("int")
