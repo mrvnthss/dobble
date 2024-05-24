@@ -139,7 +139,7 @@ def _compute_radii(
         num_circles: Total number of circles in the packing.
         packing: Type of circle packing.
         largest_radius: Radius of the largest circle in the packing.
-          Must be in the range of (0, 1].
+          Must be in the range (0, 1].
 
     Returns:
         The computed radii of all the circles in the packing.
@@ -156,9 +156,9 @@ def _compute_radii(
     if not _is_valid_packing(packing):
         raise ValueError(f"Invalid packing: '{packing}' is not supported.")
 
-    # Check if the largest radius is within the range of (0, 1]
+    # Check if the largest radius is within the range (0, 1]
     if not 0 < largest_radius <= 1:
-        raise ValueError("Largest radius must be in the range of (0, 1].")
+        raise ValueError("Largest radius must be in the range (0, 1].")
 
     packing = packing.lower()
     radius_function = constants.PACKINGS_DICT[packing]
@@ -178,7 +178,7 @@ def _convert_coordinates_to_pixels(
 ) -> np.ndarray:
     """Convert relative coordinates to pixel coordinates.
 
-    The function takes relative coordinates in the range of [-1, 1] and
+    The function takes relative coordinates in the range [-1, 1] and
     converts them to pixel coordinates based on the size of a square
     image.  The relative coordinates are assumed to be in normalized
     form, where the origin (0, 0) corresponds to the center of the image
@@ -186,7 +186,7 @@ def _convert_coordinates_to_pixels(
     upper right corner of the image, respectively.
 
     Args:
-        rel_coordinates: Relative coordinates in the range of [-1, 1].
+        rel_coordinates: Relative coordinates in the range [-1, 1].
         img_size: Size of the square image that coordinates are to be
           based on.
 
@@ -194,12 +194,12 @@ def _convert_coordinates_to_pixels(
         Pixel coordinates corresponding to the relative coordinates.
 
     Raises:
-        ValueError: If the relative coordinates are outside the range of
+        ValueError: If the relative coordinates are outside the range
           [-1, 1] or if the image size is not a positive integer.
     """
-    # Check if the relative coordinates are within the range of [-1, 1]
+    # Check if the relative coordinates are within the range [-1, 1]
     if not np.logical_and(-1 <= rel_coordinates, rel_coordinates <= 1).all():
-        raise ValueError("All relative coordinates must be in the range of [-1, 1].")
+        raise ValueError("All relative coordinates must be in the range [-1, 1].")
 
     # Check if the image size is a positive integer
     if not utils.is_integer(img_size) or img_size < 1:
@@ -221,7 +221,7 @@ def _convert_radii_to_pixels(
     """Convert relative radii to number of pixels.
 
     Args:
-        rel_radii: Relative radii in the range of (0, 1].
+        rel_radii: Relative radii in the range (0, 1].
         img_size: Size of the square image that radii are to be based
           on.
 
@@ -229,12 +229,12 @@ def _convert_radii_to_pixels(
         Number of pixels corresponding to the relative radii.
 
     Raises:
-        ValueError: If any relative radius is outside the valid range of
+        ValueError: If any relative radius is outside the valid range
           (0, 1] or if the image size is not a positive integer.
     """
-    # Check if all relative radii are within the range of (0, 1]
+    # Check if all relative radii are within the range (0, 1]
     if not np.logical_and(0 < rel_radii, rel_radii <= 1).all():
-        raise ValueError("All relative radii must be in the range of (0, 1].")
+        raise ValueError("All relative radii must be in the range (0, 1].")
 
     # Check if the image size is a positive integer
     if not utils.is_integer(img_size) or img_size < 1:
