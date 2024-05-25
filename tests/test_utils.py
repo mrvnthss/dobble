@@ -27,7 +27,7 @@ LARGE_PRIME_POWER = 3 ** 5
 
 RGB_IMAGE = Image.new("RGB", (100, 100))
 NON_SQUARE_IMAGE = Image.new("RGBA", (100, 200))
-FULLY_TRANSPARENT_IMAGE = Image.new("RGBA", (100, 100), (0, 0, 0, 0))
+FULLY_TRANSPARENT_IMAGE = Image.new("RGBA", (100, 100))
 
 NEGATIVE_PADDING = -0.1
 INVALID_PADDING = 1
@@ -113,12 +113,12 @@ def test_rescale_img_with_non_square_image():
 
 def test_rescale_img_with_negative_padding():
     with pytest.raises(ValueError):
-        utils.rescale_img(RGB_IMAGE, padding=NEGATIVE_PADDING)
+        utils.rescale_img(FULLY_TRANSPARENT_IMAGE, padding=NEGATIVE_PADDING)
 
 
 def test_rescale_img_with_invalid_padding():
     with pytest.raises(ValueError):
-        utils.rescale_img(RGB_IMAGE, padding=INVALID_PADDING)
+        utils.rescale_img(FULLY_TRANSPARENT_IMAGE, padding=INVALID_PADDING)
 
 
 def test_rescale_img_with_fully_transparent_image():
