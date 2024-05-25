@@ -98,7 +98,7 @@ CLASSIC_DOBBLE_EMOJIS = [
     "spider",
     "sun",
     "sunglasses",
-    "t-rex",
+    "T-Rex",
     "timer",
     "turtle",
     "yin yang",
