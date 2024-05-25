@@ -19,6 +19,7 @@ def is_integer(num: int | float) -> bool:
     Returns:
         True if num is an integer, False otherwise.
     """
+
     return isinstance(num, int) or (isinstance(num, float) and num.is_integer())
 
 
@@ -31,6 +32,7 @@ def is_prime(num: int | float) -> bool:
     Returns:
         True if num is a prime number, False otherwise.
     """
+
     state = True
 
     if not is_integer(num) or num <= 1:
@@ -53,6 +55,7 @@ def is_prime_power(num: int | float) -> bool:
     Returns:
         True if num is a prime power, False otherwise.
     """
+
     state = False
 
     if is_integer(num) and num > 1:

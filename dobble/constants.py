@@ -35,7 +35,6 @@ OPENMOJI_JSON = _RAW_URL + "data/openmoji.json"
 OPENMOJI_COLOR = _DOWNLOAD_URL + "openmoji-618x618-color.zip"
 OPENMOJI_BLACK = _DOWNLOAD_URL + "openmoji-618x618-black.zip"
 
-
 # Available packings and their radii functions
 PACKINGS_DICT = {
     "cci": lambda n: 1,

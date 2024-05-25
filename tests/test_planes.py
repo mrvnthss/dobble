@@ -32,6 +32,7 @@ def is_incidence_matrix_of_fpp(matrix: np.ndarray, order: int) -> bool:
         True if the matrix is an incidence matrix of a finite projective
           plane, False otherwise.
     """
+
     size = order ** 2 + order + 1
     all_ones = np.ones((size, size), dtype=np.uint8)
     identity = np.eye(size, dtype=np.uint8)

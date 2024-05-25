@@ -37,6 +37,7 @@ def _is_valid_packing(packing: str) -> bool:
     Returns:
         True if the packing is valid, False otherwise.
     """
+
     return packing.lower() in constants.PACKINGS_DICT
 
 
@@ -60,6 +61,7 @@ def _read_coordinates_from_file(
         FileNotFoundError: If the text file for the specified packing
           type and number of circles is not found.
     """
+
     # Check if the number of circles is a positive integer
     if not utils.is_integer(num_circles) or num_circles < 1:
         raise ValueError("Number of circles must be a positive integer.")
@@ -106,6 +108,7 @@ def _read_radius_from_file(
           invalid, or if no radius is found for the specified
           combination of packing type and number of circles.
     """
+
     # Check if the number of circles is a positive integer
     if not utils.is_integer(num_circles) or num_circles < 1:
         raise ValueError("Number of circles must be a positive integer.")
@@ -148,6 +151,7 @@ def _compute_radii(
         ValueError: If the packing is not one of the supported packings
           or if the number of circles is not a positive integer.
     """
+
     # Check if the number of circles is a positive integer
     if not utils.is_integer(num_circles) or num_circles < 1:
         raise ValueError("Number of circles must be a positive integer.")
@@ -197,6 +201,7 @@ def _convert_coordinates_to_pixels(
         ValueError: If the relative coordinates are outside the range
           [-1, 1] or if the image size is not a positive integer.
     """
+
     # Check if the relative coordinates are within the range [-1, 1]
     if not np.logical_and(-1 <= rel_coordinates, rel_coordinates <= 1).all():
         raise ValueError("All relative coordinates must be in the range [-1, 1].")
@@ -232,6 +237,7 @@ def _convert_radii_to_pixels(
         ValueError: If any relative radius is outside the valid range
           (0, 1] or if the image size is not a positive integer.
     """
+
     # Check if all relative radii are within the range (0, 1]
     if not np.logical_and(0 < rel_radii, rel_radii <= 1).all():
         raise ValueError("All relative radii must be in the range (0, 1].")
@@ -262,6 +268,7 @@ def get_packing_data(
         A dictionary containing the coordinates and radii in pixel
           values.
     """
+
     # Get coordinates
     coordinates = _convert_coordinates_to_pixels(
         _read_coordinates_from_file(num_circles, packing), img_size

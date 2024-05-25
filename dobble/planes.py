@@ -27,6 +27,7 @@ def _get_permutation_matrix(permutation: np.ndarray) -> np.ndarray:
     Raises:
         ValueError: If the argument is not a valid permutation.
     """
+
     # Check if the permutation is valid
     if (not isinstance(permutation, np.ndarray)
             or permutation.ndim != 1
@@ -72,6 +73,7 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
                [0, 0, 1, 1, 0, 0, 1],
                [0, 0, 1, 0, 1, 1, 0]], dtype=uint8)
     """
+
     is_prime = utils.is_prime(order)
 
     if not (is_prime or order in list(constants.FPP_KERNELS)):
