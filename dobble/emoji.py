@@ -4,6 +4,8 @@ Typical usage example:
 
   >>> emoji = Emoji("unicorn")
   >>> emoji.rotate(-30)
+  >>> emoji.rotation
+  330
   >>> emoji.show()
 """
 
@@ -34,17 +36,17 @@ class Emoji:
     Methods:
         rotate(degrees): Rotate the emoji by the specified number of
           degrees.
-        show(outline_only=False): Display the emoji image.
-        get_img(outline_only=False, padding=0.1): Get the emoji image as
+        show(outline_only=False, padding=0): Display the emoji image.
+        get_img(outline_only=False, padding=0): Get the emoji image as
           a PIL Image.
-        get_array(outline_only=False, padding=0.1): Get the emoji image
+        get_array(outline_only=False, padding=0): Get the emoji image
           as a NumPy array.
     """
 
     def __init__(
             self,
             name: str,
-            rotation: float = 0.
+            rotation: float = 0
     ) -> None:
         """Initializes the instance based on the OpenMoji emoji name.
 
@@ -75,24 +77,30 @@ class Emoji:
 
         self.rotation = (self.rotation + degrees) % 360
 
-    def show(self, outline_only: bool = False) -> None:
+    def show(
+            self,
+            outline_only: bool = False,
+            padding: float = 0
+    ) -> None:
         """Display the emoji image.
 
         Args:
             outline_only: Whether to display the outline-only version of
               the emoji.
+            padding: The padding around the image content as a fraction
+              of the image size.  Must be in the range [0, 1).
         """
 
         # Load image, rescale emoji, apply rotation, and display
         img = self._load(outline_only=outline_only)
-        img = utils.rescale_img(img, padding=0)
+        img = utils.rescale_img(img, padding=padding)
         img = img.rotate(self.rotation)
         img.show()
 
     def get_img(
             self,
             outline_only: bool = False,
-            padding: float = 0.1
+            padding: float = 0
     ) -> Image.Image:
         """Get the emoji image as a PIL Image.
 
@@ -115,7 +123,7 @@ class Emoji:
     def get_array(
             self,
             outline_only: bool = False,
-            padding: float = 0.1
+            padding: float = 0
     ) -> np.ndarray:
         """Get the emoji image as a NumPy array.
 
