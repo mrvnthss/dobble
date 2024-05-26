@@ -17,3 +17,6 @@ Modules:
     - planes: Computes incidence matrices of finite projective planes.
     - utils: Utility functions.
 """
+
+
+from .emoji import Emoji
