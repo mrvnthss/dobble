@@ -7,6 +7,9 @@ Typical usage example:
   >>> emoji.rotation
   330
   >>> emoji.show()
+  >>> emoji.reset_rotation()
+  >>> emoji.rotation
+  0
 """
 
 
@@ -36,6 +39,7 @@ class Emoji:
     Methods:
         rotate(degrees): Rotate the emoji by the specified number of
           degrees.
+        reset_rotation(): Reset the rotation of the emoji to 0 degrees.
         show(outline_only=False, padding=0): Display the emoji image.
         get_img(outline_only=False, padding=0): Get the emoji image as
           a PIL Image.
@@ -76,6 +80,11 @@ class Emoji:
         """
 
         self.rotation = (self.rotation + degrees) % 360
+
+    def reset_rotation(self) -> None:
+        """Reset the rotation of the emoji to 0 degrees."""
+
+        self.rotation = 0
 
     def show(
             self,

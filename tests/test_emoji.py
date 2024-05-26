@@ -50,6 +50,14 @@ def test_emoji_rotate():
     assert emoji.rotation == 0
 
 
+def test_emoji_reset_rotation():
+    emoji = Emoji(VALID_EMOJI_NAME)
+    emoji.rotate(-70)
+    assert emoji.rotation == 290
+    emoji.reset_rotation()
+    assert emoji.rotation == 0
+
+
 def test_emoji_show(mocker):
     mock_show = mocker.patch("PIL.Image.Image.show")
     emoji = Emoji(VALID_EMOJI_NAME)
