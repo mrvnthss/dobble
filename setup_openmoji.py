@@ -53,10 +53,10 @@ def download_and_extract_openmoji_data() -> None:
 
     # URLs and corresponding file names of OpenMoji data
     urls = [
-        constants.OPENMOJI_LICENSE,
-        constants.OPENMOJI_JSON,
-        constants.OPENMOJI_COLOR,
-        constants.OPENMOJI_BLACK
+        constants.OPENMOJI_LICENSE_URL,
+        constants.OPENMOJI_JSON_URL,
+        constants.OPENMOJI_COLOR_URL,
+        constants.OPENMOJI_BLACK_URL
     ]
     file_names = [
         "LICENSE.txt",
