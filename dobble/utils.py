@@ -6,13 +6,27 @@ Functions:
     is_prime_power: Check if a number is a prime power.
     rescale_img: Rescale a square image to fit content within inscribed
       circle.
+    is_valid_emoji_name: Check if an emoji exists in the OpenMoji
+      dataset.
+    get_emoji_group: Get the "group" attribute of an emoji.
+    get_emoji_hexcode: Get the hexcode of an emoji.
 """
 
 
+from importlib.resources import files
+import json
 import math
 
 import numpy as np
 from PIL import Image
+
+from . import constants
+
+
+# Load OpenMoji metadata from restructured JSON file
+json_fpath = files(constants.OPENMOJI_DIR) / "openmoji_restructured.json"
+with json_fpath.open("r", encoding="utf-8") as json_file:
+    _META_DATA = json.load(json_file)
 
 
 def is_integer(num: int | float) -> bool:
@@ -143,3 +157,55 @@ def rescale_img(
         img = img.crop((offset, offset, offset + img_size, offset + img_size))
 
     return img
+
+
+def is_valid_emoji_name(emoji_name: str) -> bool:
+    """Check if an emoji exists in the OpenMoji dataset.
+
+    Args:
+        emoji_name: The emoji name to be checked.
+
+    Returns:
+        True if the emoji exists in the OpenMoji dataset, False
+        otherwise.
+    """
+
+    return emoji_name in _META_DATA
+
+
+def get_emoji_group(emoji_name: str) -> str:
+    """Get the "group" attribute of an emoji.
+
+    Args:
+        emoji_name: The emoji name.
+
+    Returns:
+        The "group" attribute of the emoji.
+
+    Raises:
+        ValueError: If the emoji name is not valid.
+    """
+
+    if not is_valid_emoji_name(emoji_name):
+        raise ValueError(f"'{emoji_name}' is not a valid emoji name.")
+
+    return _META_DATA[emoji_name]["group"]
+
+
+def get_emoji_hexcode(emoji_name: str) -> str:
+    """Get the hexcode of an emoji.
+
+    Args:
+        emoji_name: The emoji name.
+
+    Returns:
+        The hexcode of the emoji.
+
+    Raises:
+        ValueError: If the emoji name is not valid.
+    """
+
+    if not is_valid_emoji_name(emoji_name):
+        raise ValueError(f"'{emoji_name}' is not a valid emoji name.")
+
+    return _META_DATA[emoji_name]["hexcode"]

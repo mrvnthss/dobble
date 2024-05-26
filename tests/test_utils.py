@@ -4,6 +4,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 import pytest
 
+from dobble import constants
 from dobble import utils
 
 
@@ -31,6 +32,14 @@ FULLY_TRANSPARENT_IMAGE = Image.new("RGBA", (100, 100))
 
 NEGATIVE_PADDING = -0.1
 INVALID_PADDING = 1
+
+INVALID_EMOJI_NAME = "invalid emoji name"
+TEST_EMOJIS = [
+    ("sunset", "travel-places", "1F307"),
+    ("face with tears of joy", "smileys-emotion", "1F602"),
+    ("basketball", "activities", "1F3C0"),
+    ("electric coffee percolator", "extras-openmoji", "E154")
+]
 
 
 def test_is_integer_with_integer():
@@ -160,3 +169,32 @@ def test_rescale_img_with_small_square():
     # Check that rescaled image contains more non-transparent pixels
     rescaled_img = utils.rescale_img(img, padding=0)
     assert np.sum(np.array(rescaled_img)[:, :, -1] > 0) > np.sum(np.array(img)[:, :, -1] > 0)
+
+
+def test_is_valid_emoji_name_with_classic_dobble_emojis():
+    for name in constants.CLASSIC_DOBBLE_EMOJIS:
+        assert utils.is_valid_emoji_name(name)
+
+
+def test_is_valid_emoji_name_with_invalid_emoji_name():
+    assert not utils.is_valid_emoji_name(INVALID_EMOJI_NAME)
+
+
+def test_get_emoji_group_with_invalid_emoji_name():
+    with pytest.raises(ValueError):
+        utils.get_emoji_group(INVALID_EMOJI_NAME)
+
+
+def test_get_emoji_group_with_test_emojis():
+    for name, group, _ in TEST_EMOJIS:
+        assert utils.get_emoji_group(name) == group
+
+
+def test_get_emoji_hexcode_with_invalid_emoji_name():
+    with pytest.raises(ValueError):
+        utils.get_emoji_hexcode(INVALID_EMOJI_NAME)
+
+
+def test_get_emoji_hexcode_with_test_emojis():
+    for name, _, hexcode in TEST_EMOJIS:
+        assert utils.get_emoji_hexcode(name) == hexcode

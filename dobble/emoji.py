@@ -14,19 +14,12 @@ Typical usage example:
 
 
 from importlib.resources import files
-import json
 
 import numpy as np
 from PIL import Image
 
 from . import constants
 from . import utils
-
-
-# Load OpenMoji metadata from restructured JSON file
-json_fpath = files(constants.OPENMOJI_DIR) / "openmoji_restructured.json"
-with json_fpath.open("r", encoding="utf-8") as json_file:
-    _META_DATA = json.load(json_file)
 
 
 class Emoji:
@@ -61,14 +54,14 @@ class Emoji:
               degrees.
         """
 
-        if name not in _META_DATA:
+        if not utils.is_valid_emoji_name(name):
             raise ValueError(f"'{name}' is not a valid emoji name.")
 
         self.name = name
         self.rotation = rotation
 
-        self._group: str = _META_DATA[name]["group"]
-        self._hexcode: str = _META_DATA[name]["hexcode"]
+        self._group: str = utils.get_emoji_group(name)
+        self._hexcode: str = utils.get_emoji_hexcode(name)
 
     def rotate(self, degrees: float) -> None:
         """Rotate the emoji by the specified number of degrees.
