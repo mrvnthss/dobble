@@ -22,6 +22,11 @@ VALID_EMOJI_PATH_BLACK = (
 )
 
 
+def test_emoji_init_with_invalid_emoji_name():
+    with pytest.raises(ValueError):
+        Emoji(INVALID_EMOJI_NAME)
+
+
 def test_emoji_init_with_valid_emoji_name():
     emoji = Emoji(VALID_EMOJI_NAME)
     assert emoji.name == VALID_EMOJI_NAME
@@ -33,11 +38,6 @@ def test_emoji_init_with_classic_dobble_emojis():
         emoji = Emoji(name)
         assert emoji.name == name
         assert emoji.rotation == 0
-
-
-def test_emoji_init_with_invalid_emoji_name():
-    with pytest.raises(ValueError):
-        Emoji(INVALID_EMOJI_NAME)
 
 
 def test_emoji_rotate():
