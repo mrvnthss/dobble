@@ -10,7 +10,8 @@ Functions:
       dataset.
     get_emoji_group: Get the "group" attribute of an emoji.
     get_emoji_hexcode: Get the hexcode of an emoji.
-    is_layout_available: Check if a circle packing layout is available.
+    is_valid_packing: Check if a packing is valid (i.e., implemented).
+    is_layout_available: Check if a layout is available.
 """
 
 
@@ -22,7 +23,6 @@ import numpy as np
 from PIL import Image
 
 from . import constants
-from . import packings
 
 
 # Load OpenMoji metadata from restructured JSON file
@@ -213,11 +213,27 @@ def get_emoji_hexcode(emoji_name: str) -> str:
     return _META_DATA[emoji_name]["hexcode"]
 
 
+def is_valid_packing(packing: str) -> bool:
+    """Check if the provided packing is valid (i.e., implemented).
+
+    Args:
+        packing: Type of circle packing.
+
+    Returns:
+        True if the packing is valid, False otherwise.
+    """
+
+    return packing.lower() in constants.PACKINGS_DICT
+
+
 def is_layout_available(
         packing: str,
         num_circles: int
 ) -> bool:
-    """Check if a circle packing layout is available.
+    """Check if a layout is available.
+
+    This function checks whether a particular combination of packing
+    type and number of circles is available.
 
     Args:
         packing: Type of circle packing.
@@ -229,7 +245,7 @@ def is_layout_available(
 
     is_num_circles_valid = is_integer(num_circles) and num_circles > 0
 
-    if not packings.is_valid_packing(packing) or not is_num_circles_valid:
+    if not is_valid_packing(packing) or not is_num_circles_valid:
         return False
 
     return num_circles in constants.PACKINGS_DICT[packing.lower()][1]

@@ -209,6 +209,15 @@ def test_get_emoji_hexcode_with_test_emojis():
         assert utils.get_emoji_hexcode(name) == hexcode
 
 
+def test_is_valid_packing_with_invalid_packing():
+    assert not utils.is_valid_packing(INVALID_PACKING)
+
+
+def test_is_valid_packing_with_valid_packings():
+    for packing in constants.PACKINGS_DICT:
+        assert utils.is_valid_packing(packing)
+
+
 def test_is_layout_available_with_negative_num_circles():
     for packing in constants.PACKINGS_DICT:
         assert not utils.is_layout_available(packing, NEGATIVE_NUMBER)

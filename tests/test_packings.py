@@ -3,7 +3,6 @@
 import numpy as np
 import pytest
 
-from dobble import constants
 from dobble import packings
 
 
@@ -92,15 +91,6 @@ CCIS5_COORDINATES = np.array([
 CCI3_RADII = np.array([118, 118, 118])
 CCIR5_RADII = np.array([56, 80, 98, 113, 126])
 CCIS5_RADII = np.array([65, 73, 84, 103, 146])
-
-
-def test_is_valid_packing_with_invalid_packing():
-    assert not packings.is_valid_packing(INVALID_PACKING)
-
-
-def test_is_valid_packing_with_valid_packings():
-    for packing in constants.PACKINGS_DICT:
-        assert packings.is_valid_packing(packing)
 
 
 def test_read_coordinates_from_file_with_negative_num_circles():
