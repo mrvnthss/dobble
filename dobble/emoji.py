@@ -30,14 +30,14 @@ class Emoji:
         rotation: The counterclockwise rotation of the emoji in degrees.
 
     Methods:
-        rotate(degrees): Rotate the emoji by the specified number of
-          degrees.
-        reset_rotation(): Reset the rotation of the emoji to 0 degrees.
-        show(outline_only=False, padding=0): Display the emoji image.
-        get_img(outline_only=False, padding=0): Get the emoji image as
-          a PIL Image.
         get_array(outline_only=False, padding=0): Get the emoji image
           as a NumPy array.
+        get_img(outline_only=False, padding=0): Get the emoji image as
+          a PIL Image.
+        reset_rotation(): Reset the rotation of the emoji to 0 degrees.
+        rotate(degrees): Rotate the emoji by the specified number of
+          degrees.
+        show(outline_only=False, padding=0): Display the emoji image.
     """
 
     def __init__(
