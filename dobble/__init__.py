@@ -19,4 +19,5 @@ Modules:
 """
 
 
+from .card import Card
 from .emoji import Emoji

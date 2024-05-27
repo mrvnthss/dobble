@@ -1,0 +1,87 @@
+# pylint: disable=missing-function-docstring, missing-module-docstring
+
+import pytest
+
+from dobble import constants
+from dobble import Card, Emoji
+
+
+INVALID_EMOJI_NAME = "invalid emoji name"
+FIVE_VALID_EMOJI_NAMES = [
+    "unicorn",
+    "dolphin",
+    "cheese wedge",
+    "bomb",
+    "ice"
+]
+
+INVALID_PACKING = "ccid"
+INVALID_LAYOUTS = [
+    ("ccib", 1),
+    ("ccic", 2),
+    ("ccir", 3),
+    ("ccis", 4)
+]
+
+
+def test_card_init_with_invalid_emoji_name():
+    with pytest.raises(ValueError):
+        Card([INVALID_EMOJI_NAME])
+
+
+def test_card_init_with_empty_emoji_names():
+    with pytest.raises(ValueError):
+        Card([])
+
+
+def test_card_init_with_duplicate_emoji_names():
+    with pytest.warns(UserWarning):
+        card = Card(FIVE_VALID_EMOJI_NAMES * 2)
+    assert card.emoji_names == FIVE_VALID_EMOJI_NAMES
+
+
+def test_card_init_with_invalid_layouts():
+    # Invalid packing
+    with pytest.raises(ValueError):
+        Card(FIVE_VALID_EMOJI_NAMES, packing=INVALID_PACKING)
+
+    # More than 50 emojis
+    with pytest.raises(ValueError):
+        Card(constants.CLASSIC_DOBBLE_EMOJIS)
+
+    # Packings "ccib", "ccic", "ccir", and "ccis" not available for 1 to 4 emojis
+    for packing, num_emojis in INVALID_LAYOUTS:
+        with pytest.warns(UserWarning):
+            Card(FIVE_VALID_EMOJI_NAMES[:num_emojis], packing=packing)
+
+
+def test_card_init_with_valid_emojis():
+    card = Card(FIVE_VALID_EMOJI_NAMES, packing="ccir")
+    assert card.emoji_names == FIVE_VALID_EMOJI_NAMES
+    assert card.rotation == 0
+    assert card.packing == "ccir"
+    for name in FIVE_VALID_EMOJI_NAMES:
+        assert isinstance(card.emojis[name], Emoji)
+
+
+def test_card_rotate_emoji():
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+    emoji_name = FIVE_VALID_EMOJI_NAMES[3]
+    card.rotate_emoji(emoji_name, 30)
+    assert card.emojis[emoji_name].rotation == 30
+    card.rotate_emoji(emoji_name, -45)
+    assert card.emojis[emoji_name].rotation == 345
+    card.rotate_emoji(emoji_name, 15)
+    assert card.emojis[emoji_name].rotation == 0
+    for name in FIVE_VALID_EMOJI_NAMES:
+        if name != emoji_name:
+            assert card.emojis[name].rotation == 0
+
+
+def test_card_reset_emoji_rotation():
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+    emoji_name = FIVE_VALID_EMOJI_NAMES[2]
+    card.rotate_emoji(emoji_name, -70)
+    assert card.emojis[emoji_name].rotation == 290
+    card.reset_emoji_rotation(emoji_name)
+    assert card.emojis[emoji_name].rotation == 0
