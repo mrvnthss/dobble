@@ -6,8 +6,7 @@ Functions:
     is_prime_power: Check if a number is a prime power.
     rescale_img: Rescale a square image to fit content within inscribed
       circle.
-    is_valid_emoji_name: Check if an emoji exists in the OpenMoji
-      dataset.
+    is_valid_emoji_name: Check if emojis exist in the OpenMoji dataset.
     get_emoji_group: Get the "group" attribute of an emoji.
     get_emoji_hexcode: Get the hexcode of an emoji.
     is_valid_packing: Check if a packing is valid (i.e., implemented).
@@ -161,16 +160,20 @@ def rescale_img(
     return img
 
 
-def is_valid_emoji_name(emoji_name: str) -> bool:
-    """Check if an emoji exists in the OpenMoji dataset.
+def is_valid_emoji_name(emoji_name: str | list[str]) -> bool:
+    """Check if emojis exist in the OpenMoji dataset.
 
     Args:
-        emoji_name: The emoji name to be checked.
+        emoji_name: The emoji name or a list of emoji names to be
+          checked.
 
     Returns:
-        True if the emoji exists in the OpenMoji dataset, False
-        otherwise.
+        True if the emoji or all emojis in the list exist in the
+        OpenMoji dataset, False otherwise.
     """
+
+    if isinstance(emoji_name, list):
+        return all(name in _META_DATA for name in emoji_name)
 
     return emoji_name in _META_DATA
 

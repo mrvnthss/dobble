@@ -184,9 +184,13 @@ def test_is_valid_emoji_name_with_classic_dobble_emojis():
     for name in constants.CLASSIC_DOBBLE_EMOJIS:
         assert utils.is_valid_emoji_name(name)
 
+    # Test list version of is_valid_emoji_name()
+    assert utils.is_valid_emoji_name([name for name in constants.CLASSIC_DOBBLE_EMOJIS])
+
 
 def test_is_valid_emoji_name_with_invalid_emoji_name():
     assert not utils.is_valid_emoji_name(INVALID_EMOJI_NAME)
+    assert not utils.is_valid_emoji_name([INVALID_EMOJI_NAME])
 
 
 def test_get_emoji_group_with_invalid_emoji_name():
