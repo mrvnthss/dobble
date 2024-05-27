@@ -22,6 +22,7 @@ import numpy as np
 from PIL import Image
 
 from . import constants
+from . import packings
 
 
 # Load OpenMoji metadata from restructured JSON file
@@ -226,10 +227,9 @@ def is_layout_available(
         True if the layout is available, False otherwise.
     """
 
-    is_packing_valid = packing.lower() in constants.PACKINGS_DICT
     is_num_circles_valid = is_integer(num_circles) and num_circles > 0
 
-    if not is_packing_valid or not is_num_circles_valid:
+    if not packings.is_valid_packing(packing) or not is_num_circles_valid:
         return False
 
     return num_circles in constants.PACKINGS_DICT[packing.lower()][1]

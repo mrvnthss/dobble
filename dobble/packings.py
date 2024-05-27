@@ -5,7 +5,7 @@ and convert relative coordinates and relative radii to integer values
 (number of pixels) for use in images.
 
 Functions:
-    _is_valid_packing: Check if a packing is valid (i.e., implemented).
+    is_valid_packing: Check if a packing is valid (i.e., implemented).
     _read_coordinates_from_file: Read coordinates of a specified circle
       packing from a text file.
     _read_radius_from_file: Read the radius of the largest circle of a
@@ -28,7 +28,7 @@ from . import constants
 from . import utils
 
 
-def _is_valid_packing(packing: str) -> bool:
+def is_valid_packing(packing: str) -> bool:
     """Check if the provided packing is valid (i.e., implemented).
 
     Args:
@@ -67,7 +67,7 @@ def _read_coordinates_from_file(
         raise ValueError("Number of circles must be a positive integer.")
 
     # Check if a valid packing is provided
-    if not _is_valid_packing(packing):
+    if not is_valid_packing(packing):
         raise ValueError(f"Invalid packing: '{packing}' is not supported.")
 
     # Construct the file name based on the packing type and number of circles
@@ -114,7 +114,7 @@ def _read_radius_from_file(
         raise ValueError("Number of circles must be a positive integer.")
 
     # Check if a valid packing is provided
-    if not _is_valid_packing(packing):
+    if not is_valid_packing(packing):
         raise ValueError(f"Invalid packing: '{packing}' is not supported.")
 
     packing = packing.lower()
@@ -157,7 +157,7 @@ def _compute_radii(
         raise ValueError("Number of circles must be a positive integer.")
 
     # Check if a valid packing is provided
-    if not _is_valid_packing(packing):
+    if not is_valid_packing(packing):
         raise ValueError(f"Invalid packing: '{packing}' is not supported.")
 
     # Check if the largest radius is within the range (0, 1]
