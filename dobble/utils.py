@@ -10,6 +10,7 @@ Functions:
       dataset.
     get_emoji_group: Get the "group" attribute of an emoji.
     get_emoji_hexcode: Get the hexcode of an emoji.
+    is_layout_available: Check if a circle packing layout is available.
 """
 
 
@@ -209,3 +210,26 @@ def get_emoji_hexcode(emoji_name: str) -> str:
         raise ValueError(f"'{emoji_name}' is not a valid emoji name.")
 
     return _META_DATA[emoji_name]["hexcode"]
+
+
+def is_layout_available(
+        packing: str,
+        num_circles: int
+) -> bool:
+    """Check if a circle packing layout is available.
+
+    Args:
+        packing: Type of circle packing.
+        num_circles: Total number of circles in the packing.
+
+    Returns:
+        True if the layout is available, False otherwise.
+    """
+
+    is_packing_valid = packing.lower() in constants.PACKINGS_DICT
+    is_num_circles_valid = is_integer(num_circles) and num_circles > 0
+
+    if not is_packing_valid or not is_num_circles_valid:
+        return False
+
+    return num_circles in constants.PACKINGS_DICT[packing.lower()][1]

@@ -41,6 +41,15 @@ TEST_EMOJIS = [
     ("electric coffee percolator", "extras-openmoji", "E154")
 ]
 
+INVALID_PACKING = "ccid"
+INVALID_LAYOUTS = [
+    ("cci", 51),
+    ("ccib", 1),
+    ("ccic", 2),
+    ("ccir", 3),
+    ("ccis", 4)
+]
+
 
 def test_is_integer_with_integer():
     assert utils.is_integer(INTEGER)
@@ -198,3 +207,29 @@ def test_get_emoji_hexcode_with_invalid_emoji_name():
 def test_get_emoji_hexcode_with_test_emojis():
     for name, _, hexcode in TEST_EMOJIS:
         assert utils.get_emoji_hexcode(name) == hexcode
+
+
+def test_is_layout_available_with_negative_num_circles():
+    for packing in constants.PACKINGS_DICT:
+        assert not utils.is_layout_available(packing, NEGATIVE_NUMBER)
+
+
+def test_is_layout_available_with_zero_num_circles():
+    for packing in constants.PACKINGS_DICT:
+        assert not utils.is_layout_available(packing, 0)
+
+
+def test_is_layout_available_with_invalid_packing():
+    for num_circles in range(5, 51):
+        assert not utils.is_layout_available(INVALID_PACKING, num_circles)
+
+
+def test_is_layout_available_with_invalid_layouts():
+    for packing, num_circles in INVALID_LAYOUTS:
+        assert not utils.is_layout_available(packing, num_circles)
+
+
+def test_is_layout_available_with_valid_layouts():
+    for packing, data in constants.PACKINGS_DICT.items():
+        for num_circles in data[1]:
+            assert utils.is_layout_available(packing, num_circles)

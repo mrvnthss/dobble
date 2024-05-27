@@ -165,7 +165,7 @@ def _compute_radii(
         raise ValueError("Largest radius must be in the range (0, 1].")
 
     packing = packing.lower()
-    radius_function = constants.PACKINGS_DICT[packing]
+    radius_function = constants.PACKINGS_DICT[packing][0]
     function_values = np.sort(
         np.array([radius_function(n + 1) for n in range(int(num_circles))])
     )

@@ -35,13 +35,13 @@ OPENMOJI_JSON_URL = _RAW_URL + "data/openmoji.json"
 OPENMOJI_COLOR_URL = _DOWNLOAD_URL + "openmoji-618x618-color.zip"
 OPENMOJI_BLACK_URL = _DOWNLOAD_URL + "openmoji-618x618-black.zip"
 
-# Available packings and their radii functions
+# Available packings along with their radii functions and available layouts
 PACKINGS_DICT = {
-    "cci": lambda n: 1,
-    "ccib": lambda n: n ** (-1 / 5),
-    "ccic": lambda n: n ** (-2 / 3),
-    "ccir": lambda n: n ** (1 / 2),
-    "ccis": lambda n: n ** (-1 / 2)
+    "cci": (lambda n: 1, range(1, 51)),
+    "ccib": (lambda n: n ** (-1 / 5), range(5, 51)),
+    "ccic": (lambda n: n ** (-2 / 3), range(5, 51)),
+    "ccir": (lambda n: n ** (1 / 2), range(5, 51)),
+    "ccis": (lambda n: n ** (-1 / 2), range(5, 51)),
 }
 
 # OpenMoji emojis that (somewhat closely) resemble the classic Dobble game
