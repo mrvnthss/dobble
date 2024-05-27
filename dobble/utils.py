@@ -169,10 +169,13 @@ def is_valid_emoji_name(emoji_name: str | list[str]) -> bool:
 
     Returns:
         True if the emoji or all emojis in the list exist in the
-        OpenMoji dataset, False otherwise.
+        OpenMoji dataset, False otherwise.  Returns False for empty
+        lists.
     """
 
     if isinstance(emoji_name, list):
+        if len(emoji_name) == 0:
+            return False
         return all(name in _META_DATA for name in emoji_name)
 
     return emoji_name in _META_DATA

@@ -193,6 +193,10 @@ def test_is_valid_emoji_name_with_invalid_emoji_name():
     assert not utils.is_valid_emoji_name([INVALID_EMOJI_NAME])
 
 
+def test_is_valid_emoji_name_with_empty_list():
+    assert not utils.is_valid_emoji_name([])
+
+
 def test_get_emoji_group_with_invalid_emoji_name():
     with pytest.raises(ValueError):
         utils.get_emoji_group(INVALID_EMOJI_NAME)
