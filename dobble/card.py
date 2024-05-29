@@ -35,7 +35,7 @@ class Card:
             packing: str = "cci",
             rotation: float = 0
     ) -> None:
-        """Initializes the instance based on the OpenMoji emoji names.
+        """Initialize the instance based on the OpenMoji emoji names.
 
         Args:
             emoji_names: A list of emoji names.  Each name needs to be

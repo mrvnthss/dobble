@@ -45,7 +45,7 @@ class Emoji:
             name: str,
             rotation: float = 0
     ) -> None:
-        """Initializes the instance based on the OpenMoji emoji name.
+        """Initialize the instance based on the OpenMoji emoji name.
 
         Args:
             name: The name of the emoji.  Needs to be the name of one of
