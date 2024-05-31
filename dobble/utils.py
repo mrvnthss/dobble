@@ -4,6 +4,8 @@ Functions:
     * is_integer: Check if a number is an integer.
     * is_prime: Check if a number is prime.
     * is_prime_power: Check if a number is a prime power.
+    * is_valid_permutation: Check if the argument is a valid
+        permutation.
     * rescale_img: Rescale a square image to fit content within
         inscribed circle.
     * is_valid_emoji_name: Check if emojis exist in the OpenMoji
@@ -87,6 +89,30 @@ def is_prime_power(num: int | float) -> bool:
                 state = True
                 break
     return state
+
+
+def is_valid_permutation(permutation: np.ndarray | list[int]) -> bool:
+    """Check if the argument is a valid permutation.
+
+    A valid permutation is a one-dimensional NumPy array or list of
+    integers with elements from 1 to n, where n is the length of the
+    permutation.
+
+    Args:
+        permutation: The permutation to be checked.
+
+    Returns:
+        True if the argument is a valid permutation, False otherwise.
+    """
+
+    if not isinstance(permutation, np.ndarray):
+        permutation = np.array(permutation)
+
+    return (
+        permutation.ndim == 1
+        and len(permutation) > 0
+        and set(permutation) == set(range(1, len(permutation) + 1))
+    )
 
 
 def rescale_img(

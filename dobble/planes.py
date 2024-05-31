@@ -29,10 +29,7 @@ def _get_permutation_matrix(permutation: np.ndarray) -> np.ndarray:
     """
 
     # Check if the permutation is valid
-    if (not isinstance(permutation, np.ndarray)
-            or permutation.ndim != 1
-            or set(permutation) != set(range(1, len(permutation) + 1))
-            or len(permutation) == 0):
+    if not utils.is_valid_permutation(permutation):
         raise ValueError("Invalid permutation.")
 
     # Construct permutation matrix

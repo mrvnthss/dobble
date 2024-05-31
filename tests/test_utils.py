@@ -26,6 +26,14 @@ LARGE_NON_PRIME_POWER = (2 * 5) ** 4
 PRIME_POWER = 2 ** 3
 LARGE_PRIME_POWER = 3 ** 5
 
+INVALID_PERMUTATIONS = [
+    [1, 1, 3, 4, 5],
+    [1, 2, 2, 3, 4],
+    [4, 1, 2],
+    [0, 1, 2, 3, 4]
+]
+VALID_PERMUTATION = [5, 2, 3, 4, 1]
+
 RGB_IMAGE = Image.new("RGB", (100, 100))
 NON_SQUARE_IMAGE = Image.new("RGBA", (100, 200))
 FULLY_TRANSPARENT_IMAGE = Image.new("RGBA", (100, 100))
@@ -117,6 +125,17 @@ def test_is_prime_power_with_prime_power():
 
 def test_is_prime_power_with_large_prime_power():
     assert utils.is_prime_power(LARGE_PRIME_POWER)
+
+
+def test_is_valid_permutation_with_invalid_permutations():
+    for invalid_permutation in INVALID_PERMUTATIONS:
+        assert not utils.is_valid_permutation(invalid_permutation)
+        assert not utils.is_valid_permutation(np.array(invalid_permutation))
+
+
+def test_is_valid_permutation_with_valid_permutation():
+    assert utils.is_valid_permutation(VALID_PERMUTATION)
+    assert utils.is_valid_permutation(np.array(VALID_PERMUTATION))
 
 
 def test_rescale_img_with_rgb_image():
