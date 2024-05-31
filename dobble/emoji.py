@@ -4,12 +4,7 @@ Typical usage example:
 
   >>> emoji = Emoji("unicorn")
   >>> emoji.rotate(-30)
-  >>> emoji.rotation
-  330
-  >>> emoji.show()
-  >>> emoji.reset_rotation()
-  >>> emoji.rotation
-  0
+  >>> emoji.show(outline_only=True)
 """
 
 
