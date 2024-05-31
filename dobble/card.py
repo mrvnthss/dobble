@@ -28,6 +28,10 @@ class Card:
     Methods:
         reset_emoji_rotation(emoji_name): Reset the rotation of the
           specified emoji to 0 degrees.
+        reset_rotation(): Reset the rotation of the playing card to 0
+          degrees.
+        rotate(degrees): Rotate the playing card by the specified number
+          of degrees.
         rotate_emoji(emoji_name, degrees): Rotate the specified emoji by
           the specified number of degrees.
         shuffle_emojis(permutation=None, seed=None): Shuffle the emojis
@@ -81,6 +85,26 @@ class Card:
 
         self.emojis = {name: Emoji(name) for name in emoji_names}
         self.num_emojis = len(emoji_names)
+
+    def rotate(
+            self,
+            degrees: float
+    ) -> None:
+        """Rotate the playing card by the specified number of degrees.
+
+        Args:
+            degrees: The number of degrees to rotate the playing card
+              by.  Positive values rotate the playing card
+              counterclockwise, while negative values lead to a
+              clockwise rotation.
+        """
+
+        self.rotation = (self.rotation + degrees) % 360
+
+    def reset_rotation(self) -> None:
+        """Reset the rotation of the playing card to 0 degrees."""
+
+        self.rotation = 0
 
     def rotate_emoji(
             self,

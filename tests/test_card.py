@@ -81,6 +81,24 @@ def test_card_init_with_valid_emojis():
         assert isinstance(card.emojis[name], Emoji)
 
 
+def test_card_rotate():
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+    card.rotate(30)
+    assert card.rotation == 30
+    card.rotate(-45)
+    assert card.rotation == 345
+    card.rotate(15)
+    assert card.rotation == 0
+
+
+def test_card_reset_rotation():
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+    card.rotate(-70)
+    assert card.rotation == 290
+    card.reset_rotation()
+    assert card.rotation == 0
+
+
 def test_card_rotate_emoji():
     card = Card(FIVE_VALID_EMOJI_NAMES)
     emoji_name = FIVE_VALID_EMOJI_NAMES[3]
