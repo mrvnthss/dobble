@@ -63,7 +63,10 @@ class Emoji:
         self._group: str = utils.get_emoji_group(name)
         self._hexcode: str = utils.get_emoji_hexcode(name)
 
-    def rotate(self, degrees: float) -> None:
+    def rotate(
+            self,
+            degrees: float
+    ) -> None:
         """Rotate the emoji by the specified number of degrees.
 
         Args:
@@ -147,7 +150,10 @@ class Emoji:
 
         return img_np
 
-    def _load(self, outline_only: bool = False) -> Image.Image:
+    def _load(
+            self,
+            outline_only: bool = False
+    ) -> Image.Image:
         """Load the emoji image.
 
         Args:
