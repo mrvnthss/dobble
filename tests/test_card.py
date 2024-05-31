@@ -14,6 +14,13 @@ FIVE_VALID_EMOJI_NAMES = [
     "bomb",
     "ice"
 ]
+FIVE_VALID_EMOJI_NAMES_SHUFFLED = [
+    "ice",
+    "dolphin",
+    "cheese wedge",
+    "bomb",
+    "unicorn"
+]
 
 INVALID_PACKING = "ccid"
 INVALID_LAYOUTS = [
@@ -21,6 +28,15 @@ INVALID_LAYOUTS = [
     ("ccic", 2),
     ("ccir", 3),
     ("ccis", 4)
+]
+
+VALID_PERMUTATION = [5, 2, 3, 4, 1]
+# NOTE: The permutation [3, 1, 4, 2] is only invalid with respect to a card with five emojis.
+INVALID_PERMUTATIONS = [
+    [1, 1, 3, 4, 5],
+    [1, 2, 2, 3, 4],
+    [3, 1, 4, 2],
+    [0, 1, 2, 3, 4]
 ]
 
 
@@ -60,6 +76,7 @@ def test_card_init_with_valid_emojis():
     assert card.emoji_names == FIVE_VALID_EMOJI_NAMES
     assert card.rotation == 0
     assert card.packing == "ccir"
+    assert card.num_emojis == 5
     for name in FIVE_VALID_EMOJI_NAMES:
         assert isinstance(card.emojis[name], Emoji)
 
@@ -85,3 +102,30 @@ def test_card_reset_emoji_rotation():
     assert card.emojis[emoji_name].rotation == 290
     card.reset_emoji_rotation(emoji_name)
     assert card.emojis[emoji_name].rotation == 0
+
+
+def test_card_shuffle_emojis_with_invalid_permutations():
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+    for invalid_permutation in INVALID_PERMUTATIONS:
+        with pytest.raises(ValueError):
+            card.shuffle_emojis(permutation=invalid_permutation)
+
+
+def test_card_shuffle_emojis_with_identity():
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+    emoji_names = card.emoji_names.copy()
+    card.shuffle_emojis(permutation=list(range(1, 6)))
+    assert card.emoji_names == emoji_names
+
+
+def test_card_shuffle_emojis_with_valid_permutation():
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+    card.shuffle_emojis(permutation=VALID_PERMUTATION)
+    assert card.emoji_names == FIVE_VALID_EMOJI_NAMES_SHUFFLED
+
+
+def test_card_shuffle_emojis_without_permutation():
+    card = Card(constants.CLASSIC_DOBBLE_EMOJIS[:10])
+    emoji_names = card.emoji_names.copy()
+    card.shuffle_emojis(seed=42)
+    assert card.emoji_names != emoji_names

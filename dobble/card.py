@@ -8,6 +8,8 @@ Typical usage example:
 
 import warnings
 
+import numpy as np
+
 from . import utils
 from .emoji import Emoji
 
@@ -18,6 +20,7 @@ class Card:
     Attributes:
         emojis: A dictionary of the card's emojis.
         emoji_names: A list of names of the card's emojis.
+        num_emojis: The number of emojis on the card.
         packing: The packing determining the layout of the card.
         rotation: The counterclockwise rotation of the playing card in
           degrees.
@@ -27,6 +30,8 @@ class Card:
           specified emoji to 0 degrees.
         rotate_emoji(emoji_name, degrees): Rotate the specified emoji by
           the specified number of degrees.
+        shuffle_emojis(permutation=None, seed=None): Shuffle the emojis
+          on the card.
     """
 
     def __init__(
@@ -75,6 +80,7 @@ class Card:
         self.rotation = rotation
 
         self.emojis = {name: Emoji(name) for name in emoji_names}
+        self.num_emojis = len(emoji_names)
 
     def rotate_emoji(
             self,
@@ -101,3 +107,37 @@ class Card:
         """
 
         self.emojis[emoji_name].reset_rotation()
+
+    def shuffle_emojis(
+            self,
+            permutation: list[int] = None,
+            seed: int = None
+    ) -> None:
+        """Shuffle the emojis on the card.
+
+        Args:
+            permutation: A permutation of the integers from 1 to the
+              number of emojis on the card.  If None, the emojis are
+              shuffled randomly.
+            seed: If no permutation is passed, a seed can be passed to
+              initialize the random number generator, which is used to
+              shuffle the emojis, allowing for reproducible shuffling.
+
+        Raises:
+            ValueError: If the permutation is not valid.
+
+        Examples:
+            >>> card = Card(["unicorn", "dolphin", "cheese wedge", "bomb"])
+            >>> card.shuffle_emojis(permutation=[2, 3, 4, 1])
+            >>> card.emoji_names
+            ['dolphin', 'cheese wedge', 'bomb', 'unicorn']
+        """
+
+        if permutation:
+            if not (len(permutation) == self.num_emojis
+                    and utils.is_valid_permutation(permutation)):
+                raise ValueError("Invalid permutation.")
+            self.emoji_names = [self.emoji_names[i - 1] for i in permutation]
+        else:
+            rng = np.random.default_rng(seed=seed)
+            rng.shuffle(self.emoji_names)
