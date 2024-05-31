@@ -44,6 +44,7 @@ DUPLICATES = [
 
 def download_and_extract_openmoji_data() -> None:
     """Download and extract OpenMoji data from GitHub."""
+
     # Remove OpenMoji data directory if it exists
     if OPENMOJI_DIR.exists():
         shutil.rmtree(OPENMOJI_DIR)
@@ -85,6 +86,7 @@ def organize_openmoji_data() -> None:
     based on their "group" attribute in the JSON file provided by
     OpenMoji.
     """
+
     # Read JSON file provided by OpenMoji
     with OPENMOJI_JSON.open("r", encoding="utf-8") as json_file:
         openmoji_data = json.load(json_file)
@@ -120,6 +122,7 @@ def find_duplicates() -> dict[str, list[dict[str, str]]]:
         list of dictionaries of the emojis with that annotation.  Each
         dictionary contains the "hexcode" and "group" of the emoji.
     """
+
     # Read JSON file provided by OpenMoji
     with OPENMOJI_JSON.open("r", encoding="utf-8") as json_file:
         openmoji_data = json.load(json_file)
@@ -153,8 +156,9 @@ def print_duplicates(duplicates: dict[str, list[dict[str, str]]]) -> None:
     Args:
         duplicates: A dictionary of emojis from the OpenMoji dataset
           that have a non-unique "annotation" in the JSON file provided
-          by OpenMoji as returned by the `find_duplicates` function.
+          by OpenMoji as returned by the ``find_duplicates`` function.
     """
+
     for annotation, emoji_data in duplicates.items():
         print(f"Annotation: {annotation}")
         for entry in emoji_data:
@@ -168,14 +172,15 @@ def remove_duplicates() -> None:
     This function removes emojis from the OpenMoji dataset that have a
     non-unique "annotation" by deleting the emoji image as well as the
     corresponding entry in the JSON file.  Duplicates are identified via
-    the `DUPLICATES` list.
+    the ``DUPLICATES`` list.
     """
+
     for hexcode, group in DUPLICATES:
-        # Construct file paths for both  & white and color versions
+        # Construct file paths for both outline-only and color versions
         black_fpath = OPENMOJI_DIR / "black" / group / f"{hexcode}.png"
         color_fpath = OPENMOJI_DIR / "color" / group / f"{hexcode}.png"
 
-        # Remove emoji images (black & white and color) if they exist
+        # Remove emoji images (outline-only and color) if they exist
         black_fpath.unlink(missing_ok=True)
         color_fpath.unlink(missing_ok=True)
 
@@ -201,6 +206,7 @@ def restructure_json_file() -> None:
     "annotation" as keys and dictionaries containing the "group" and
     "hexcode" parameters as values.
     """
+
     # Read JSON file provided by OpenMoji
     with OPENMOJI_JSON.open("r", encoding="utf-8") as json_file:
         openmoji_data = json.load(json_file)

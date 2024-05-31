@@ -18,7 +18,7 @@ class Card:
     Attributes:
         emojis: A dictionary of the card's emojis.
         emoji_names: A list of names of the card's emojis.
-        packing: The packing to place emojis on the card.
+        packing: The packing determining the layout of the card.
         rotation: The counterclockwise rotation of the playing card in
           degrees.
 
@@ -41,7 +41,7 @@ class Card:
             emoji_names: A list of emoji names.  Each name needs to be
               the name of one of the emojis included in the OpenMoji
               dataset.
-            packing: The packing to place emojis on the playing card.
+            packing: The packing determining the layout of the card.
             rotation: The counterclockwise rotation of the playing card
               in degrees.
         """
@@ -62,9 +62,9 @@ class Card:
             if len(emoji_names) > 50:
                 raise ValueError("Cards with more than 50 emojis are not supported.")
 
-            # If none of the errors above are raised, emoji_names has to be a list with 1 to 4
+            # If none of the errors above are raised, ``emoji_names`` has to be a list with 1 to 4
             # entries, all of which are valid emoji names.  In this case, we issue a warning and
-            # revert to the 'cci' packing instead (only packing available for 1 to 4 emojis).
+            # revert to the "cci" packing instead (only packing available for 1 to 4 emojis).
             warnings.warn(
                 f"Packing '{packing}' is not available for cards with {len(emoji_names)} "
                 f"emojis. Using 'cci' instead."

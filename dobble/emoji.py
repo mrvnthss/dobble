@@ -129,8 +129,8 @@ class Emoji:
     ) -> np.ndarray:
         """Get the emoji image as a NumPy array.
 
-        This method calls the get_img method and converts the resulting
-        PIL Image to a NumPy array.
+        This method calls the ``get_img`` method and converts the
+        resulting PIL Image to a NumPy array.
 
         Args:
             outline_only: Whether to return the outline-only version of

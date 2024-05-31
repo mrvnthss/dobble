@@ -1,20 +1,21 @@
 """Project-level constants.
 
 Constants:
-    OPENMOJI_DIR: The directory where OpenMoji emojis are stored.
-    PACKINGS_DIR: The directory where data on circle packings is stored.
-    RADIUS_FILE: The name of the text file containing the radius of the
-      largest circle of each packing.
-    OPENMOJI_LICENSE_URL: The URL of the OpenMoji license.
-    OPENMOJI_JSON_URL: The URL of the OpenMoji JSON file.
-    OPENMOJI_COLOR_URL: The URL of the OpenMoji color emojis.
-    OPENMOJI_BLACK_URL: The URL of the OpenMoji black-and-white emojis.
-    PACKINGS_DICT: A dictionary mapping packings to their associated
-      radii functions.
-    CLASSIC_DOBBLE_EMOJIS: A list of OpenMoji emojis to resemble the
-      classic Dobble game.
-    FPP_KERNELS: A dictionary of kernels of incidence matrices of finite
-      projective planes whose order is a prime power.
+    * OPENMOJI_DIR: The directory where OpenMoji emojis are stored.
+    * PACKINGS_DIR: The directory where data on circle packings is
+        stored.
+    * RADIUS_FILE: The name of the text file containing the radius of
+        the largest circle of each packing.
+    * OPENMOJI_LICENSE_URL: The URL of the OpenMoji license.
+    * OPENMOJI_JSON_URL: The URL of the OpenMoji JSON file.
+    * OPENMOJI_COLOR_URL: The URL of the OpenMoji color emojis.
+    * OPENMOJI_BLACK_URL: The URL of the OpenMoji outline-only emojis.
+    * PACKINGS_DICT: A dictionary mapping packings to their associated
+        radii functions.
+    * CLASSIC_DOBBLE_EMOJIS: A list of OpenMoji emojis to resemble the
+        classic Dobble game.
+    * FPP_KERNELS: A dictionary of kernels of incidence matrices of
+        finite projective planes whose order is a prime power.
 """
 
 

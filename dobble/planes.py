@@ -1,10 +1,10 @@
 """Functions to compute incidence matrices of FPPs.
 
 Functions:
-    _get_permutation_matrix: Return the permutation matrix corresponding
-      to a permutation.
-    compute_incidence_matrix: Compute the canonical incidence matrix of
-      a finite projective plane.
+    * _get_permutation_matrix: Return the permutation matrix
+        corresponding to a permutation.
+    * compute_incidence_matrix: Compute the canonical incidence matrix
+        of a finite projective plane.
 """
 
 
@@ -50,7 +50,8 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
     projective plane (FPP) of prime order based on the construction by
     Paige and Wexler (1953).  The incidence matrix is a square matrix
     with rows corresponding to lines and columns corresponding to
-    points.
+    points.  "1" entries indicate that a given line and point are
+    incident, while "0" entries indicate the opposite.
 
     Args:
         order: The order of the finite projective plane.  Must be prime

@@ -5,17 +5,17 @@ and convert relative coordinates and relative radii to integer values
 (number of pixels) for use in images.
 
 Functions:
-    _read_coordinates_from_file: Read coordinates of a specified circle
-      packing from a text file.
-    _read_radius_from_file: Read the radius of the largest circle of a
-      specified circle packing from a text file.
-    _compute_radii: Compute the radii of all circles in a packing.
-    _convert_coordinates_to_pixels: Convert relative coordinates to
-      pixel coordinates.
-    _convert_radii_to_pixels: Convert relative radii to number of
-      pixels.
-    get_packing_data: Get data (coordinates and radii) of a specified
-      packing in pixel values.
+    * _read_coordinates_from_file: Read coordinates of a specified
+        circle packing from a text file.
+    * _read_radius_from_file: Read the radius of the largest circle of a
+        specified circle packing from a text file.
+    * _compute_radii: Compute the radii of all circles in a packing.
+    * _convert_coordinates_to_pixels: Convert relative coordinates to
+        pixel coordinates.
+    * _convert_radii_to_pixels: Convert relative radii to number of
+        pixels.
+    * get_packing_data: Get data (coordinates and radii) of a specified
+        packing in pixel values.
 """
 
 
@@ -39,7 +39,7 @@ def _read_coordinates_from_file(
 
     Returns:
         The coordinates of the circles in the packing as an (n x 2)
-          array, where n = num_circles.
+          array, where n = ``num_circles``.
 
     Raises:
         ValueError: If the packing is not one of the supported packings
