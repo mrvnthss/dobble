@@ -58,13 +58,6 @@ def test_emoji_reset_rotation():
     assert emoji.rotation == 0
 
 
-def test_emoji_show(mocker):
-    mock_show = mocker.patch("PIL.Image.Image.show")
-    emoji = Emoji(VALID_EMOJI_NAME)
-    emoji.show()
-    mock_show.assert_called_once()
-
-
 def test_emoji_get_img_with_color_img():
     emoji = Emoji(VALID_EMOJI_NAME)
     returned_img = emoji.get_img(outline_only=False, padding=0.1)
@@ -167,3 +160,10 @@ def test_emoji_get_array_with_bw_img_and_rotation():
         ).rotate(-90)
     )
     np.testing.assert_array_equal(returned_array, expected_array)
+
+
+def test_emoji_show(mocker):
+    mock_show = mocker.patch("PIL.Image.Image.show")
+    emoji = Emoji(VALID_EMOJI_NAME)
+    emoji.show()
+    mock_show.assert_called_once()

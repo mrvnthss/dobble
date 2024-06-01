@@ -77,26 +77,6 @@ class Emoji:
 
         self.rotation = 0
 
-    def show(
-            self,
-            outline_only: bool = False,
-            padding: float = 0
-    ) -> None:
-        """Display the emoji image.
-
-        Args:
-            outline_only: Whether to display the outline-only version of
-              the emoji.
-            padding: The padding around the image content as a fraction
-              of the image size.  Must be in the range [0, 1).
-        """
-
-        # Load image, rescale emoji, apply rotation, and display
-        img = self._load(outline_only=outline_only)
-        img = utils.rescale_img(img, padding=padding)
-        img = img.rotate(self.rotation)
-        img.show()
-
     def get_img(
             self,
             outline_only: bool = False,
@@ -140,10 +120,33 @@ class Emoji:
             The emoji image as a NumPy array.
         """
 
-        img = self.get_img(outline_only=outline_only, padding=padding)
-        img_np = np.array(img)
+        img = self.get_img(
+            outline_only=outline_only,
+            padding=padding
+        )
+        return np.array(img)
 
-        return img_np
+    def show(
+            self,
+            outline_only: bool = False,
+            padding: float = 0
+    ) -> None:
+        """Display the emoji image.
+
+        This method calls the ``get_img`` method and displays the
+        resulting PIL Image.
+
+        Args:
+            outline_only: Whether to display the outline-only version of
+              the emoji.
+            padding: The padding around the image content as a fraction
+              of the image size.  Must be in the range [0, 1).
+        """
+
+        self.get_img(
+            outline_only=outline_only,
+            padding=padding
+        ).show()
 
     def _load(
             self,
