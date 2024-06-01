@@ -40,22 +40,54 @@ def test_emoji_init_with_classic_dobble_emojis():
         assert emoji.rotation == 0
 
 
-def test_emoji_rotate():
+def test_emoji_get_array_with_color_img():
     emoji = Emoji(VALID_EMOJI_NAME)
-    emoji.rotate(30)
-    assert emoji.rotation == 30
-    emoji.rotate(-45)
-    assert emoji.rotation == 345
-    emoji.rotate(15)
-    assert emoji.rotation == 0
+    returned_array = emoji.get_array(outline_only=False, padding=0.1)
+    expected_array = np.array(
+        utils.rescale_img(
+            Image.open(VALID_EMOJI_PATH_COLOR).convert("RGBA"),
+            padding=0.1
+        )
+    )
+    np.testing.assert_array_equal(returned_array, expected_array)
 
 
-def test_emoji_reset_rotation():
+def test_emoji_get_array_with_bw_img():
     emoji = Emoji(VALID_EMOJI_NAME)
-    emoji.rotate(-70)
-    assert emoji.rotation == 290
-    emoji.reset_rotation()
-    assert emoji.rotation == 0
+    returned_array = emoji.get_array(outline_only=True, padding=0.1)
+    expected_array = np.array(
+        utils.rescale_img(
+            Image.open(VALID_EMOJI_PATH_BLACK).convert("RGBA"),
+            padding=0.1
+        )
+    )
+    np.testing.assert_array_equal(returned_array, expected_array)
+
+
+def test_emoji_get_array_with_color_img_and_rotation():
+    emoji = Emoji(VALID_EMOJI_NAME)
+    emoji.rotate(60)
+    returned_array = emoji.get_array(outline_only=False, padding=0.2)
+    expected_array = np.array(
+        utils.rescale_img(
+            Image.open(VALID_EMOJI_PATH_COLOR).convert("RGBA"),
+            padding=0.2
+        ).rotate(60)
+    )
+    np.testing.assert_array_equal(returned_array, expected_array)
+
+
+def test_emoji_get_array_with_bw_img_and_rotation():
+    emoji = Emoji(VALID_EMOJI_NAME)
+    emoji.rotate(-90)
+    returned_array = emoji.get_array(outline_only=True, padding=0.2)
+    expected_array = np.array(
+        utils.rescale_img(
+            Image.open(VALID_EMOJI_PATH_BLACK).convert("RGBA"),
+            padding=0.2
+        ).rotate(-90)
+    )
+    np.testing.assert_array_equal(returned_array, expected_array)
 
 
 def test_emoji_get_img_with_color_img():
@@ -112,54 +144,22 @@ def test_emoji_get_img_with_bw_img_and_rotation():
     )
 
 
-def test_emoji_get_array_with_color_img():
+def test_emoji_reset_rotation():
     emoji = Emoji(VALID_EMOJI_NAME)
-    returned_array = emoji.get_array(outline_only=False, padding=0.1)
-    expected_array = np.array(
-        utils.rescale_img(
-            Image.open(VALID_EMOJI_PATH_COLOR).convert("RGBA"),
-            padding=0.1
-        )
-    )
-    np.testing.assert_array_equal(returned_array, expected_array)
+    emoji.rotate(-70)
+    assert emoji.rotation == 290
+    emoji.reset_rotation()
+    assert emoji.rotation == 0
 
 
-def test_emoji_get_array_with_bw_img():
+def test_emoji_rotate():
     emoji = Emoji(VALID_EMOJI_NAME)
-    returned_array = emoji.get_array(outline_only=True, padding=0.1)
-    expected_array = np.array(
-        utils.rescale_img(
-            Image.open(VALID_EMOJI_PATH_BLACK).convert("RGBA"),
-            padding=0.1
-        )
-    )
-    np.testing.assert_array_equal(returned_array, expected_array)
-
-
-def test_emoji_get_array_with_color_img_and_rotation():
-    emoji = Emoji(VALID_EMOJI_NAME)
-    emoji.rotate(60)
-    returned_array = emoji.get_array(outline_only=False, padding=0.2)
-    expected_array = np.array(
-        utils.rescale_img(
-            Image.open(VALID_EMOJI_PATH_COLOR).convert("RGBA"),
-            padding=0.2
-        ).rotate(60)
-    )
-    np.testing.assert_array_equal(returned_array, expected_array)
-
-
-def test_emoji_get_array_with_bw_img_and_rotation():
-    emoji = Emoji(VALID_EMOJI_NAME)
-    emoji.rotate(-90)
-    returned_array = emoji.get_array(outline_only=True, padding=0.2)
-    expected_array = np.array(
-        utils.rescale_img(
-            Image.open(VALID_EMOJI_PATH_BLACK).convert("RGBA"),
-            padding=0.2
-        ).rotate(-90)
-    )
-    np.testing.assert_array_equal(returned_array, expected_array)
+    emoji.rotate(30)
+    assert emoji.rotation == 30
+    emoji.rotate(-45)
+    assert emoji.rotation == 345
+    emoji.rotate(15)
+    assert emoji.rotation == 0
 
 
 def test_emoji_show(mocker):

@@ -58,48 +58,6 @@ class Emoji:
         self._group: str = utils.get_emoji_group(name)
         self._hexcode: str = utils.get_emoji_hexcode(name)
 
-    def rotate(
-            self,
-            degrees: float
-    ) -> None:
-        """Rotate the emoji by the specified number of degrees.
-
-        Args:
-            degrees: The number of degrees to rotate the emoji by.
-              Positive values rotate the emoji counterclockwise, while
-              negative values lead to a clockwise rotation.
-        """
-
-        self.rotation = (self.rotation + degrees) % 360
-
-    def reset_rotation(self) -> None:
-        """Reset the rotation of the emoji to 0 degrees."""
-
-        self.rotation = 0
-
-    def get_img(
-            self,
-            outline_only: bool = False,
-            padding: float = 0
-    ) -> Image.Image:
-        """Get the emoji image as a PIL Image.
-
-        Args:
-            outline_only: Whether to return the outline-only version of
-              the emoji.
-            padding: The padding around the image content as a fraction
-              of the image size.  Must be in the range [0, 1).
-
-        Returns:
-            The emoji image as a PIL Image in RGBA mode.
-        """
-
-        img = self._load(outline_only=outline_only)
-        img = utils.rescale_img(img, padding=padding)
-        img = img.rotate(self.rotation)
-
-        return img
-
     def get_array(
             self,
             outline_only: bool = False,
@@ -125,6 +83,48 @@ class Emoji:
             padding=padding
         )
         return np.array(img)
+
+    def get_img(
+            self,
+            outline_only: bool = False,
+            padding: float = 0
+    ) -> Image.Image:
+        """Get the emoji image as a PIL Image.
+
+        Args:
+            outline_only: Whether to return the outline-only version of
+              the emoji.
+            padding: The padding around the image content as a fraction
+              of the image size.  Must be in the range [0, 1).
+
+        Returns:
+            The emoji image as a PIL Image in RGBA mode.
+        """
+
+        img = self._load(outline_only=outline_only)
+        img = utils.rescale_img(img, padding=padding)
+        img = img.rotate(self.rotation)
+
+        return img
+
+    def reset_rotation(self) -> None:
+        """Reset the rotation of the emoji to 0 degrees."""
+
+        self.rotation = 0
+
+    def rotate(
+            self,
+            degrees: float
+    ) -> None:
+        """Rotate the emoji by the specified number of degrees.
+
+        Args:
+            degrees: The number of degrees to rotate the emoji by.
+              Positive values rotate the emoji counterclockwise, while
+              negative values lead to a clockwise rotation.
+        """
+
+        self.rotation = (self.rotation + degrees) % 360
 
     def show(
             self,
