@@ -88,9 +88,9 @@ CCIS5_COORDINATES = np.array([
 ])
 
 # Based on an image size of 256x256 (cf. VALID_IMG_SIZE above)
-CCI3_RADII = np.array([118, 118, 118])
-CCIR5_RADII = np.array([56, 80, 98, 113, 126])
-CCIS5_RADII = np.array([65, 73, 84, 103, 146])
+CCI3_RADII = np.array([59, 59, 59])
+CCIR5_RADII = np.array([28, 40, 49, 56, 63])
+CCIS5_RADII = np.array([32, 36, 42, 51, 73])
 
 
 def test_read_coordinates_from_file_with_negative_num_circles():

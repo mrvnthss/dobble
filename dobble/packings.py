@@ -211,6 +211,12 @@ def _convert_radii_to_pixels(
 ) -> np.ndarray:
     """Convert relative radii to number of pixels.
 
+    The function takes relative radii in the range (0, 1] and converts
+    them to the number of pixels based on the size of a square image.
+    A radius of 1 corresponds to a circle that fills the entire image.
+    Hence, the radii in pixels are the product of the relative radii and
+    half the image size.
+
     Args:
         rel_radii: Relative radii in the range (0, 1].
         img_size: Size of the square image that radii are to be based
@@ -232,7 +238,7 @@ def _convert_radii_to_pixels(
     if not utils.is_integer(img_size) or img_size < 1:
         raise ValueError(f"Image size must be a positive integer, got {img_size}.")
 
-    radii = np.floor(rel_radii * img_size).astype("int")
+    radii = (rel_radii * img_size // 2).astype("int")
 
     return radii
 
