@@ -87,7 +87,7 @@ class Card:
 
         self.emoji_names = emoji_names
         self.packing = packing
-        self.rotation = rotation
+        self.rotation = rotation % 360
 
         self.emojis = {name: Emoji(name) for name in emoji_names}
         self.num_emojis = len(emoji_names)

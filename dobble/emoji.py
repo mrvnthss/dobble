@@ -55,7 +55,7 @@ class Emoji:
             raise ValueError(f"'{name}' is not a valid emoji name.")
 
         self.name = name
-        self.rotation = rotation
+        self.rotation = rotation % 360
 
         self._group: str = utils.get_emoji_group(name)
         self._hexcode: str = utils.get_emoji_hexcode(name)
