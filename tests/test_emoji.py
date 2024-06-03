@@ -4,6 +4,7 @@ from importlib.resources import files
 
 import numpy as np
 from PIL import Image
+from PIL.Image import Resampling
 import pytest
 
 from dobble import constants
@@ -40,18 +41,6 @@ def test_emoji_init_with_classic_dobble_emojis():
         assert emoji.rotation == 0
 
 
-def test_emoji_get_array_with_color_img():
-    emoji = Emoji(VALID_EMOJI_NAME)
-    returned_array = emoji.get_array(outline_only=False, padding=0.1)
-    expected_array = np.array(
-        utils.rescale_img(
-            Image.open(VALID_EMOJI_PATH_COLOR).convert("RGBA"),
-            padding=0.1
-        )
-    )
-    np.testing.assert_array_equal(returned_array, expected_array)
-
-
 def test_emoji_get_array_with_bw_img():
     emoji = Emoji(VALID_EMOJI_NAME)
     returned_array = emoji.get_array(outline_only=True, padding=0.1)
@@ -64,15 +53,26 @@ def test_emoji_get_array_with_bw_img():
     np.testing.assert_array_equal(returned_array, expected_array)
 
 
-def test_emoji_get_array_with_color_img_and_rotation():
+def test_emoji_get_array_with_color_img():
     emoji = Emoji(VALID_EMOJI_NAME)
-    emoji.rotate(60)
-    returned_array = emoji.get_array(outline_only=False, padding=0.2)
+    returned_array = emoji.get_array(outline_only=False, padding=0.1)
     expected_array = np.array(
         utils.rescale_img(
             Image.open(VALID_EMOJI_PATH_COLOR).convert("RGBA"),
-            padding=0.2
-        ).rotate(60)
+            padding=0.1
+        )
+    )
+    np.testing.assert_array_equal(returned_array, expected_array)
+
+
+def test_emoji_get_array_with_non_default_img_size():
+    emoji = Emoji(VALID_EMOJI_NAME)
+    returned_array = emoji.get_array(outline_only=False, padding=0.05, img_size=256)
+    expected_array = np.array(
+        utils.rescale_img(
+            Image.open(VALID_EMOJI_PATH_COLOR).convert("RGBA"),
+            padding=0.05
+        ).resize((256, 256), resample=Resampling.LANCZOS)
     )
     np.testing.assert_array_equal(returned_array, expected_array)
 
@@ -85,22 +85,22 @@ def test_emoji_get_array_with_bw_img_and_rotation():
         utils.rescale_img(
             Image.open(VALID_EMOJI_PATH_BLACK).convert("RGBA"),
             padding=0.2
-        ).rotate(-90)
+        ).rotate(-90, resample=Resampling.BICUBIC)
     )
     np.testing.assert_array_equal(returned_array, expected_array)
 
 
-def test_emoji_get_img_with_color_img():
+def test_emoji_get_array_with_color_img_and_rotation():
     emoji = Emoji(VALID_EMOJI_NAME)
-    returned_img = emoji.get_img(outline_only=False, padding=0.1)
-    expected_img = utils.rescale_img(
-        Image.open(VALID_EMOJI_PATH_COLOR).convert("RGBA"),
-        padding=0.1
+    emoji.rotate(60)
+    returned_array = emoji.get_array(outline_only=False, padding=0.2)
+    expected_array = np.array(
+        utils.rescale_img(
+            Image.open(VALID_EMOJI_PATH_COLOR).convert("RGBA"),
+            padding=0.2
+        ).rotate(60, resample=Resampling.BICUBIC)
     )
-    np.testing.assert_array_equal(
-        np.array(returned_img),
-        np.array(expected_img)
-    )
+    np.testing.assert_array_equal(returned_array, expected_array)
 
 
 def test_emoji_get_img_with_bw_img():
@@ -116,14 +116,26 @@ def test_emoji_get_img_with_bw_img():
     )
 
 
-def test_emoji_get_img_with_color_img_and_rotation():
+def test_emoji_get_img_with_color_img():
     emoji = Emoji(VALID_EMOJI_NAME)
-    emoji.rotate(45)
-    returned_img = emoji.get_img(outline_only=False, padding=0.05)
+    returned_img = emoji.get_img(outline_only=False, padding=0.1)
+    expected_img = utils.rescale_img(
+        Image.open(VALID_EMOJI_PATH_COLOR).convert("RGBA"),
+        padding=0.1
+    )
+    np.testing.assert_array_equal(
+        np.array(returned_img),
+        np.array(expected_img)
+    )
+
+
+def test_emoji_get_img_with_non_default_img_size():
+    emoji = Emoji(VALID_EMOJI_NAME)
+    returned_img = emoji.get_img(outline_only=False, padding=0.05, img_size=128)
     expected_img = utils.rescale_img(
         Image.open(VALID_EMOJI_PATH_COLOR).convert("RGBA"),
         padding=0.05
-    ).rotate(45)
+    ).resize((128, 128), resample=Resampling.LANCZOS)
     np.testing.assert_array_equal(
         np.array(returned_img),
         np.array(expected_img)
@@ -137,7 +149,21 @@ def test_emoji_get_img_with_bw_img_and_rotation():
     expected_img = utils.rescale_img(
         Image.open(VALID_EMOJI_PATH_BLACK).convert("RGBA"),
         padding=0.05
-    ).rotate(-30)
+    ).rotate(-30, resample=Resampling.BICUBIC)
+    np.testing.assert_array_equal(
+        np.array(returned_img),
+        np.array(expected_img)
+    )
+
+
+def test_emoji_get_img_with_color_img_and_rotation():
+    emoji = Emoji(VALID_EMOJI_NAME)
+    emoji.rotate(45)
+    returned_img = emoji.get_img(outline_only=False, padding=0.05)
+    expected_img = utils.rescale_img(
+        Image.open(VALID_EMOJI_PATH_COLOR).convert("RGBA"),
+        padding=0.05
+    ).rotate(45, resample=Resampling.BICUBIC)
     np.testing.assert_array_equal(
         np.array(returned_img),
         np.array(expected_img)

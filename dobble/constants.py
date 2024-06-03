@@ -10,6 +10,7 @@ Constants:
     * OPENMOJI_JSON_URL: The URL of the OpenMoji JSON file.
     * OPENMOJI_COLOR_URL: The URL of the OpenMoji color emojis.
     * OPENMOJI_BLACK_URL: The URL of the OpenMoji outline-only emojis.
+    * DEFAULT_IMG_SIZE: The default size of OpenMoji images in pixels.
     * PACKINGS_DICT: A dictionary mapping packings to their associated
         radii functions.
     * CLASSIC_DOBBLE_EMOJIS: A list of OpenMoji emojis to resemble the
@@ -35,6 +36,9 @@ OPENMOJI_LICENSE_URL = _RAW_URL + "LICENSE.txt"
 OPENMOJI_JSON_URL = _RAW_URL + "data/openmoji.json"
 OPENMOJI_COLOR_URL = _DOWNLOAD_URL + "openmoji-618x618-color.zip"
 OPENMOJI_BLACK_URL = _DOWNLOAD_URL + "openmoji-618x618-black.zip"
+
+# Default size of OpenMoji images in pixels
+DEFAULT_IMG_SIZE = 618
 
 # Available packings along with their radii functions and available layouts
 PACKINGS_DICT = {

@@ -12,6 +12,7 @@ from importlib.resources import files
 
 import numpy as np
 from PIL import Image
+from PIL.Image import Resampling
 
 from . import constants
 from . import utils
@@ -25,14 +26,15 @@ class Emoji:
         rotation: The counterclockwise rotation of the emoji in degrees.
 
     Methods:
-        get_array(outline_only=False, padding=0): Get the emoji image
-          as a NumPy array.
-        get_img(outline_only=False, padding=0): Get the emoji image as
-          a PIL Image.
+        get_array(outline_only=False, padding=0, img_size=618): Get the
+          emoji image as a NumPy array.
+        get_img(outline_only=False, padding=0, img_size=618): Get the
+          emoji image as a PIL Image.
         reset_rotation(): Reset the rotation of the emoji to 0 degrees.
         rotate(degrees): Rotate the emoji by the specified number of
           degrees.
-        show(outline_only=False, padding=0): Display the emoji image.
+        show(outline_only=False, padding=0, img_size=618): Display the
+          emoji image.
     """
 
     def __init__(
@@ -61,7 +63,8 @@ class Emoji:
     def get_array(
             self,
             outline_only: bool = False,
-            padding: float = 0
+            padding: float = 0,
+            img_size: int = 618
     ) -> np.ndarray:
         """Get the emoji image as a NumPy array.
 
@@ -73,6 +76,7 @@ class Emoji:
               the emoji.
             padding: The padding around the image content as a fraction
               of the image size.  Must be in the range [0, 1).
+            img_size: The size of the square image in pixels.
 
         Returns:
             The emoji image as a NumPy array.
@@ -80,14 +84,16 @@ class Emoji:
 
         img = self.get_img(
             outline_only=outline_only,
-            padding=padding
+            padding=padding,
+            img_size=img_size
         )
         return np.array(img)
 
     def get_img(
             self,
             outline_only: bool = False,
-            padding: float = 0
+            padding: float = 0,
+            img_size: int = 618
     ) -> Image.Image:
         """Get the emoji image as a PIL Image.
 
@@ -96,14 +102,21 @@ class Emoji:
               the emoji.
             padding: The padding around the image content as a fraction
               of the image size.  Must be in the range [0, 1).
+            img_size: The size of the square image in pixels.
 
         Returns:
             The emoji image as a PIL Image in RGBA mode.
         """
 
+        # Load and rescale the emoji image
         img = self._load(outline_only=outline_only)
         img = utils.rescale_img(img, padding=padding)
-        img = img.rotate(self.rotation)
+
+        # Resize the image and rotate it, if necessary
+        if img_size != constants.DEFAULT_IMG_SIZE:
+            img = img.resize((img_size, img_size), resample=Resampling.LANCZOS)
+        if self.rotation != 0:
+            img = img.rotate(self.rotation, resample=Resampling.BICUBIC)
 
         return img
 
@@ -129,7 +142,8 @@ class Emoji:
     def show(
             self,
             outline_only: bool = False,
-            padding: float = 0
+            padding: float = 0,
+            img_size: int = 618
     ) -> None:
         """Display the emoji image.
 
@@ -141,11 +155,13 @@ class Emoji:
               the emoji.
             padding: The padding around the image content as a fraction
               of the image size.  Must be in the range [0, 1).
+            img_size: The size of the square image in pixels.
         """
 
         self.get_img(
             outline_only=outline_only,
-            padding=padding
+            padding=padding,
+            img_size=img_size
         ).show()
 
     def _load(
