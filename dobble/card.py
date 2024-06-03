@@ -109,7 +109,19 @@ class Card:
 
         Returns:
             The card image as a PIL Image in RGBA mode.
+
+        Raises:
+            ValueError: If the padding is not in the range [0, 1) or if
+              the image size is not a positive integer.
         """
+
+        # Check if padding is within valid range
+        if not 0 <= padding < 1:
+            raise ValueError("Padding must be in the range [0, 1).")
+
+        # Check if the image size is a positive integer
+        if not utils.is_integer(img_size) or img_size < 1:
+            raise ValueError(f"Image size must be a positive integer, got {img_size}.")
 
         # Create empty playing card
         img = Image.new("RGBA", (img_size, img_size))

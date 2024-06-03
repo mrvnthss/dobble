@@ -30,6 +30,12 @@ INVALID_LAYOUTS = [
     ("ccis", 4)
 ]
 
+NEGATIVE_PADDING = -0.1
+INVALID_PADDING = 1
+
+NEGATIVE_IMG_SIZE = -256
+FLOAT_IMG_SIZE = 256.5
+
 VALID_PERMUTATION = [5, 2, 3, 4, 1]
 # NOTE: The permutation [3, 1, 4, 2] is only invalid with respect to a card with five emojis.
 INVALID_PERMUTATIONS = [
@@ -79,6 +85,30 @@ def test_card_init_with_valid_emojis():
     assert card.num_emojis == 5
     for name in FIVE_VALID_EMOJI_NAMES:
         assert isinstance(card.emojis[name], Emoji)
+
+
+def test_card_get_img_with_negative_padding():
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+    with pytest.raises(ValueError):
+        card.get_img(padding=NEGATIVE_PADDING)
+
+
+def test_card_get_img_with_invalid_padding():
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+    with pytest.raises(ValueError):
+        card.get_img(padding=INVALID_PADDING)
+
+
+def test_card_get_img_with_negative_img_size():
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+    with pytest.raises(ValueError):
+        card.get_img(img_size=NEGATIVE_IMG_SIZE)
+
+
+def test_card_get_img_with_float_img_size():
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+    with pytest.raises(ValueError):
+        card.get_img(img_size=FLOAT_IMG_SIZE)
 
 
 def test_card_get_img_with_bw_img():
