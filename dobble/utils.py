@@ -117,7 +117,7 @@ def is_valid_permutation(permutation: np.ndarray | list[int]) -> bool:
 
 def rescale_img(
         img: Image.Image,
-        padding: float = 0.1
+        padding: float = 0
 ) -> Image.Image:
     """Rescale a square image to fit content within inscribed circle.
 
