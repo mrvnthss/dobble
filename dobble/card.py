@@ -2,14 +2,18 @@
 
 Typical usage example:
 
-  >>> dobble_card = Card(["unicorn", "dolphin", "cheese wedge", "bomb"])
+  >>> emoji_names = ["light bulb", "sun", "maple leaf", "unicorn", "bomb"]
+  >>> dobble_card = Card(emoji_names, packing="ccir")
 """
 
 
 import warnings
 
 import numpy as np
+from PIL import Image, ImageDraw
+from PIL.Image import Resampling
 
+from . import packings
 from . import utils
 from .emoji import Emoji
 
@@ -26,6 +30,8 @@ class Card:
           degrees.
 
     Methods:
+        get_img(outline_only=False, padding=0.01, img_size=1024): Get
+          the card image as a PIL Image.
         reset_emoji_rotation(emoji_name): Reset the rotation of the
           specified emoji to 0 degrees.
         reset_rotation(): Reset the rotation of the playing card to 0
@@ -86,6 +92,77 @@ class Card:
         self.emojis = {name: Emoji(name) for name in emoji_names}
         self.num_emojis = len(emoji_names)
 
+    def get_img(
+            self,
+            outline_only: bool = False,
+            padding: float = 0.01,
+            img_size: int = 1024
+    ) -> Image.Image:
+        """Get the card image as a PIL Image.
+
+        Args:
+            outline_only: Whether to use the outline-only version of the
+              emojis.
+            padding: The padding around each emoji image as a fraction
+              of the image size.  Must be in the range [0, 1).
+            img_size: The size of the square image in pixels.
+
+        Returns:
+            The card image as a PIL Image in RGBA mode.
+        """
+
+        # Create empty playing card
+        img = Image.new("RGBA", (img_size, img_size))
+        draw = ImageDraw.Draw(img)
+        draw.ellipse((0, 0, img_size, img_size), fill="white")
+
+        # Retrieve packing data
+        packing_data = packings.get_packing_data(
+            num_circles=self.num_emojis,
+            packing=self.packing,
+            img_size=img_size
+        )
+        coordinates = packing_data["coordinates"]
+        radii = packing_data["radii"]
+
+        # Place emojis on card
+        for idx, emoji_name in enumerate(self.emoji_names):
+            # Retrieve, resize, and paste emoji image
+            emoji = self.emojis[emoji_name]
+            emoji_img_size = int(2 * radii[idx])
+            emoji_img = emoji.get_img(
+                outline_only=outline_only,
+                padding=padding,
+                img_size=emoji_img_size
+            )
+            img.paste(
+                emoji_img,
+                tuple(coordinates[idx] - radii[idx]),  # upper left corner
+                mask=emoji_img
+            )
+
+        # Apply rotation
+        img = img.rotate(self.rotation, resample=Resampling.BICUBIC)
+
+        return img
+
+    def reset_emoji_rotation(
+            self,
+            emoji_name: str
+    ) -> None:
+        """Reset the rotation of the specified emoji to 0 degrees.
+
+        Args:
+            emoji_name: The name of the emoji to reset.
+        """
+
+        self.emojis[emoji_name].reset_rotation()
+
+    def reset_rotation(self) -> None:
+        """Reset the rotation of the playing card to 0 degrees."""
+
+        self.rotation = 0
+
     def rotate(
             self,
             degrees: float
@@ -101,11 +178,6 @@ class Card:
 
         self.rotation = (self.rotation + degrees) % 360
 
-    def reset_rotation(self) -> None:
-        """Reset the rotation of the playing card to 0 degrees."""
-
-        self.rotation = 0
-
     def rotate_emoji(
             self,
             emoji_name: str,
@@ -119,18 +191,6 @@ class Card:
         """
 
         self.emojis[emoji_name].rotate(degrees)
-
-    def reset_emoji_rotation(
-            self,
-            emoji_name: str
-    ) -> None:
-        """Reset the rotation of the specified emoji to 0 degrees.
-
-        Args:
-            emoji_name: The name of the emoji to reset.
-        """
-
-        self.emojis[emoji_name].reset_rotation()
 
     def shuffle_emojis(
             self,

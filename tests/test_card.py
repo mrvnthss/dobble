@@ -81,14 +81,29 @@ def test_card_init_with_valid_emojis():
         assert isinstance(card.emojis[name], Emoji)
 
 
-def test_card_rotate():
+def test_card_get_img_with_bw_img():
     card = Card(FIVE_VALID_EMOJI_NAMES)
-    card.rotate(30)
-    assert card.rotation == 30
-    card.rotate(-45)
-    assert card.rotation == 345
-    card.rotate(15)
-    assert card.rotation == 0
+    returned_img = card.get_img(outline_only=True, img_size=512)
+
+    assert returned_img.mode == "RGBA"
+    assert returned_img.size == (512, 512)
+
+
+def test_card_get_img_with_color_img():
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+    returned_img = card.get_img(outline_only=False, img_size=1024)
+
+    assert returned_img.mode == "RGBA"
+    assert returned_img.size == (1024, 1024)
+
+
+def test_card_reset_emoji_rotation():
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+    emoji_name = FIVE_VALID_EMOJI_NAMES[2]
+    card.rotate_emoji(emoji_name, -70)
+    assert card.emojis[emoji_name].rotation == 290
+    card.reset_emoji_rotation(emoji_name)
+    assert card.emojis[emoji_name].rotation == 0
 
 
 def test_card_reset_rotation():
@@ -96,6 +111,16 @@ def test_card_reset_rotation():
     card.rotate(-70)
     assert card.rotation == 290
     card.reset_rotation()
+    assert card.rotation == 0
+
+
+def test_card_rotate():
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+    card.rotate(30)
+    assert card.rotation == 30
+    card.rotate(-45)
+    assert card.rotation == 345
+    card.rotate(15)
     assert card.rotation == 0
 
 
@@ -111,15 +136,6 @@ def test_card_rotate_emoji():
     for name in FIVE_VALID_EMOJI_NAMES:
         if name != emoji_name:
             assert card.emojis[name].rotation == 0
-
-
-def test_card_reset_emoji_rotation():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
-    emoji_name = FIVE_VALID_EMOJI_NAMES[2]
-    card.rotate_emoji(emoji_name, -70)
-    assert card.emojis[emoji_name].rotation == 290
-    card.reset_emoji_rotation(emoji_name)
-    assert card.emojis[emoji_name].rotation == 0
 
 
 def test_card_shuffle_emojis_with_invalid_permutations():
