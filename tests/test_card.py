@@ -117,6 +117,20 @@ def test_card_init_with_valid_emojis():
         assert isinstance(card.emojis[name], Emoji)
 
 
+def test_card_get_array_with_bw_img():
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+    returned_array = card.get_array(outline_only=True, padding=0.1, img_size=256)
+
+    assert returned_array.shape == (256, 256, 4)
+
+
+def test_card_get_array_with_color_img():
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+    returned_array = card.get_array(outline_only=False, padding=0.05, img_size=512)
+
+    assert returned_array.shape == (512, 512, 4)
+
+
 def test_card_get_img_with_negative_padding():
     card = Card(FIVE_VALID_EMOJI_NAMES)
     with pytest.raises(ValueError):
@@ -355,6 +369,13 @@ def test_card_rotate_emojis_with_invalid_inputs():
     # Float instead of tuple (i.e., only rotation w/o emoji name)
     with pytest.raises(ValueError):
         card.rotate_emojis(30.0)
+
+
+def test_card_show(mocker):
+    mock_show = mocker.patch("PIL.Image.Image.show")
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+    card.show()
+    mock_show.assert_called_once()
 
 
 def test_card_shuffle_emojis_with_invalid_permutations():

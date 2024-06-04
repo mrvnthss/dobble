@@ -30,7 +30,9 @@ class Card:
           degrees.
 
     Methods:
-        get_img(outline_only=False, padding=0.01, img_size=1024): Get
+        get_array(outline_only=False, padding=0.05, img_size=1024): Get
+          the card image as a NumPy array.
+        get_img(outline_only=False, padding=0.05, img_size=1024): Get
           the card image as a PIL Image.
         reset_card_rotation(): Reset the rotation of the playing card to
           0 degrees.
@@ -40,6 +42,8 @@ class Card:
           number of degrees.
         rotate_emojis(emoji_data=None, seed=None): Rotate the specified
           emoji(s).
+        show(outline_only=False, padding=0.05, img_size=1024): Display
+          the card image.
         shuffle_emojis(permutation=None, seed=None): Shuffle the emojis
           on the card.
     """
@@ -92,10 +96,39 @@ class Card:
         self.emojis = {name: Emoji(name) for name in emoji_names}
         self.num_emojis = len(emoji_names)
 
+    def get_array(
+            self,
+            outline_only: bool = False,
+            padding: float = 0.05,
+            img_size: int = 1024
+    ) -> np.ndarray:
+        """Get the card image as a NumPy array.
+
+        This method calls the ``get_img`` method and converts the
+        resulting PIL Image to a NumPy array.
+
+        Args:
+            outline_only: Whether to use the outline-only version of the
+              emojis.
+            padding: The padding around each emoji image as a fraction
+              of the image size.  Must be in the range [0, 1).
+            img_size: The size of the square image in pixels.
+
+        Returns:
+            The card image as a NumPy array.
+        """
+
+        img = self.get_img(
+            outline_only=outline_only,
+            padding=padding,
+            img_size=img_size
+        )
+        return np.array(img)
+
     def get_img(
             self,
             outline_only: bool = False,
-            padding: float = 0.01,
+            padding: float = 0.05,
             img_size: int = 1024
     ) -> Image.Image:
         """Get the card image as a PIL Image.
@@ -272,6 +305,31 @@ class Card:
                     )
         else:
             raise ValueError("Invalid input.")
+
+    def show(
+            self,
+            outline_only: bool = False,
+            padding: float = 0.05,
+            img_size: int = 1024
+    ):
+        """Display the card image.
+
+        This method calls the ``get_img`` method and displays the
+        resulting PIL Image.
+
+        Args:
+            outline_only: Whether to use the outline-only version of the
+              emojis.
+            padding: The padding around each emoji image as a fraction
+              of the image size.  Must be in the range [0, 1).
+            img_size: The size of the square image in pixels.
+        """
+
+        self.get_img(
+            outline_only=outline_only,
+            padding=padding,
+            img_size=img_size
+        ).show()
 
     def shuffle_emojis(
             self,
