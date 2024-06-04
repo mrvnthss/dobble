@@ -1,9 +1,12 @@
-# pylint: disable=missing-function-docstring, missing-module-docstring
+# pylint: disable=missing-function-docstring, missing-module-docstring, redefined-outer-name
 
+import numpy as np
 import pytest
+from PIL import Image
+from PIL.Image import Resampling
 
-from dobble import constants
 from dobble import Card, Emoji
+from dobble import constants
 
 
 INVALID_EMOJI_NAME = "invalid emoji name"
@@ -14,6 +17,7 @@ FIVE_VALID_EMOJI_NAMES = [
     "bomb",
     "ice"
 ]
+# NOTE: The shuffled list below corresponds to the permutation ``VALID_PERMUTATION``.
 FIVE_VALID_EMOJI_NAMES_SHUFFLED = [
     "ice",
     "dolphin",
@@ -46,14 +50,19 @@ INVALID_PERMUTATIONS = [
 ]
 
 
+@pytest.fixture
+def card():
+    return Card(FIVE_VALID_EMOJI_NAMES, packing="ccir")
+
+
 def _all_emojis_rotated(card: Card) -> bool:
     """Check if all emojis on a card have been rotated.
 
     Args:
-        card (Card): The playing card to check.
+        card: The playing card to check.
 
     Returns:
-        bool: True if all emojis have been rotated, False otherwise.
+        True if all emojis have been rotated, False otherwise.
     """
 
     return all(emoji.rotation != 0 for emoji in card.emojis.values())
@@ -63,32 +72,31 @@ def _no_emojis_rotated(card: Card) -> bool:
     """Check if no emojis on a card have been rotated.
 
     Args:
-        card (Card): The playing card to check.
+        card: The playing card to check.
 
     Returns:
-        bool: True if no emojis have been rotated, False otherwise.
+        True if no emojis have been rotated, False otherwise.
     """
 
     return all(emoji.rotation == 0 for emoji in card.emojis.values())
 
 
-def test_card_init_with_invalid_emoji_name():
-    with pytest.raises(ValueError):
-        Card([INVALID_EMOJI_NAME])
-
-
-def test_card_init_with_empty_emoji_names():
+def test_init_with_invalid_emoji_names():
+    with pytest.raises(TypeError):
+        Card()  # pylint: disable=no-value-for-parameter
     with pytest.raises(ValueError):
         Card([])
+    with pytest.raises(ValueError):
+        Card([*FIVE_VALID_EMOJI_NAMES, INVALID_EMOJI_NAME])
 
 
-def test_card_init_with_duplicate_emoji_names():
+def test_init_with_duplicate_emoji_names():
     with pytest.warns(UserWarning):
         card = Card(FIVE_VALID_EMOJI_NAMES * 2)
     assert card.emoji_names == FIVE_VALID_EMOJI_NAMES
 
 
-def test_card_init_with_invalid_layouts():
+def test_init_with_invalid_layouts():
     # Invalid packing
     with pytest.raises(ValueError):
         Card(FIVE_VALID_EMOJI_NAMES, packing=INVALID_PACKING)
@@ -103,119 +111,81 @@ def test_card_init_with_invalid_layouts():
             Card(FIVE_VALID_EMOJI_NAMES[:num_emojis], packing=packing)
 
 
-def test_card_init_with_valid_emojis():
-    card = Card(FIVE_VALID_EMOJI_NAMES, packing="ccir")
-
-    # Check that attributes are set correctly
+def test_init_with_valid_parameters(card):
+    assert isinstance(card, Card)
     assert card.emoji_names == FIVE_VALID_EMOJI_NAMES
-    assert card.rotation == 0
     assert card.packing == "ccir"
+    assert card.rotation == 0
     assert card.num_emojis == 5
-
-    # Check that each emoji is an instance of the Emoji class
     for name in FIVE_VALID_EMOJI_NAMES:
         assert isinstance(card.emojis[name], Emoji)
 
 
-def test_card_get_array_with_bw_img():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
-    returned_array = card.get_array(outline_only=True, padding=0.1, img_size=256)
-
-    assert returned_array.shape == (256, 256, 4)
-
-
-def test_card_get_array_with_color_img():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
-    returned_array = card.get_array(outline_only=False, padding=0.05, img_size=512)
-
-    assert returned_array.shape == (512, 512, 4)
+def test_get_array_with_default_parameters(card):
+    returned_array = card.get_array()
+    assert isinstance(returned_array, np.ndarray)
+    assert returned_array.shape == (1024, 1024, 4)
 
 
-def test_card_get_img_with_negative_padding():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
+def test_get_img_with_invalid_parameters(card):
     with pytest.raises(ValueError):
         card.get_img(padding=NEGATIVE_PADDING)
-
-
-def test_card_get_img_with_invalid_padding():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
     with pytest.raises(ValueError):
         card.get_img(padding=INVALID_PADDING)
-
-
-def test_card_get_img_with_negative_img_size():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
     with pytest.raises(ValueError):
         card.get_img(img_size=NEGATIVE_IMG_SIZE)
-
-
-def test_card_get_img_with_float_img_size():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
     with pytest.raises(ValueError):
         card.get_img(img_size=FLOAT_IMG_SIZE)
 
 
-def test_card_get_img_with_bw_img():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
-    returned_img = card.get_img(outline_only=True, img_size=512)
-
-    assert returned_img.mode == "RGBA"
-    assert returned_img.size == (512, 512)
-
-
-def test_card_get_img_with_color_img():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
-    returned_img = card.get_img(outline_only=False, img_size=1024)
-
-    assert returned_img.mode == "RGBA"
+def test_get_img_with_default_parameters(card):
+    returned_img = card.get_img()
+    assert isinstance(returned_img, Image.Image)
     assert returned_img.size == (1024, 1024)
+    assert returned_img.mode == "RGBA"
 
 
-def test_card_reset_card_rotation():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
+def test_get_img_with_non_default_parameters(card):
+    returned_img = card.get_img(
+        outline_only=True,
+        padding=0.1,
+        img_size=512
+    )
+    assert isinstance(returned_img, Image.Image)
+    assert returned_img.size == (512, 512)
+    assert returned_img.mode == "RGBA"
 
-    # Rotate card, then reset rotation, and check that it is back to 0
-    card.rotate_card(-70)
-    assert card.rotation != 0
-    card.reset_card_rotation()
-    assert card.rotation == 0
+
+def test_get_img_with_rotation(card, mocker):
+    mock_rotate = mocker.patch("PIL.Image.Image.rotate")
+    card.rotate(60)
+    _ = card.get_img()
+    mock_rotate.assert_called_once_with(60, resample=Resampling.BICUBIC)
 
 
-def test_card_reset_emoji_rotations_with_no_input():
-    # Create card and randomly rotate all emojis
-    card = Card(FIVE_VALID_EMOJI_NAMES)
+def test_reset_emoji_rotations_with_no_input(card):
     card.rotate_emojis(seed=42)
     assert _all_emojis_rotated(card)
-
-    # Reset rotations and check that they are all back to 0
     card.reset_emoji_rotations()
     assert _no_emojis_rotated(card)
 
 
-def test_card_reset_emoji_rotations_with_single_emoji():
-    # Create card and randomly rotate all emojis
-    card = Card(FIVE_VALID_EMOJI_NAMES)
+def test_reset_emoji_rotations_with_single_emoji(card):
     card.rotate_emojis(seed=42)
     assert _all_emojis_rotated(card)
-
-    # Reset rotation of single emoji and check that it is back to 0
     emoji_name = FIVE_VALID_EMOJI_NAMES[3]
     card.reset_emoji_rotations(emoji_name)
     assert card.emojis[emoji_name].rotation == 0
+    non_reset_emojis = [
+        name for name in FIVE_VALID_EMOJI_NAMES if name != emoji_name
+    ]
+    for name in non_reset_emojis:
+        assert card.emojis[name].rotation != 0
 
-    # Check that other emojis are not affected
-    for name in FIVE_VALID_EMOJI_NAMES:
-        if name != emoji_name:
-            assert card.emojis[name].rotation != 0
 
-
-def test_card_reset_emoji_rotations_with_multiple_emojis():
-    # Create card and randomly rotate all emojis
-    card = Card(FIVE_VALID_EMOJI_NAMES)
+def test_reset_emoji_rotations_with_multiple_emojis(card):
     card.rotate_emojis(seed=42)
     assert _all_emojis_rotated(card)
-
-    # Reset rotations of multiple emojis and check that they are back to 0
     emoji_names = [
         FIVE_VALID_EMOJI_NAMES[0],
         FIVE_VALID_EMOJI_NAMES[2],
@@ -224,21 +194,17 @@ def test_card_reset_emoji_rotations_with_multiple_emojis():
     card.reset_emoji_rotations(emoji_names)
     for name in emoji_names:
         assert card.emojis[name].rotation == 0
-
-    # Check that other emojis are not affected
-    non_reset_emojis = [name for name in FIVE_VALID_EMOJI_NAMES if name not in emoji_names]
+    non_reset_emojis = [
+        name for name in FIVE_VALID_EMOJI_NAMES if name not in emoji_names
+    ]
     for name in non_reset_emojis:
         assert card.emojis[name].rotation != 0
 
 
-def test_card_reset_emoji_rotations_with_invalid_emoji_name():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
+def test_reset_emoji_rotations_with_invalid_inputs(card):
+    # Invalid emoji name
     with pytest.raises(ValueError):
         card.reset_emoji_rotations(INVALID_EMOJI_NAME)
-
-
-def test_card_reset_emoji_rotations_with_invalid_inputs():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
 
     # Emoji instead of name of emoji
     with pytest.raises(ValueError):
@@ -257,94 +223,55 @@ def test_card_reset_emoji_rotations_with_invalid_inputs():
         card.reset_emoji_rotations([FIVE_VALID_EMOJI_NAMES[0], 42, FIVE_VALID_EMOJI_NAMES[1]])
 
 
-def test_card_rotate_card():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
-
-    # Rotate card multiple times and check that rotation is as expected
-    card.rotate_card(30)
-    # (0 + 30) % 360 = 30
-    assert card.rotation == 30
-    card.rotate_card(-45)
-    # (30 - 45) % 360 = 345
-    assert card.rotation == 345
-    card.rotate_card(15)
-    # (345 + 15) % 360 = 0
-    assert card.rotation == 0
-
-
-def test_card_rotate_emojis_with_no_input():
-    # Create card, randomly rotate all emojis, and check that all emojis have been rotated
-    card = Card(FIVE_VALID_EMOJI_NAMES)
+def test_rotate_emojis_with_no_input(card):
     card.rotate_emojis(seed=42)
     assert _all_emojis_rotated(card)
 
 
-def test_card_rotate_emojis_with_seed_only():
-    # Create card and randomly rotate all emojis
-    card = Card(FIVE_VALID_EMOJI_NAMES)
+def test_rotate_emojis_with_seed_only(card):
     card.rotate_emojis(seed=42)
-
-    # Store rotations of emojis in separate list and reset rotations
-    rotations = [card.emojis[name].rotation for name in FIVE_VALID_EMOJI_NAMES]
+    rotations = [
+        card.emojis[name].rotation for name in FIVE_VALID_EMOJI_NAMES
+    ]
     card.reset_emoji_rotations()
     assert _no_emojis_rotated(card)
-
-    # Rotate emojis with same seed and check that rotations are the same
     card.rotate_emojis(seed=42)
     for name, rotation in zip(FIVE_VALID_EMOJI_NAMES, rotations):
         assert card.emojis[name].rotation == rotation
 
 
-def test_card_rotate_emojis_with_single_emoji():
-    # Create card and pick emoji to rotate
-    card = Card(FIVE_VALID_EMOJI_NAMES)
+@pytest.mark.parametrize("degrees", [45, 90, 180, -45, -90, -180])
+def test_rotate_emojis_with_single_emoji(card, degrees):
     emoji_name = FIVE_VALID_EMOJI_NAMES[3]
-
-    # Rotate emoji multiple times and check that rotation is as expected
-    card.rotate_emojis((emoji_name, 30))
-    # (0 + 30) % 360 = 30
-    assert card.emojis[emoji_name].rotation == 30
-    card.rotate_emojis((emoji_name, -45))
-    # (30 - 45) % 360 = 345
-    assert card.emojis[emoji_name].rotation == 345
-    card.rotate_emojis((emoji_name, 15))
-    # (345 + 15) % 360 = 0
-    assert card.emojis[emoji_name].rotation == 0
-
-    # Check that other emojis are not affected
-    for name in FIVE_VALID_EMOJI_NAMES:
-        if name != emoji_name:
-            assert card.emojis[name].rotation == 0
+    previous_rotation = card.emojis[emoji_name].rotation
+    card.rotate_emojis((emoji_name, degrees))
+    new_rotation = card.emojis[emoji_name].rotation
+    assert (previous_rotation + degrees) % 360 == new_rotation
+    non_rotated_emojis = [
+        name for name in FIVE_VALID_EMOJI_NAMES if name != emoji_name
+    ]
+    for name in non_rotated_emojis:
+        assert card.emojis[name].rotation == 0
 
 
-def test_card_rotate_emojis_with_multiple_emojis():
-    # Create card and pick emojis to rotate
-    card = Card(FIVE_VALID_EMOJI_NAMES)
+def test_rotate_emojis_with_multiple_emojis(card):
     emoji_data = [
         (FIVE_VALID_EMOJI_NAMES[0], 30),
         (FIVE_VALID_EMOJI_NAMES[2], -45),
         (FIVE_VALID_EMOJI_NAMES[4], 15)
     ]
-
-    # Rotate emojis and check that rotations are as expected
     card.rotate_emojis(emoji_data)
     assert card.emojis[FIVE_VALID_EMOJI_NAMES[0]].rotation == 30
+    assert card.emojis[FIVE_VALID_EMOJI_NAMES[1]].rotation == 0
     assert card.emojis[FIVE_VALID_EMOJI_NAMES[2]].rotation == 315
+    assert card.emojis[FIVE_VALID_EMOJI_NAMES[3]].rotation == 0
     assert card.emojis[FIVE_VALID_EMOJI_NAMES[4]].rotation == 15
 
-    # Check that other emojis are not affected
-    assert card.emojis[FIVE_VALID_EMOJI_NAMES[1]].rotation == 0
-    assert card.emojis[FIVE_VALID_EMOJI_NAMES[3]].rotation == 0
 
-
-def test_card_rotate_emojis_with_invalid_emoji_name():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
+def test_rotate_emojis_with_invalid_inputs(card):
+    # Invalid emoji name
     with pytest.raises(ValueError):
         card.rotate_emojis((INVALID_EMOJI_NAME, 30))
-
-
-def test_card_rotate_emojis_with_invalid_inputs():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
 
     # Single tuple of length 3
     with pytest.raises(ValueError):
@@ -371,46 +298,31 @@ def test_card_rotate_emojis_with_invalid_inputs():
         card.rotate_emojis(30.0)
 
 
-def test_card_show(mocker):
+def test_show(card, mocker):
     mock_show = mocker.patch("PIL.Image.Image.show")
-    card = Card(FIVE_VALID_EMOJI_NAMES)
     card.show()
     mock_show.assert_called_once()
 
 
-def test_card_shuffle_emojis_with_invalid_permutations():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
-    for invalid_permutation in INVALID_PERMUTATIONS:
-        with pytest.raises(ValueError):
-            card.shuffle_emojis(permutation=invalid_permutation)
+@pytest.mark.parametrize("invalid_permutation", INVALID_PERMUTATIONS)
+def test_shuffle_emojis_with_invalid_permutations(card, invalid_permutation):
+    with pytest.raises(ValueError):
+        card.shuffle_emojis(permutation=invalid_permutation)
 
 
-def test_card_shuffle_emojis_with_identity():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
-
-    # Store original order of emojis in separate list and "shuffle" with identity
+def test_shuffle_emojis_with_identity(card):
     emoji_names = card.emoji_names.copy()
-    card.shuffle_emojis(permutation=list(range(1, 6)))
-
-    # Check that order of emojis remains unchanged
-    assert card.emoji_names == emoji_names
+    shuffled_names = card.shuffle_emojis(permutation=list(range(1, 6)))
+    assert shuffled_names == emoji_names
 
 
-def test_card_shuffle_emojis_with_valid_permutation():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
-
-    # Shuffle emojis and check that order is as expected
-    card.shuffle_emojis(permutation=VALID_PERMUTATION)
-    assert card.emoji_names == FIVE_VALID_EMOJI_NAMES_SHUFFLED
+def test_shuffle_emojis_with_valid_permutation(card):
+    shuffled_names = card.shuffle_emojis(permutation=VALID_PERMUTATION)
+    assert shuffled_names == FIVE_VALID_EMOJI_NAMES_SHUFFLED
 
 
-def test_card_shuffle_emojis_without_permutation():
-    # Create playing card with 10 emojis from the classic Dobble set
+def test_shuffle_emojis_without_permutation():
     card = Card(constants.CLASSIC_DOBBLE_EMOJIS[:10])
-
-    # Store original order of emojis in separate list and shuffle randomly (i.e., w/o permutation)
     emoji_names = card.emoji_names.copy()
-    card.shuffle_emojis(seed=42)
-
-    # Check that order of emojis has been changed
-    assert card.emoji_names != emoji_names
+    shuffled_names = card.shuffle_emojis(seed=42)
+    assert shuffled_names != emoji_names

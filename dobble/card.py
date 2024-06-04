@@ -4,6 +4,9 @@ Typical usage example:
 
   >>> emoji_names = ["light bulb", "sun", "maple leaf", "unicorn", "bomb"]
   >>> dobble_card = Card(emoji_names, packing="ccir")
+  >>> dobble_card.rotate_emojis(seed=42)
+  >>> dobble_card.show()
+  >>> dobble_card_np = dobble_card.get_array()
 """
 
 
@@ -16,9 +19,10 @@ from PIL.Image import Resampling
 from . import packings
 from . import utils
 from .emoji import Emoji
+from .visual import Visual
 
 
-class Card:
+class Card(Visual):
     """A class representing an individual Dobble playing card.
 
     Attributes:
@@ -34,11 +38,11 @@ class Card:
           the card image as a NumPy array.
         get_img(outline_only=False, padding=0.05, img_size=1024): Get
           the card image as a PIL Image.
-        reset_card_rotation(): Reset the rotation of the playing card to
-          0 degrees.
         reset_emoji_rotations(emoji_names=None): Reset the rotation of
           the specified emoji(s) to 0 degrees.
-        rotate_card(degrees): Rotate the playing card by the specified
+        reset_rotation(): Reset the rotation of the playing card to 0
+          degrees.
+        rotate(degrees, seed): Rotate the playing card by the specified
           number of degrees.
         rotate_emojis(emoji_data=None, seed=None): Rotate the specified
           emoji(s).
@@ -54,7 +58,7 @@ class Card:
             packing: str = "cci",
             rotation: float = 0
     ) -> None:
-        """Initialize the instance based on the OpenMoji emoji names.
+        """Initialize the playing card.
 
         Args:
             emoji_names: A list of emoji names.  Each name needs to be
@@ -65,16 +69,19 @@ class Card:
               in degrees.
         """
 
+        # Validate emoji names
         if not utils.is_valid_emoji_name(emoji_names):
             raise ValueError(
                 "At least one of the emoji names is not valid or an empty list was passed."
             )
 
+        # Remove duplicate emoji names, if any
         unique_emoji_names = list(dict.fromkeys(emoji_names))
         if len(emoji_names) > len(unique_emoji_names):
             warnings.warn("Duplicate emoji names detected and removed.")
             emoji_names = unique_emoji_names
 
+        # Check if the packing is available
         if not utils.is_layout_available(packing, len(emoji_names)):
             if not utils.is_valid_packing(packing):
                 raise ValueError(f"Packing '{packing}' is not available.")
@@ -91,7 +98,7 @@ class Card:
 
         self.emoji_names = emoji_names
         self.packing = packing
-        self.rotation = rotation % 360
+        super().__init__(rotation=rotation)
 
         self.emojis = {name: Emoji(name) for name in emoji_names}
         self.num_emojis = len(emoji_names)
@@ -102,28 +109,7 @@ class Card:
             padding: float = 0.05,
             img_size: int = 1024
     ) -> np.ndarray:
-        """Get the card image as a NumPy array.
-
-        This method calls the ``get_img`` method and converts the
-        resulting PIL Image to a NumPy array.
-
-        Args:
-            outline_only: Whether to use the outline-only version of the
-              emojis.
-            padding: The padding around each emoji image as a fraction
-              of the image size.  Must be in the range [0, 1).
-            img_size: The size of the square image in pixels.
-
-        Returns:
-            The card image as a NumPy array.
-        """
-
-        img = self.get_img(
-            outline_only=outline_only,
-            padding=padding,
-            img_size=img_size
-        )
-        return np.array(img)
+        return super().get_array(outline_only, padding, img_size)
 
     def get_img(
             self,
@@ -186,15 +172,11 @@ class Card:
                 mask=emoji_img
             )
 
-        # Apply rotation
-        img = img.rotate(self.rotation, resample=Resampling.BICUBIC)
+        # Apply rotation, if necessary
+        if self.rotation != 0:
+            img = img.rotate(self.rotation, resample=Resampling.BICUBIC)
 
         return img
-
-    def reset_card_rotation(self) -> None:
-        """Reset the rotation of the playing card to 0 degrees."""
-
-        self.rotation = 0
 
     def reset_emoji_rotations(
             self,
@@ -232,21 +214,6 @@ class Card:
         else:
             raise ValueError("Invalid input.")
 
-    def rotate_card(
-            self,
-            degrees: float
-    ) -> None:
-        """Rotate the playing card by the specified number of degrees.
-
-        Args:
-            degrees: The number of degrees to rotate the playing card
-              by.  Positive values rotate the playing card
-              counterclockwise, while negative values lead to a
-              clockwise rotation.
-        """
-
-        self.rotation = (self.rotation + degrees) % 360
-
     def rotate_emojis(
             self,
             emoji_data: tuple[str, float] | list[tuple[str, float]] = None,
@@ -280,7 +247,7 @@ class Card:
             """Helper function to rotate a single emoji."""
 
             if emoji_name in self.emojis:
-                self.emojis[emoji_name].rotate(degrees)
+                _ = self.emojis[emoji_name].rotate(degrees)
             else:
                 raise ValueError(f"Emoji '{emoji_name}' not found on card.")
 
@@ -289,7 +256,7 @@ class Card:
 
             rng = np.random.default_rng(seed=seed)
             for emoji in self.emojis.values():
-                emoji.rotate(rng.uniform(0, 360))
+                _ = emoji.rotate(rng.uniform(0, 360))
 
         if emoji_data is None:
             rotate_all()
@@ -312,30 +279,13 @@ class Card:
             padding: float = 0.05,
             img_size: int = 1024
     ):
-        """Display the card image.
-
-        This method calls the ``get_img`` method and displays the
-        resulting PIL Image.
-
-        Args:
-            outline_only: Whether to use the outline-only version of the
-              emojis.
-            padding: The padding around each emoji image as a fraction
-              of the image size.  Must be in the range [0, 1).
-            img_size: The size of the square image in pixels.
-        """
-
-        self.get_img(
-            outline_only=outline_only,
-            padding=padding,
-            img_size=img_size
-        ).show()
+        super().show(outline_only, padding, img_size)
 
     def shuffle_emojis(
             self,
             permutation: list[int] = None,
             seed: int = None
-    ) -> None:
+    ) -> list[str]:
         """Shuffle the emojis on the card.
 
         Args:
@@ -346,13 +296,15 @@ class Card:
               initialize the random number generator, which is used to
               shuffle the emojis, allowing for reproducible shuffling.
 
+        Returns:
+            The shuffled list of emoji names.
+
         Raises:
             ValueError: If the permutation is not valid.
 
         Examples:
-            >>> card = Card(["unicorn", "dolphin", "cheese wedge", "bomb"])
-            >>> card.shuffle_emojis(permutation=[2, 3, 4, 1])
-            >>> card.emoji_names
+            >>> dobble_card = Card(["unicorn", "dolphin", "cheese wedge", "bomb"])
+            >>> dobble_card.shuffle_emojis(permutation=[2, 3, 4, 1])
             ['dolphin', 'cheese wedge', 'bomb', 'unicorn']
         """
 
@@ -364,3 +316,5 @@ class Card:
         else:
             rng = np.random.default_rng(seed=seed)
             rng.shuffle(self.emoji_names)
+
+        return self.emoji_names
