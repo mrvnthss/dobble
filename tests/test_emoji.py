@@ -227,6 +227,7 @@ def test_emoji_reset_rotation():
 
     # Rotate emoji, then reset rotation, and check that it is back to 0
     emoji.rotate(-70)
+    assert emoji.rotation != 0
     emoji.reset_rotation()
     assert emoji.rotation == 0
 
