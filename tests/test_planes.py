@@ -11,6 +11,7 @@ from dobble import utils
 NEGATIVE_NUMBER = -7
 NON_PRIME_NUMBER = 2 * 7
 SMALL_PRIME_NUMBER = 2
+PRIMES_UP_TO_50 = [num for num in range(1, 51) if utils.is_prime(num)]
 
 INVALID_PERMUTATION = np.array([2, 1, 4])
 VALID_PERMUTATION = np.array([2, 4, 1, 3])
@@ -40,11 +41,9 @@ def is_incidence_matrix_of_fpp(
     all_ones = np.ones((size, size), dtype=np.uint8)
     identity = np.eye(size, dtype=np.uint8)
 
-    is_incidence_matrix = np.all(
+    return np.all(
         matrix @ matrix.T == order * identity + all_ones
     )
-
-    return is_incidence_matrix
 
 
 def test_get_permutation_matrix_with_empty_permutation():
@@ -101,14 +100,17 @@ def test_compute_incidence_matrix_with_small_prime_number():
     assert is_incidence_matrix_of_fpp(result, SMALL_PRIME_NUMBER)
 
 
-def test_compute_incidence_matrix_with_primes_up_to_50():
-    for num in range(1, 51):
-        if utils.is_prime(num):
-            result = planes.compute_incidence_matrix(num)
-            assert is_incidence_matrix_of_fpp(result, num)
+@pytest.mark.parametrize("order", PRIMES_UP_TO_50)
+def test_compute_incidence_matrix_with_primes_up_to_50(order):
+    assert is_incidence_matrix_of_fpp(
+        planes.compute_incidence_matrix(order),
+        order
+    )
 
 
-def test_compute_incidence_matrix_with_implemented_prime_powers():
-    for num in constants.FPP_KERNELS:
-        result = planes.compute_incidence_matrix(num)
-        assert is_incidence_matrix_of_fpp(result, num)
+@pytest.mark.parametrize("order", constants.FPP_KERNELS)
+def test_compute_incidence_matrix_with_implemented_prime_powers(order):
+    assert is_incidence_matrix_of_fpp(
+        planes.compute_incidence_matrix(order),
+        order
+    )

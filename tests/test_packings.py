@@ -115,19 +115,22 @@ def test_read_coordinates_from_file_with_invalid_combo():
 
 def test_read_coordinates_from_file_with_valid_combo_cci():
     np.testing.assert_array_equal(
-        packings._read_coordinates_from_file(*VALID_COMBO_CCI), CCI3_REL_COORDINATES
+        packings._read_coordinates_from_file(*VALID_COMBO_CCI),
+        CCI3_REL_COORDINATES
     )
 
 
 def test_read_coordinates_from_file_with_valid_combo_ccir():
     np.testing.assert_array_equal(
-        packings._read_coordinates_from_file(*VALID_COMBO_CCIR), CCIR5_REL_COORDINATES
+        packings._read_coordinates_from_file(*VALID_COMBO_CCIR),
+        CCIR5_REL_COORDINATES
     )
 
 
 def test_read_coordinates_from_file_with_valid_combo_ccis():
     np.testing.assert_array_equal(
-        packings._read_coordinates_from_file(*VALID_COMBO_CCIS), CCIS5_REL_COORDINATES
+        packings._read_coordinates_from_file(*VALID_COMBO_CCIS),
+        CCIS5_REL_COORDINATES
     )
 
 
@@ -165,17 +168,29 @@ def test_read_radius_from_file_with_valid_combo_ccis():
 
 def test_compute_radii_with_negative_num_circles():
     with pytest.raises(ValueError):
-        packings._compute_radii(NEGATIVE_NUM_CIRCLES, VALID_PACKING, CCI3_LARGEST_REL_RADIUS)
+        packings._compute_radii(
+            NEGATIVE_NUM_CIRCLES,
+            VALID_PACKING,
+            CCI3_LARGEST_REL_RADIUS
+        )
 
 
 def test_compute_radii_with_float_num_circles():
     with pytest.raises(ValueError):
-        packings._compute_radii(FLOAT_NUM_CIRCLES, VALID_PACKING, CCI3_LARGEST_REL_RADIUS)
+        packings._compute_radii(
+            FLOAT_NUM_CIRCLES,
+            VALID_PACKING,
+            CCI3_LARGEST_REL_RADIUS
+        )
 
 
 def test_compute_radii_with_invalid_packing():
     with pytest.raises(ValueError):
-        packings._compute_radii(VALID_NUM_CIRCLES, INVALID_PACKING, CCI3_LARGEST_REL_RADIUS)
+        packings._compute_radii(
+            VALID_NUM_CIRCLES,
+            INVALID_PACKING,
+            CCI3_LARGEST_REL_RADIUS
+        )
 
 
 def test_compute_radii_with_negative_radius():
@@ -195,54 +210,84 @@ def test_compute_radii_with_invalid_radius():
 
 def test_compute_radii_with_valid_parameters_cci():
     np.testing.assert_array_equal(
-        packings._compute_radii(*VALID_COMBO_CCI, CCI3_LARGEST_REL_RADIUS), CCI3_REL_RADII
+        packings._compute_radii(
+            *VALID_COMBO_CCI,
+            CCI3_LARGEST_REL_RADIUS
+        ),
+        CCI3_REL_RADII
     )
 
 
 def test_compute_radii_with_valid_parameters_ccir():
     np.testing.assert_array_equal(
-        packings._compute_radii(*VALID_COMBO_CCIR, CCIR5_LARGEST_REL_RADIUS), CCIR5_REL_RADII
+        packings._compute_radii(
+            *VALID_COMBO_CCIR,
+            CCIR5_LARGEST_REL_RADIUS
+        ),
+        CCIR5_REL_RADII
     )
 
 
 def test_compute_radii_with_valid_parameters_ccis():
     np.testing.assert_array_equal(
-        packings._compute_radii(*VALID_COMBO_CCIS, CCIS5_LARGEST_REL_RADIUS), CCIS5_REL_RADII
+        packings._compute_radii(
+            *VALID_COMBO_CCIS,
+            CCIS5_LARGEST_REL_RADIUS
+        ),
+        CCIS5_REL_RADII
     )
 
 
 def test_convert_coordinates_to_pixels_with_invalid_coordinates():
     with pytest.raises(ValueError):
-        packings._convert_coordinates_to_pixels(CCI3_REL_COORDINATES + 1, VALID_IMG_SIZE)
+        packings._convert_coordinates_to_pixels(
+            CCI3_REL_COORDINATES + 1,
+            VALID_IMG_SIZE
+        )
 
 
 def test_convert_coordinates_to_pixels_with_float_img_size():
     with pytest.raises(ValueError):
-        packings._convert_coordinates_to_pixels(CCI3_REL_COORDINATES, FLOAT_IMG_SIZE)
+        packings._convert_coordinates_to_pixels(
+            CCI3_REL_COORDINATES,
+            FLOAT_IMG_SIZE
+        )
 
 
 def test_convert_coordinates_to_pixels_with_negative_img_size():
     with pytest.raises(ValueError):
-        packings._convert_coordinates_to_pixels(CCI3_REL_COORDINATES, NEGATIVE_IMG_SIZE)
+        packings._convert_coordinates_to_pixels(
+            CCI3_REL_COORDINATES,
+            NEGATIVE_IMG_SIZE
+        )
 
 
 def test_convert_coordinates_to_pixels_with_valid_parameters_cci():
     np.testing.assert_array_equal(
-        packings._convert_coordinates_to_pixels(CCI3_REL_COORDINATES, VALID_IMG_SIZE),
+        packings._convert_coordinates_to_pixels(
+            CCI3_REL_COORDINATES,
+            VALID_IMG_SIZE
+        ),
         CCI3_COORDINATES
     )
 
 
 def test_convert_coordinates_to_pixels_with_valid_parameters_ccir():
     np.testing.assert_array_equal(
-        packings._convert_coordinates_to_pixels(CCIR5_REL_COORDINATES, VALID_IMG_SIZE),
+        packings._convert_coordinates_to_pixels(
+            CCIR5_REL_COORDINATES,
+            VALID_IMG_SIZE
+        ),
         CCIR5_COORDINATES
     )
 
 
 def test_convert_coordinates_to_pixels_with_valid_parameters_ccis():
     np.testing.assert_array_equal(
-        packings._convert_coordinates_to_pixels(CCIS5_REL_COORDINATES, VALID_IMG_SIZE),
+        packings._convert_coordinates_to_pixels(
+            CCIS5_REL_COORDINATES,
+            VALID_IMG_SIZE
+        ),
         CCIS5_COORDINATES
     )
 
