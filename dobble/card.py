@@ -32,14 +32,14 @@ class Card:
     Methods:
         get_img(outline_only=False, padding=0.01, img_size=1024): Get
           the card image as a PIL Image.
-        reset_emoji_rotation(emoji_name): Reset the rotation of the
-          specified emoji to 0 degrees.
+        reset_emoji_rotations(emoji_names=None): Reset the rotation of
+          the specified emoji(s) to 0 degrees.
         reset_rotation(): Reset the rotation of the playing card to 0
           degrees.
         rotate(degrees): Rotate the playing card by the specified number
           of degrees.
-        rotate_emoji(emoji_name, degrees): Rotate the specified emoji by
-          the specified number of degrees.
+        rotate_emojis(emoji_data=None, seed=None): Rotate the specified
+          emoji(s).
         shuffle_emojis(permutation=None, seed=None): Shuffle the emojis
           on the card.
     """
@@ -158,17 +158,41 @@ class Card:
 
         return img
 
-    def reset_emoji_rotation(
+    def reset_emoji_rotations(
             self,
-            emoji_name: str
+            emoji_names: str | list[str] = None
     ) -> None:
-        """Reset the rotation of the specified emoji to 0 degrees.
+        """Reset the rotation of the specified emoji(s) to 0 degrees.
 
         Args:
-            emoji_name: The name of the emoji to reset.
+            emoji_names: The name of the emoji or a list of names of
+              emojis to reset the rotation of.  If None, the rotation of
+              all emojis is reset to 0 degrees.
+
+        Raises:
+            ValueError: If ``emoji_names`` is neither a string, a list
+              of strings, nor None.  Also raised if at least one of the
+              emoji names is not the name of an emoji on the card.
         """
 
-        self.emojis[emoji_name].reset_rotation()
+        def reset_rotation_of_single_emoji(emoji_name: str) -> None:
+            """Helper function to reset the rotation of a single emoji."""
+
+            if emoji_name in self.emojis:
+                self.emojis[emoji_name].reset_rotation()
+            else:
+                raise ValueError(f"Emoji '{emoji_name}' not found on card.")
+
+        if emoji_names is None:
+            for emoji in self.emojis:
+                reset_rotation_of_single_emoji(emoji)
+        elif isinstance(emoji_names, str):
+            reset_rotation_of_single_emoji(emoji_names)
+        elif isinstance(emoji_names, list):
+            for name in emoji_names:
+                reset_rotation_of_single_emoji(name)
+        else:
+            raise ValueError("Invalid input.")
 
     def reset_rotation(self) -> None:
         """Reset the rotation of the playing card to 0 degrees."""
@@ -190,19 +214,64 @@ class Card:
 
         self.rotation = (self.rotation + degrees) % 360
 
-    def rotate_emoji(
+    def rotate_emojis(
             self,
-            emoji_name: str,
-            degrees: float
+            emoji_data: tuple[str, float] | list[tuple[str, float]] = None,
+            seed: int = None
     ) -> None:
-        """Rotate the specified emoji.
+        """Rotate the specified emoji(s).
+
+        Rotate selected emojis on the card by a specified number of
+        degrees.
 
         Args:
-            emoji_name: The name of the emoji to rotate.
-            degrees: The number of degrees to rotate the emoji.
+            emoji_data: A tuple or list of tuples, each containing the
+                name of an emoji of the card and the number of degrees
+                to rotate it by.  If None, all emojis are rotated
+                randomly.
+            seed: If no emoji data is passed, a seed can be passed to
+                initialize the random number generator, which is used to
+                rotate the emojis, allowing for reproducible rotations.
+
+        Raises:
+            ValueError: If ``emoji_data`` is neither a tuple of length
+              2, a list of tuples of length 2, nor None.  Also raised if
+              at least one of the emoji names is not the name of an
+              emoji on the card.
         """
 
-        self.emojis[emoji_name].rotate(degrees)
+        def rotate_single_emoji(
+                emoji_name: str,
+                degrees: float
+        ) -> None:
+            """Helper function to rotate a single emoji."""
+
+            if emoji_name in self.emojis:
+                self.emojis[emoji_name].rotate(degrees)
+            else:
+                raise ValueError(f"Emoji '{emoji_name}' not found on card.")
+
+        def rotate_all() -> None:
+            """Helper function to rotate all emojis randomly."""
+
+            rng = np.random.default_rng(seed=seed)
+            for emoji in self.emojis.values():
+                emoji.rotate(rng.uniform(0, 360))
+
+        if emoji_data is None:
+            rotate_all()
+        elif isinstance(emoji_data, tuple) and len(emoji_data) == 2:
+            rotate_single_emoji(*emoji_data)
+        elif isinstance(emoji_data, list):
+            for emoji_tuple in emoji_data:
+                if isinstance(emoji_tuple, tuple) and len(emoji_tuple) == 2:
+                    rotate_single_emoji(*emoji_tuple)
+                else:
+                    raise ValueError(
+                        "At least one of the entries in the list is not a tuple of length 2."
+                    )
+        else:
+            raise ValueError("Invalid input.")
 
     def shuffle_emojis(
             self,
