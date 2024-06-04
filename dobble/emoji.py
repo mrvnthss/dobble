@@ -4,6 +4,7 @@ Typical usage example:
 
   >>> emoji = Emoji("unicorn")
   >>> emoji.rotate(-30)
+  330
   >>> emoji.show(outline_only=True)
 """
 
@@ -16,9 +17,10 @@ from PIL.Image import Resampling
 
 from . import constants
 from . import utils
+from .visual import Visual
 
 
-class Emoji:
+class Emoji(Visual):
     """A class representing a single emoji.
 
     Attributes:
@@ -31,8 +33,8 @@ class Emoji:
         get_img(outline_only=False, padding=0, img_size=618): Get the
           emoji image as a PIL Image.
         reset_rotation(): Reset the rotation of the emoji to 0 degrees.
-        rotate(degrees): Rotate the emoji by the specified number of
-          degrees.
+        rotate(degrees, seed): Rotate the emoji by the specified number
+          of degrees.
         show(outline_only=False, padding=0, img_size=618): Display the
           emoji image.
     """
@@ -42,7 +44,7 @@ class Emoji:
             name: str,
             rotation: float = 0
     ) -> None:
-        """Initialize the instance based on the OpenMoji emoji name.
+        """Initialize the emoji based on the OpenMoji name.
 
         Args:
             name: The name of the emoji.  Needs to be the name of one of
@@ -55,7 +57,7 @@ class Emoji:
             raise ValueError(f"'{name}' is not a valid emoji name.")
 
         self.name = name
-        self.rotation = rotation % 360
+        super().__init__(rotation=rotation)
 
         self._group: str = utils.get_emoji_group(name)
         self._hexcode: str = utils.get_emoji_hexcode(name)
@@ -66,28 +68,7 @@ class Emoji:
             padding: float = 0,
             img_size: int = 618
     ) -> np.ndarray:
-        """Get the emoji image as a NumPy array.
-
-        This method calls the ``get_img`` method and converts the
-        resulting PIL Image to a NumPy array.
-
-        Args:
-            outline_only: Whether to return the outline-only version of
-              the emoji.
-            padding: The padding around the image content as a fraction
-              of the image size.  Must be in the range [0, 1).
-            img_size: The size of the square image in pixels.
-
-        Returns:
-            The emoji image as a NumPy array.
-        """
-
-        img = self.get_img(
-            outline_only=outline_only,
-            padding=padding,
-            img_size=img_size
-        )
-        return np.array(img)
+        return super().get_array(outline_only, padding, img_size)
 
     def get_img(
             self,
@@ -120,49 +101,13 @@ class Emoji:
 
         return img
 
-    def reset_rotation(self) -> None:
-        """Reset the rotation of the emoji to 0 degrees."""
-
-        self.rotation = 0
-
-    def rotate(
-            self,
-            degrees: float
-    ) -> None:
-        """Rotate the emoji by the specified number of degrees.
-
-        Args:
-            degrees: The number of degrees to rotate the emoji by.
-              Positive values rotate the emoji counterclockwise, while
-              negative values lead to a clockwise rotation.
-        """
-
-        self.rotation = (self.rotation + degrees) % 360
-
     def show(
             self,
             outline_only: bool = False,
             padding: float = 0,
             img_size: int = 618
     ) -> None:
-        """Display the emoji image.
-
-        This method calls the ``get_img`` method and displays the
-        resulting PIL Image.
-
-        Args:
-            outline_only: Whether to display the outline-only version of
-              the emoji.
-            padding: The padding around the image content as a fraction
-              of the image size.  Must be in the range [0, 1).
-            img_size: The size of the square image in pixels.
-        """
-
-        self.get_img(
-            outline_only=outline_only,
-            padding=padding,
-            img_size=img_size
-        ).show()
+        super().show(outline_only, padding, img_size)
 
     def _load(
             self,
@@ -180,6 +125,4 @@ class Emoji:
 
         color = "black" if outline_only else "color"
         fpath = files(constants.OPENMOJI_DIR) / color / self._group / f"{self._hexcode}.png"
-        img = Image.open(fpath).convert("RGBA")
-
-        return img
+        return Image.open(fpath).convert("RGBA")
