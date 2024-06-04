@@ -9,13 +9,14 @@ functions, and provide functionality to load circle packing data and to
 compute incidence matrices of finite projective planes.
 
 Modules:
-    - card: Class to represent individual Dobble playing cards.
-    - constants: Project-level constants.
-    - deck: Class to represent Dobble decks.
-    - emoji: Class to represent single emojis.
-    - packings: Functionality to load circle packing data.
-    - planes: Computes incidence matrices of finite projective planes.
-    - utils: Utility functions.
+    * card: Class to represent individual Dobble playing cards.
+    * constants: Project-level constants.
+    * deck: Class to represent Dobble decks.
+    * emoji: Class to represent single emojis.
+    * packings: Functionality to load circle packing data.
+    * planes: Computes incidence matrices of finite projective planes.
+    * utils: Utility functions.
+    * visual: Base class for the Card and Emoji classes.
 """
 
 
