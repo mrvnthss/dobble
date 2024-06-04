@@ -47,6 +47,8 @@ def test_get_array_with_default_parameters(emoji):
             padding=0
         )
     )
+    assert isinstance(returned_array, np.ndarray)
+    assert returned_array.shape == (618, 618, 4)
     np.testing.assert_array_equal(returned_array, expected_array)
 
 
@@ -75,7 +77,13 @@ def test_get_img_with_non_default_parameters_and_rotation(emoji):
     expected_img = utils.rescale_img(
         Image.open(VALID_EMOJI_PATH_BLACK).convert("RGBA"),
         padding=0.05
-    ).resize((128, 128), resample=Resampling.LANCZOS).rotate(60, resample=Resampling.BICUBIC)
+    ).resize(
+        (128, 128),
+        resample=Resampling.LANCZOS
+    ).rotate(
+        60,
+        resample=Resampling.BICUBIC
+    )
     assert isinstance(returned_img, Image.Image)
     assert returned_img.size == (128, 128)
     assert returned_img.mode == "RGBA"
