@@ -1,8 +1,8 @@
 # pylint: disable=missing-function-docstring, missing-module-docstring
 
 import numpy as np
-from PIL import Image, ImageDraw
 import pytest
+from PIL import Image, ImageDraw
 
 from dobble import constants
 from dobble import utils

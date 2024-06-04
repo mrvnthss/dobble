@@ -17,9 +17,9 @@ Functions:
 """
 
 
-from importlib.resources import files
 import json
 import math
+from importlib.resources import files
 
 import numpy as np
 from PIL import Image
