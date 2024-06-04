@@ -81,8 +81,8 @@ class Emoji(Visual):
         Args:
             outline_only: Whether to return the outline-only version of
               the emoji.
-            padding: The padding around the image content as a fraction
-              of the image size.  Must be in the range [0, 1).
+            padding: The padding around the emoji image as a fraction of
+              the image size.  Must be in the range [0, 1).
             img_size: The size of the square image in pixels.
 
         Returns:
