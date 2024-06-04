@@ -32,12 +32,12 @@ class Card:
     Methods:
         get_img(outline_only=False, padding=0.01, img_size=1024): Get
           the card image as a PIL Image.
+        reset_card_rotation(): Reset the rotation of the playing card to
+          0 degrees.
         reset_emoji_rotations(emoji_names=None): Reset the rotation of
           the specified emoji(s) to 0 degrees.
-        reset_rotation(): Reset the rotation of the playing card to 0
-          degrees.
-        rotate(degrees): Rotate the playing card by the specified number
-          of degrees.
+        rotate_card(degrees): Rotate the playing card by the specified
+          number of degrees.
         rotate_emojis(emoji_data=None, seed=None): Rotate the specified
           emoji(s).
         shuffle_emojis(permutation=None, seed=None): Shuffle the emojis
@@ -158,6 +158,11 @@ class Card:
 
         return img
 
+    def reset_card_rotation(self) -> None:
+        """Reset the rotation of the playing card to 0 degrees."""
+
+        self.rotation = 0
+
     def reset_emoji_rotations(
             self,
             emoji_names: str | list[str] = None
@@ -194,12 +199,7 @@ class Card:
         else:
             raise ValueError("Invalid input.")
 
-    def reset_rotation(self) -> None:
-        """Reset the rotation of the playing card to 0 degrees."""
-
-        self.rotation = 0
-
-    def rotate(
+    def rotate_card(
             self,
             degrees: float
     ) -> None:

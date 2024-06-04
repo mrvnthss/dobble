@@ -157,6 +157,16 @@ def test_card_get_img_with_color_img():
     assert returned_img.size == (1024, 1024)
 
 
+def test_card_reset_card_rotation():
+    card = Card(FIVE_VALID_EMOJI_NAMES)
+
+    # Rotate card, then reset rotation, and check that it is back to 0
+    card.rotate_card(-70)
+    assert card.rotation != 0
+    card.reset_card_rotation()
+    assert card.rotation == 0
+
+
 def test_card_reset_emoji_rotations_with_no_input():
     # Create card and randomly rotate all emojis
     card = Card(FIVE_VALID_EMOJI_NAMES)
@@ -233,27 +243,17 @@ def test_card_reset_emoji_rotations_with_invalid_inputs():
         card.reset_emoji_rotations([FIVE_VALID_EMOJI_NAMES[0], 42, FIVE_VALID_EMOJI_NAMES[1]])
 
 
-def test_card_reset_rotation():
-    card = Card(FIVE_VALID_EMOJI_NAMES)
-
-    # Rotate card, then reset rotation, and check that it is back to 0
-    card.rotate(-70)
-    assert card.rotation != 0
-    card.reset_rotation()
-    assert card.rotation == 0
-
-
-def test_card_rotate():
+def test_card_rotate_card():
     card = Card(FIVE_VALID_EMOJI_NAMES)
 
     # Rotate card multiple times and check that rotation is as expected
-    card.rotate(30)
+    card.rotate_card(30)
     # (0 + 30) % 360 = 30
     assert card.rotation == 30
-    card.rotate(-45)
+    card.rotate_card(-45)
     # (30 - 45) % 360 = 345
     assert card.rotation == 345
-    card.rotate(15)
+    card.rotate_card(15)
     # (345 + 15) % 360 = 0
     assert card.rotation == 0
 
