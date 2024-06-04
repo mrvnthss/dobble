@@ -6,10 +6,10 @@ Typical usage example:
 """
 
 
-from collections import defaultdict
 import json
-from pathlib import Path
 import shutil
+from collections import defaultdict
+from pathlib import Path
 
 import requests
 
