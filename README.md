@@ -9,6 +9,11 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/794b38d9b11c4a9c944c4c508607d17c)](https://app.codacy.com/gh/mrvnthss/dobble/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Maintainability](https://api.codeclimate.com/v1/badges/0ffef4262adacd13c884/maintainability)](https://codeclimate.com/github/mrvnthss/dobble/maintainability)
 
+<br>
+<div align="center">
+    <img src="imgs/cards/cards.gif" alt="playing-cards" width="500">
+</div>
+
 ## Table of Contents
 
 - [References](#references)
