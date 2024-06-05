@@ -1,4 +1,4 @@
-# pylint: disable=missing-function-docstring, missing-module-docstring
+# pylint: disable=missing-function-docstring, missing-module-docstring, protected-access
 
 import numpy as np
 import pytest
@@ -11,7 +11,6 @@ from dobble import utils
 INTEGER = 41
 INTEGER_AS_FLOAT = 41.0
 NON_INTEGER = 41.5
-
 NEGATIVE_NUMBER = -7
 
 NON_PRIME_NUMBER = 2 * 7
@@ -49,6 +48,22 @@ TEST_EMOJIS = [
     ("electric coffee percolator", "extras-openmoji", "E154")
 ]
 
+VALID_GROUP_NAMES = [
+    "activities",
+    "animals-nature",
+    "component",
+    "flags",
+    "food-drink",
+    "objects",
+    "people-body",
+    "smileys-emotion",
+    "symbols",
+    "travel-places",
+    "extras-openmoji",
+    "extras-unicode"
+]
+INVALID_GROUP_NAME = "food"
+
 INVALID_PACKING = "ccid"
 VALID_NUM_CIRCLES = list(range(5, 51))
 INVALID_LAYOUTS = [
@@ -72,6 +87,21 @@ def test_get_emoji_group_with_invalid_emoji_name():
 @pytest.mark.parametrize("name, group, _", TEST_EMOJIS)
 def test_get_emoji_group_with_test_emojis(name, group, _):
     assert utils.get_emoji_group(name) == group
+
+
+def test_get_emoji_names_by_group_with_invalid_group_name():
+    with pytest.raises(ValueError):
+        utils.get_emoji_names_by_group(INVALID_GROUP_NAME)
+
+
+@pytest.mark.parametrize("valid_group_name", VALID_GROUP_NAMES)
+def test_get_emoji_names_by_group_with_valid_group_name(valid_group_name):
+    emoji_names = utils.get_emoji_names_by_group(valid_group_name)
+    assert isinstance(emoji_names, list)
+    assert all(utils.is_valid_emoji_name(emoji_name) for emoji_name in emoji_names)
+    assert all(
+        utils._META_DATA[emoji_name]["group"] == valid_group_name for emoji_name in emoji_names
+    )
 
 
 def test_get_emoji_hexcode_with_invalid_emoji_name():

@@ -3,6 +3,8 @@
 Functions:
     * get_emoji_group: Get the "group" attribute of an emoji.
     * get_emoji_hexcode: Get the "hexcode" attribute of an emoji.
+    * get_emoji_names_by_group: Get the names of all emojis in the
+        specified OpenMoji group.
     * is_integer: Check if a number is an integer.
     * is_layout_available: Check if a layout is available.
     * is_prime: Check if a number is prime.
@@ -31,6 +33,9 @@ from . import constants
 json_fpath = files(constants.OPENMOJI_DIR) / "openmoji_restructured.json"
 with json_fpath.open("r", encoding="utf-8") as json_file:
     _META_DATA = json.load(json_file)
+
+# Extract unique group names
+EMOJI_GROUPS = set(_META_DATA[emoji]["group"] for emoji in _META_DATA)
 
 
 def get_emoji_group(emoji_name: str) -> str:
@@ -69,6 +74,36 @@ def get_emoji_hexcode(emoji_name: str) -> str:
         raise ValueError(f"'{emoji_name}' is not a valid emoji name.")
 
     return _META_DATA[emoji_name]["hexcode"]
+
+
+def get_emoji_names_by_group(group: str) -> list[str]:
+    """Get the names of all emojis in the specified OpenMoji group.
+
+    Every OpenMoji emoji belongs to a unique group.  These groups can be
+    found at https://openmoji.org/library/.  This function returns
+    a list of names of all emojis in the specified group.
+
+    Args:
+        group: The name of the OpenMoji group.
+
+    Returns:
+        An alphabetically sorted list of names of all emojis in the
+        specified group.
+
+    Raises:
+        ValueError: If the ``group`` argument is not the name of a group
+          in the OpenMoji dataset.
+    """
+
+    if group not in EMOJI_GROUPS:
+        raise ValueError(f"'{group}' is not a valid emoji group.")
+
+    emoji_names = [
+        emoji for emoji in _META_DATA if _META_DATA[emoji]["group"] == group
+    ]
+    emoji_names.sort()
+
+    return emoji_names
 
 
 def is_integer(num: int | float) -> bool:
