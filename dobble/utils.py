@@ -5,6 +5,7 @@ Functions:
     * get_emoji_hexcode: Get the "hexcode" attribute of an emoji.
     * get_emoji_names_by_group: Get the names of all emojis in the
         specified OpenMoji group.
+    * get_emoji_subgroups: Get the "subgroups" attribute of an emoji.
     * is_integer: Check if a number is an integer.
     * is_layout_available: Check if a layout is available.
     * is_prime: Check if a number is prime.
@@ -104,6 +105,25 @@ def get_emoji_names_by_group(group: str) -> list[str]:
     emoji_names.sort()
 
     return emoji_names
+
+
+def get_emoji_subgroups(emoji_name: str) -> str:
+    """Get the "subgroups" attribute of an emoji.
+
+    Args:
+        emoji_name: The emoji name.
+
+    Returns:
+        The "subgroups" attribute of the emoji.
+
+    Raises:
+        ValueError: If the emoji name is not valid.
+    """
+
+    if not is_valid_emoji_name(emoji_name):
+        raise ValueError(f"'{emoji_name}' is not a valid emoji name.")
+
+    return _META_DATA[emoji_name]["subgroups"]
 
 
 def is_integer(num: int | float) -> bool:

@@ -6,6 +6,13 @@ Typical usage example:
   >>> emoji.rotate(-30)
   330
   >>> emoji.show(outline_only=True)
+  >>> print(emoji)
+  Emoji data
+    Name: unicorn
+    Hexcode: 1F984
+    Group: animals-nature
+    Subgroups: animal-mammal
+    Rotation: 330.0 degrees
 """
 
 
@@ -59,8 +66,15 @@ class Emoji(Visual):
         self.name = name
         super().__init__(rotation=rotation)
 
-        self._group: str = utils.get_emoji_group(name)
         self._hexcode: str = utils.get_emoji_hexcode(name)
+        self._group: str = utils.get_emoji_group(name)
+        self._subgroups: str = utils.get_emoji_subgroups(name)
+
+    def __repr__(self) -> str:
+        return (
+            f"Emoji data\n  Name: {self.name}\n  Hexcode: {self._hexcode}\n  Group: {self._group}"
+            f"\n  Subgroups: {self._subgroups}\n  Rotation: {self.rotation:.1f} degrees"
+        )
 
     def get_array(
             self,

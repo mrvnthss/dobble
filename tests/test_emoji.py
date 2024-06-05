@@ -39,6 +39,14 @@ def test_init_with_valid_name(emoji):
     assert emoji.rotation == 0
 
 
+def test_repr(emoji):
+    assert repr(emoji) == (
+        "Emoji data\n  Name: hand with index finger and thumb crossed: medium-light skin tone"
+        "\n  Hexcode: 1FAF0-1F3FC\n  Group: people-body\n  Subgroups: hand-fingers-partial"
+        "\n  Rotation: 0.0 degrees"
+    )
+
+
 def test_get_array_with_default_parameters(emoji):
     returned_array = emoji.get_array()
     expected_array = np.array(

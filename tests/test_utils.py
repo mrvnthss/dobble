@@ -42,27 +42,149 @@ INVALID_PADDING = 1
 
 INVALID_EMOJI_NAME = "invalid emoji name"
 TEST_EMOJIS = [
-    ("sunset", "travel-places", "1F307"),
-    ("face with tears of joy", "smileys-emotion", "1F602"),
-    ("basketball", "activities", "1F3C0"),
-    ("electric coffee percolator", "extras-openmoji", "E154")
+    ("sunset", "1F307", "travel-places", "place-other"),
+    ("face with tears of joy", "1F602", "smileys-emotion", "face-smiling"),
+    ("basketball", "1F3C0", "activities", "sport"),
+    ("electric coffee percolator", "E154", "extras-openmoji", "objects")
 ]
 
-VALID_GROUP_NAMES = [
+VALID_GROUPS = [
     "activities",
     "animals-nature",
     "component",
+    "extras-openmoji",
+    "extras-unicode",
     "flags",
     "food-drink",
     "objects",
     "people-body",
     "smileys-emotion",
     "symbols",
-    "travel-places",
-    "extras-openmoji",
-    "extras-unicode"
+    "travel-places"
 ]
-INVALID_GROUP_NAME = "food"
+VALID_SUBGROUPS = [
+    "alphanum",
+    "animal-amphibian",
+    "animal-bird",
+    "animal-bug",
+    "animal-mammal",
+    "animal-marine",
+    "animal-reptile",
+    "animals-nature",
+    "arrow",
+    "arts-crafts",
+    "av-symbol",
+    "award-medal",
+    "body-parts",
+    "book-paper",
+    "brand",
+    "cat-face",
+    "climate-environment",
+    "clothing",
+    "computer",
+    "country-flag",
+    "currency",
+    "dishware",
+    "drink",
+    "emergency",
+    "emotion",
+    "event",
+    "face-affection",
+    "face-concerned",
+    "face-costume",
+    "face-glasses",
+    "face-hand",
+    "face-hat",
+    "face-negative",
+    "face-neutral-skeptical",
+    "face-sleepy",
+    "face-smiling",
+    "face-tongue",
+    "face-unwell",
+    "family",
+    "flag",
+    "flags",
+    "food-asian",
+    "food-drink",
+    "food-fruit",
+    "food-marine",
+    "food-prepared",
+    "food-sweet",
+    "food-vegetable",
+    "game",
+    "gardening",
+    "gender",
+    "geometric",
+    "hair-style",
+    "hand-fingers-closed",
+    "hand-fingers-open",
+    "hand-fingers-partial",
+    "hand-prop",
+    "hand-single-finger",
+    "hands",
+    "healthcare",
+    "heart",
+    "hotel",
+    "household",
+    "interaction",
+    "keycap",
+    "light-video",
+    "lock",
+    "mail",
+    "math",
+    "medical",
+    "money",
+    "monkey-face",
+    "music",
+    "musical-instrument",
+    "objects",
+    "office",
+    "other-object",
+    "other-symbol",
+    "people",
+    "person",
+    "person-activity",
+    "person-fantasy",
+    "person-gesture",
+    "person-resting",
+    "person-role",
+    "person-sport",
+    "person-symbol",
+    "phone",
+    "place-building",
+    "place-geographic",
+    "place-map",
+    "place-other",
+    "place-religious",
+    "plant-flower",
+    "plant-other",
+    "punctuation",
+    "regional-indicator",
+    "religion",
+    "science",
+    "skin-tone",
+    "sky-weather",
+    "smileys-emotion",
+    "sound",
+    "sport",
+    "subdivision-flag",
+    "symbol-other",
+    "symbols",
+    "technology",
+    "time",
+    "tool",
+    "transport-air",
+    "transport-ground",
+    "transport-sign",
+    "transport-water",
+    "travel-places",
+    "ui-element",
+    "warning",
+    "writing",
+    "zodiac"
+]
+INVALID_GROUP = "food"
+INVALID_SUBGROUP = "exercise"
 
 INVALID_PACKING = "ccid"
 VALID_NUM_CIRCLES = list(range(5, 51))
@@ -84,17 +206,27 @@ def test_get_emoji_group_with_invalid_emoji_name():
         utils.get_emoji_group(INVALID_EMOJI_NAME)
 
 
-@pytest.mark.parametrize("name, group, _", TEST_EMOJIS)
-def test_get_emoji_group_with_test_emojis(name, group, _):
+@pytest.mark.parametrize("name, _, group, __", TEST_EMOJIS)
+def test_get_emoji_group_with_test_emojis(name, group, _, __):
     assert utils.get_emoji_group(name) == group
+
+
+def test_get_emoji_hexcode_with_invalid_emoji_name():
+    with pytest.raises(ValueError):
+        utils.get_emoji_hexcode(INVALID_EMOJI_NAME)
+
+
+@pytest.mark.parametrize("name, hexcode, _, __", TEST_EMOJIS)
+def test_get_emoji_hexcode_with_test_emojis(name, hexcode, _, __):
+    assert utils.get_emoji_hexcode(name) == hexcode
 
 
 def test_get_emoji_names_by_group_with_invalid_group_name():
     with pytest.raises(ValueError):
-        utils.get_emoji_names_by_group(INVALID_GROUP_NAME)
+        utils.get_emoji_names_by_group(INVALID_GROUP)
 
 
-@pytest.mark.parametrize("valid_group_name", VALID_GROUP_NAMES)
+@pytest.mark.parametrize("valid_group_name", VALID_GROUPS)
 def test_get_emoji_names_by_group_with_valid_group_name(valid_group_name):
     emoji_names = utils.get_emoji_names_by_group(valid_group_name)
     assert isinstance(emoji_names, list)
@@ -104,14 +236,14 @@ def test_get_emoji_names_by_group_with_valid_group_name(valid_group_name):
     )
 
 
-def test_get_emoji_hexcode_with_invalid_emoji_name():
+def test_get_emoji_subgroups_with_invalid_emoji_name():
     with pytest.raises(ValueError):
-        utils.get_emoji_hexcode(INVALID_EMOJI_NAME)
+        utils.get_emoji_subgroups(INVALID_EMOJI_NAME)
 
 
-@pytest.mark.parametrize("name, _, hexcode", TEST_EMOJIS)
-def test_get_emoji_hexcode_with_test_emojis(name, _, hexcode):
-    assert utils.get_emoji_hexcode(name) == hexcode
+@pytest.mark.parametrize("name, _, __, subgroups", TEST_EMOJIS)
+def test_get_emoji_subgroups_with_test_emojis(name, subgroups, _, __):
+    assert utils.get_emoji_subgroups(name) == subgroups
 
 
 def test_is_integer_with_integer():
