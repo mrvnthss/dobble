@@ -5,6 +5,8 @@ Functions:
     * get_emoji_hexcode: Get the "hexcode" attribute of an emoji.
     * get_emoji_names_by_group: Get the names of all emojis in the
         specified OpenMoji group.
+    * get_emoji_names_by_subgroup: Get the names of all emojis in the
+        specified OpenMoji subgroup.
     * get_emoji_subgroup: Get the "subgroup" attribute of an emoji.
     * is_integer: Check if a number is an integer.
     * is_layout_available: Check if a layout is available.
@@ -35,8 +37,9 @@ json_fpath = files(constants.OPENMOJI_DIR) / "openmoji_restructured.json"
 with json_fpath.open("r", encoding="utf-8") as json_file:
     _META_DATA = json.load(json_file)
 
-# Extract unique group names
+# Extract unique group and subgroup names
 EMOJI_GROUPS = set(_META_DATA[emoji]["group"] for emoji in _META_DATA)
+EMOJI_SUBGROUPS = set(_META_DATA[emoji]["subgroup"] for emoji in _META_DATA)
 
 
 def get_emoji_group(emoji_name: str) -> str:
@@ -101,6 +104,36 @@ def get_emoji_names_by_group(group: str) -> list[str]:
 
     emoji_names = [
         emoji for emoji in _META_DATA if _META_DATA[emoji]["group"] == group
+    ]
+    emoji_names.sort()
+
+    return emoji_names
+
+
+def get_emoji_names_by_subgroup(subgroup: str) -> list[str]:
+    """Get the names of all emojis in the specified OpenMoji subgroup.
+
+    Every OpenMoji emoji belongs to a unique subgroup.  These subgroups
+    can be found at https://openmoji.org/library/.  This function
+    returns a list of names of all emojis in the specified subgroup.
+
+    Args:
+        subgroup: The name of the OpenMoji subgroup.
+
+    Returns:
+        An alphabetically sorted list of names of all emojis in the
+        specified subgroup.
+
+    Raises:
+        ValueError: If the ``subgroup`` argument is not the name of a
+          subgroup in the OpenMoji dataset.
+    """
+
+    if subgroup not in EMOJI_SUBGROUPS:
+        raise ValueError(f"'{subgroup}' is not a valid emoji group.")
+
+    emoji_names = [
+        emoji for emoji in _META_DATA if _META_DATA[emoji]["subgroup"] == subgroup
     ]
     emoji_names.sort()
 

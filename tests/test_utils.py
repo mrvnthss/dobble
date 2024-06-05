@@ -236,6 +236,22 @@ def test_get_emoji_names_by_group_with_valid_group_name(valid_group_name):
     )
 
 
+def test_get_emoji_names_by_subgroup_with_invalid_subgroup_name():
+    with pytest.raises(ValueError):
+        utils.get_emoji_names_by_subgroup(INVALID_SUBGROUP)
+
+
+@pytest.mark.parametrize("valid_subgroup_name", VALID_SUBGROUPS)
+def test_get_emoji_names_by_subgroup_with_valid_subgroup_name(valid_subgroup_name):
+    emoji_names = utils.get_emoji_names_by_subgroup(valid_subgroup_name)
+    assert isinstance(emoji_names, list)
+    assert all(utils.is_valid_emoji_name(emoji_name) for emoji_name in emoji_names)
+    assert all(
+        utils._META_DATA[emoji_name]["subgroup"] == valid_subgroup_name
+        for emoji_name in emoji_names
+    )
+
+
 def test_get_emoji_subgroup_with_invalid_emoji_name():
     with pytest.raises(ValueError):
         utils.get_emoji_subgroup(INVALID_EMOJI_NAME)
