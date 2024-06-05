@@ -145,7 +145,7 @@ class Card(Visual):
         # Create empty playing card
         img = Image.new("RGBA", (img_size, img_size))
         draw = ImageDraw.Draw(img)
-        draw.ellipse((0, 0, img_size, img_size), fill="white")
+        draw.ellipse((0, 0, img_size - 1, img_size - 1), fill="white")
 
         # Retrieve packing data
         packing_data = packings.get_packing_data(
