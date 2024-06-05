@@ -42,7 +42,7 @@ def test_init_with_valid_name(emoji):
 def test_repr(emoji):
     assert repr(emoji) == (
         "Emoji data\n  Name: hand with index finger and thumb crossed: medium-light skin tone"
-        "\n  Hexcode: 1FAF0-1F3FC\n  Group: people-body\n  Subgroups: hand-fingers-partial"
+        "\n  Hexcode: 1FAF0-1F3FC\n  Group: people-body\n  Subgroup: hand-fingers-partial"
         "\n  Rotation: 0.0 degrees"
     )
 

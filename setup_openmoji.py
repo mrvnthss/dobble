@@ -218,7 +218,7 @@ def restructure_json_file() -> None:
         restructured_data[key] = {
             "hexcode": entry["hexcode"],
             "group": entry["group"],
-            "subgroups": entry["subgroups"]
+            "subgroup": entry["subgroups"]
         }
 
     # Write restructured data to JSON file

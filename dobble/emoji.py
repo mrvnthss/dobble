@@ -11,7 +11,7 @@ Typical usage example:
     Name: unicorn
     Hexcode: 1F984
     Group: animals-nature
-    Subgroups: animal-mammal
+    Subgroup: animal-mammal
     Rotation: 330.0 degrees
 """
 
@@ -68,12 +68,12 @@ class Emoji(Visual):
 
         self._hexcode: str = utils.get_emoji_hexcode(name)
         self._group: str = utils.get_emoji_group(name)
-        self._subgroups: str = utils.get_emoji_subgroups(name)
+        self._subgroup: str = utils.get_emoji_subgroup(name)
 
     def __repr__(self) -> str:
         return (
             f"Emoji data\n  Name: {self.name}\n  Hexcode: {self._hexcode}\n  Group: {self._group}"
-            f"\n  Subgroups: {self._subgroups}\n  Rotation: {self.rotation:.1f} degrees"
+            f"\n  Subgroup: {self._subgroup}\n  Rotation: {self.rotation:.1f} degrees"
         )
 
     def get_array(
