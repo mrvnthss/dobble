@@ -16,6 +16,8 @@ python = "^3.11"
 [tool.poetry.group.dev.dependencies]
 complexipy = "^0.3.3"
 coverage = "^7.3.3"
+jupyter = "^1.0.0"
+matplotlib = "^3.9.0"
 pylint = "^3.0.3"
 pytest = "^7.4.3"
 pytest-cov = "^5.0.0"
