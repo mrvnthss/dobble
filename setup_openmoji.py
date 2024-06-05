@@ -203,8 +203,8 @@ def restructure_json_file() -> None:
 
     This function restructures the JSON file provided by OpenMoji in
     such a way that the JSON file contains a dictionary with the emoji
-    "annotation" as keys and dictionaries containing the "group" and
-    "hexcode" parameters as values.
+    "annotation" as keys and dictionaries containing the "hexcode",
+    "group", and "subgroups" parameters as values.
     """
 
     # Read JSON file provided by OpenMoji
@@ -216,8 +216,9 @@ def restructure_json_file() -> None:
     for entry in openmoji_data:
         key = entry["annotation"]
         restructured_data[key] = {
+            "hexcode": entry["hexcode"],
             "group": entry["group"],
-            "hexcode": entry["hexcode"]
+            "subgroups": entry["subgroups"]
         }
 
     # Write restructured data to JSON file
