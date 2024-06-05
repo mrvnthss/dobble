@@ -5,17 +5,17 @@ and convert relative coordinates and relative radii to integer values
 (number of pixels) for use in images.
 
 Functions:
-    * _read_coordinates_from_file: Read coordinates of a specified
-        circle packing from a text file.
-    * _read_radius_from_file: Read the radius of the largest circle of a
-        specified circle packing from a text file.
+    * get_packing_data: Get data (coordinates and radii) of a specified
+        packing in pixel values.
     * _compute_radii: Compute the radii of all circles in a packing.
     * _convert_coordinates_to_pixels: Convert relative coordinates to
         pixel coordinates.
     * _convert_radii_to_pixels: Convert relative radii to number of
         pixels.
-    * get_packing_data: Get data (coordinates and radii) of a specified
-        packing in pixel values.
+    * _read_coordinates_from_file: Read coordinates of a specified
+        circle packing from a text file.
+    * _read_radius_from_file: Read the radius of the largest circle of a
+        specified circle packing from a text file.
 """
 
 
@@ -27,94 +27,43 @@ from . import constants
 from . import utils
 
 
-def _read_coordinates_from_file(
+def get_packing_data(
         num_circles: int,
-        packing: str
-) -> np.ndarray:
-    """Read coordinates of a specified circle packing from a text file.
+        packing: str,
+        img_size: int
+) -> dict[str, np.ndarray]:
+    """Get data (coordinates and radii) of a packing in pixel values.
 
     Args:
-        num_circles: Number of circles in the packing.
+        num_circles: Total number of circles in the packing.
         packing: Type of circle packing.
+        img_size: Size of the square image that coordinates and radii
+          are to be based on.
 
     Returns:
-        The coordinates of the circles in the packing as an (n x 2)
-          array, where n = ``num_circles``.
-
-    Raises:
-        ValueError: If the packing is not one of the supported packings
-          or if the number of circles is not a positive integer.
-        FileNotFoundError: If the text file for the specified packing
-          type and number of circles is not found.
+        A dictionary containing the coordinates and radii in pixel
+          values.
     """
 
-    # Check if the number of circles is a positive integer
-    if not utils.is_integer(num_circles) or num_circles < 1:
-        raise ValueError("Number of circles must be a positive integer.")
-
-    # Check if a valid packing is provided
-    if not utils.is_valid_packing(packing):
-        raise ValueError(f"Invalid packing: '{packing}' is not supported.")
-
-    # Construct the file name based on the packing type and number of circles
-    packing = packing.lower()
-    file_name = packing + str(int(num_circles)) + ".txt"
-
-    try:
-        fpath = files(constants.PACKINGS_DIR) / packing / file_name
-        with fpath.open("r") as file:
-            # Read the text file line by line
-            lines = file.readlines()
-            # Strip extra spaces from each line and split into columns
-            data = [line.strip().split() for line in lines]
-            # Convert the data to a NumPy array and skip the first column
-            data = np.array(data)[:, 1:3].astype(float)
-        return data
-    except FileNotFoundError as exc:
-        raise FileNotFoundError(
-            f"Coordinates file for '{packing}' packing with {num_circles} circles not found."
-        ) from exc
-
-
-def _read_radius_from_file(
-        num_circles: int,
-        packing: str
-) -> float:
-    """Return the radius of the largest circle of a packing.
-
-    Args:
-        num_circles: Number of circles in the packing.
-        packing: Type of circle packing.
-
-    Returns:
-        The radius of the largest circle of the specified packing.
-
-    Raises:
-        ValueError: If either the packing or the number of circles are
-          invalid, or if no radius is found for the specified
-          combination of packing type and number of circles.
-    """
-
-    # Check if the number of circles is a positive integer
-    if not utils.is_integer(num_circles) or num_circles < 1:
-        raise ValueError("Number of circles must be a positive integer.")
-
-    # Check if a valid packing is provided
-    if not utils.is_valid_packing(packing):
-        raise ValueError(f"Invalid packing: '{packing}' is not supported.")
-
-    packing = packing.lower()
-    file_name = constants.RADIUS_FILE
-
-    fpath = files(constants.PACKINGS_DIR) / packing / file_name
-    with fpath.open("r") as file:
-        for line in file:
-            values = line.strip().split()
-            if len(values) == 2 and int(values[0]) == num_circles:
-                return float(values[1])
-    raise ValueError(
-        f"No radius found for packing '{packing}' with {int(num_circles)} circles."
+    # Get coordinates
+    coordinates = _convert_coordinates_to_pixels(
+        _read_coordinates_from_file(num_circles, packing), img_size
     )
+
+    # Get radii (i.e., sizes of the circles in pixels)
+    largest_radius = _read_radius_from_file(num_circles, packing)
+    radii = _convert_radii_to_pixels(
+        _compute_radii(num_circles, packing, largest_radius),
+        img_size
+    )
+
+    # Combine into dictionary
+    packing_data = {
+        "coordinates": coordinates,
+        "radii": radii
+    }
+
+    return packing_data
 
 
 def _compute_radii(
@@ -243,40 +192,91 @@ def _convert_radii_to_pixels(
     return radii
 
 
-def get_packing_data(
+def _read_coordinates_from_file(
         num_circles: int,
-        packing: str,
-        img_size: int
-) -> dict[str, np.ndarray]:
-    """Get data (coordinates and radii) of a packing in pixel values.
+        packing: str
+) -> np.ndarray:
+    """Read coordinates of a specified circle packing from a text file.
 
     Args:
-        num_circles: Total number of circles in the packing.
+        num_circles: Number of circles in the packing.
         packing: Type of circle packing.
-        img_size: Size of the square image that coordinates and radii
-          are to be based on.
 
     Returns:
-        A dictionary containing the coordinates and radii in pixel
-          values.
+        The coordinates of the circles in the packing as an (n x 2)
+          array, where n = ``num_circles``.
+
+    Raises:
+        ValueError: If the packing is not one of the supported packings
+          or if the number of circles is not a positive integer.
+        FileNotFoundError: If the text file for the specified packing
+          type and number of circles is not found.
     """
 
-    # Get coordinates
-    coordinates = _convert_coordinates_to_pixels(
-        _read_coordinates_from_file(num_circles, packing), img_size
+    # Check if the number of circles is a positive integer
+    if not utils.is_integer(num_circles) or num_circles < 1:
+        raise ValueError("Number of circles must be a positive integer.")
+
+    # Check if a valid packing is provided
+    if not utils.is_valid_packing(packing):
+        raise ValueError(f"Invalid packing: '{packing}' is not supported.")
+
+    # Construct the file name based on the packing type and number of circles
+    packing = packing.lower()
+    file_name = packing + str(int(num_circles)) + ".txt"
+
+    try:
+        fpath = files(constants.PACKINGS_DIR) / packing / file_name
+        with fpath.open("r") as file:
+            # Read the text file line by line
+            lines = file.readlines()
+            # Strip extra spaces from each line and split into columns
+            data = [line.strip().split() for line in lines]
+            # Convert the data to a NumPy array and skip the first column
+            data = np.array(data)[:, 1:3].astype(float)
+        return data
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(
+            f"Coordinates file for '{packing}' packing with {num_circles} circles not found."
+        ) from exc
+
+
+def _read_radius_from_file(
+        num_circles: int,
+        packing: str
+) -> float:
+    """Return the radius of the largest circle of a packing.
+
+    Args:
+        num_circles: Number of circles in the packing.
+        packing: Type of circle packing.
+
+    Returns:
+        The radius of the largest circle of the specified packing.
+
+    Raises:
+        ValueError: If either the packing or the number of circles are
+          invalid, or if no radius is found for the specified
+          combination of packing type and number of circles.
+    """
+
+    # Check if the number of circles is a positive integer
+    if not utils.is_integer(num_circles) or num_circles < 1:
+        raise ValueError("Number of circles must be a positive integer.")
+
+    # Check if a valid packing is provided
+    if not utils.is_valid_packing(packing):
+        raise ValueError(f"Invalid packing: '{packing}' is not supported.")
+
+    packing = packing.lower()
+    file_name = constants.RADIUS_FILE
+
+    fpath = files(constants.PACKINGS_DIR) / packing / file_name
+    with fpath.open("r") as file:
+        for line in file:
+            values = line.strip().split()
+            if len(values) == 2 and int(values[0]) == num_circles:
+                return float(values[1])
+    raise ValueError(
+        f"No radius found for packing '{packing}' with {int(num_circles)} circles."
     )
-
-    # Get radii (i.e., sizes of the circles in pixels)
-    largest_radius = _read_radius_from_file(num_circles, packing)
-    radii = _convert_radii_to_pixels(
-        _compute_radii(num_circles, packing, largest_radius),
-        img_size
-    )
-
-    # Combine into dictionary
-    packing_data = {
-        "coordinates": coordinates,
-        "radii": radii
-    }
-
-    return packing_data

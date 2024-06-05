@@ -93,77 +93,22 @@ CCIR5_RADII = np.array([28, 40, 49, 56, 63])
 CCIS5_RADII = np.array([32, 36, 42, 51, 73])
 
 
-def test_read_coordinates_from_file_with_negative_num_circles():
-    with pytest.raises(ValueError):
-        packings._read_coordinates_from_file(NEGATIVE_NUM_CIRCLES, VALID_PACKING)
+def test_get_packing_data_with_valid_parameters_cci():
+    packing_data = packings.get_packing_data(*VALID_COMBO_CCI, VALID_IMG_SIZE)
+    np.testing.assert_array_equal(packing_data["coordinates"], CCI3_COORDINATES)
+    np.testing.assert_array_equal(packing_data["radii"], CCI3_RADII)
 
 
-def test_read_coordinates_from_file_with_float_num_circles():
-    with pytest.raises(ValueError):
-        packings._read_coordinates_from_file(FLOAT_NUM_CIRCLES, VALID_PACKING)
+def test_get_packing_data_with_valid_parameters_ccir():
+    packing_data = packings.get_packing_data(*VALID_COMBO_CCIR, VALID_IMG_SIZE)
+    np.testing.assert_array_equal(packing_data["coordinates"], CCIR5_COORDINATES)
+    np.testing.assert_array_equal(packing_data["radii"], CCIR5_RADII)
 
 
-def test_read_coordinates_from_file_with_invalid_packing():
-    with pytest.raises(ValueError):
-        packings._read_coordinates_from_file(VALID_NUM_CIRCLES, INVALID_PACKING)
-
-
-def test_read_coordinates_from_file_with_invalid_combo():
-    with pytest.raises(FileNotFoundError):
-        packings._read_coordinates_from_file(*INVALID_COMBO)
-
-
-def test_read_coordinates_from_file_with_valid_combo_cci():
-    np.testing.assert_array_equal(
-        packings._read_coordinates_from_file(*VALID_COMBO_CCI),
-        CCI3_REL_COORDINATES
-    )
-
-
-def test_read_coordinates_from_file_with_valid_combo_ccir():
-    np.testing.assert_array_equal(
-        packings._read_coordinates_from_file(*VALID_COMBO_CCIR),
-        CCIR5_REL_COORDINATES
-    )
-
-
-def test_read_coordinates_from_file_with_valid_combo_ccis():
-    np.testing.assert_array_equal(
-        packings._read_coordinates_from_file(*VALID_COMBO_CCIS),
-        CCIS5_REL_COORDINATES
-    )
-
-
-def test_read_radius_from_file_with_negative_num_circles():
-    with pytest.raises(ValueError):
-        packings._read_radius_from_file(NEGATIVE_NUM_CIRCLES, VALID_PACKING)
-
-
-def test_read_radius_from_file_with_float_num_circles():
-    with pytest.raises(ValueError):
-        packings._read_radius_from_file(FLOAT_NUM_CIRCLES, VALID_PACKING)
-
-
-def test_read_radius_from_file_with_invalid_packing():
-    with pytest.raises(ValueError):
-        packings._read_radius_from_file(VALID_NUM_CIRCLES, INVALID_PACKING)
-
-
-def test_read_radius_from_file_with_invalid_combo():
-    with pytest.raises(ValueError):
-        packings._read_radius_from_file(*INVALID_COMBO)
-
-
-def test_read_radius_from_file_with_valid_combo_cci():
-    assert packings._read_radius_from_file(*VALID_COMBO_CCI) == CCI3_LARGEST_REL_RADIUS
-
-
-def test_read_radius_from_file_with_valid_combo_ccir():
-    assert packings._read_radius_from_file(*VALID_COMBO_CCIR) == CCIR5_LARGEST_REL_RADIUS
-
-
-def test_read_radius_from_file_with_valid_combo_ccis():
-    assert packings._read_radius_from_file(*VALID_COMBO_CCIS) == CCIS5_LARGEST_REL_RADIUS
+def test_get_packing_data_with_valid_parameters_ccis():
+    packing_data = packings.get_packing_data(*VALID_COMBO_CCIS, VALID_IMG_SIZE)
+    np.testing.assert_array_equal(packing_data["coordinates"], CCIS5_COORDINATES)
+    np.testing.assert_array_equal(packing_data["radii"], CCIS5_RADII)
 
 
 def test_compute_radii_with_negative_num_circles():
@@ -328,19 +273,74 @@ def test_convert_radii_to_pixels_with_valid_parameters_ccis():
     )
 
 
-def test_get_packing_data_with_valid_parameters_cci():
-    packing_data = packings.get_packing_data(*VALID_COMBO_CCI, VALID_IMG_SIZE)
-    np.testing.assert_array_equal(packing_data["coordinates"], CCI3_COORDINATES)
-    np.testing.assert_array_equal(packing_data["radii"], CCI3_RADII)
+def test_read_coordinates_from_file_with_negative_num_circles():
+    with pytest.raises(ValueError):
+        packings._read_coordinates_from_file(NEGATIVE_NUM_CIRCLES, VALID_PACKING)
 
 
-def test_get_packing_data_with_valid_parameters_ccir():
-    packing_data = packings.get_packing_data(*VALID_COMBO_CCIR, VALID_IMG_SIZE)
-    np.testing.assert_array_equal(packing_data["coordinates"], CCIR5_COORDINATES)
-    np.testing.assert_array_equal(packing_data["radii"], CCIR5_RADII)
+def test_read_coordinates_from_file_with_float_num_circles():
+    with pytest.raises(ValueError):
+        packings._read_coordinates_from_file(FLOAT_NUM_CIRCLES, VALID_PACKING)
 
 
-def test_get_packing_data_with_valid_parameters_ccis():
-    packing_data = packings.get_packing_data(*VALID_COMBO_CCIS, VALID_IMG_SIZE)
-    np.testing.assert_array_equal(packing_data["coordinates"], CCIS5_COORDINATES)
-    np.testing.assert_array_equal(packing_data["radii"], CCIS5_RADII)
+def test_read_coordinates_from_file_with_invalid_packing():
+    with pytest.raises(ValueError):
+        packings._read_coordinates_from_file(VALID_NUM_CIRCLES, INVALID_PACKING)
+
+
+def test_read_coordinates_from_file_with_invalid_combo():
+    with pytest.raises(FileNotFoundError):
+        packings._read_coordinates_from_file(*INVALID_COMBO)
+
+
+def test_read_coordinates_from_file_with_valid_combo_cci():
+    np.testing.assert_array_equal(
+        packings._read_coordinates_from_file(*VALID_COMBO_CCI),
+        CCI3_REL_COORDINATES
+    )
+
+
+def test_read_coordinates_from_file_with_valid_combo_ccir():
+    np.testing.assert_array_equal(
+        packings._read_coordinates_from_file(*VALID_COMBO_CCIR),
+        CCIR5_REL_COORDINATES
+    )
+
+
+def test_read_coordinates_from_file_with_valid_combo_ccis():
+    np.testing.assert_array_equal(
+        packings._read_coordinates_from_file(*VALID_COMBO_CCIS),
+        CCIS5_REL_COORDINATES
+    )
+
+
+def test_read_radius_from_file_with_negative_num_circles():
+    with pytest.raises(ValueError):
+        packings._read_radius_from_file(NEGATIVE_NUM_CIRCLES, VALID_PACKING)
+
+
+def test_read_radius_from_file_with_float_num_circles():
+    with pytest.raises(ValueError):
+        packings._read_radius_from_file(FLOAT_NUM_CIRCLES, VALID_PACKING)
+
+
+def test_read_radius_from_file_with_invalid_packing():
+    with pytest.raises(ValueError):
+        packings._read_radius_from_file(VALID_NUM_CIRCLES, INVALID_PACKING)
+
+
+def test_read_radius_from_file_with_invalid_combo():
+    with pytest.raises(ValueError):
+        packings._read_radius_from_file(*INVALID_COMBO)
+
+
+def test_read_radius_from_file_with_valid_combo_cci():
+    assert packings._read_radius_from_file(*VALID_COMBO_CCI) == CCI3_LARGEST_REL_RADIUS
+
+
+def test_read_radius_from_file_with_valid_combo_ccir():
+    assert packings._read_radius_from_file(*VALID_COMBO_CCIR) == CCIR5_LARGEST_REL_RADIUS
+
+
+def test_read_radius_from_file_with_valid_combo_ccis():
+    assert packings._read_radius_from_file(*VALID_COMBO_CCIS) == CCIS5_LARGEST_REL_RADIUS

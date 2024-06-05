@@ -1,19 +1,19 @@
 """Utility functions used in the "dobble" package.
 
 Functions:
+    * get_emoji_group: Get the "group" attribute of an emoji.
+    * get_emoji_hexcode: Get the "hexcode" attribute of an emoji.
     * is_integer: Check if a number is an integer.
+    * is_layout_available: Check if a layout is available.
     * is_prime: Check if a number is prime.
     * is_prime_power: Check if a number is a prime power.
+    * is_valid_emoji_name: Check if emojis exist in the OpenMoji
+        dataset.
+    * is_valid_packing: Check if a packing is valid (i.e., implemented).
     * is_valid_permutation: Check if the argument is a valid
         permutation.
     * rescale_img: Rescale a square image to fit content within
         inscribed circle.
-    * is_valid_emoji_name: Check if emojis exist in the OpenMoji
-        dataset.
-    * get_emoji_group: Get the "group" attribute of an emoji.
-    * get_emoji_hexcode: Get the "hexcode" attribute of an emoji.
-    * is_valid_packing: Check if a packing is valid (i.e., implemented).
-    * is_layout_available: Check if a layout is available.
 """
 
 
@@ -33,6 +33,44 @@ with json_fpath.open("r", encoding="utf-8") as json_file:
     _META_DATA = json.load(json_file)
 
 
+def get_emoji_group(emoji_name: str) -> str:
+    """Get the "group" attribute of an emoji.
+
+    Args:
+        emoji_name: The emoji name.
+
+    Returns:
+        The "group" attribute of the emoji.
+
+    Raises:
+        ValueError: If the emoji name is not valid.
+    """
+
+    if not is_valid_emoji_name(emoji_name):
+        raise ValueError(f"'{emoji_name}' is not a valid emoji name.")
+
+    return _META_DATA[emoji_name]["group"]
+
+
+def get_emoji_hexcode(emoji_name: str) -> str:
+    """Get the "hexcode" attribute of an emoji.
+
+    Args:
+        emoji_name: The emoji name.
+
+    Returns:
+        The "hexcode" attribute of the emoji.
+
+    Raises:
+        ValueError: If the emoji name is not valid.
+    """
+
+    if not is_valid_emoji_name(emoji_name):
+        raise ValueError(f"'{emoji_name}' is not a valid emoji name.")
+
+    return _META_DATA[emoji_name]["hexcode"]
+
+
 def is_integer(num: int | float) -> bool:
     """Check if a number is an integer.
 
@@ -44,6 +82,31 @@ def is_integer(num: int | float) -> bool:
     """
 
     return isinstance(num, int) or (isinstance(num, float) and num.is_integer())
+
+
+def is_layout_available(
+        packing: str,
+        num_circles: int
+) -> bool:
+    """Check if a layout is available.
+
+    This function checks whether a particular combination of packing
+    type and number of circles is available.
+
+    Args:
+        packing: Type of circle packing.
+        num_circles: Total number of circles in the packing.
+
+    Returns:
+        True if the layout is available, False otherwise.
+    """
+
+    is_num_circles_valid = is_integer(num_circles) and num_circles > 0
+
+    if not is_valid_packing(packing) or not is_num_circles_valid:
+        return False
+
+    return num_circles in constants.PACKINGS_DICT[packing.lower()][1]
 
 
 def is_prime(num: int | float) -> bool:
@@ -89,6 +152,40 @@ def is_prime_power(num: int | float) -> bool:
                 state = True
                 break
     return state
+
+
+def is_valid_emoji_name(emoji_name: str | list[str]) -> bool:
+    """Check if emojis exist in the OpenMoji dataset.
+
+    Args:
+        emoji_name: The emoji name or a list of emoji names to be
+          checked.
+
+    Returns:
+        True if the emoji or all emojis in the list exist in the
+        OpenMoji dataset, False otherwise.  Returns False for empty
+        lists.
+    """
+
+    if isinstance(emoji_name, list):
+        if len(emoji_name) == 0:
+            return False
+        return all(name in _META_DATA for name in emoji_name)
+
+    return emoji_name in _META_DATA
+
+
+def is_valid_packing(packing: str) -> bool:
+    """Check if the provided packing is valid (i.e., implemented).
+
+    Args:
+        packing: Type of circle packing.
+
+    Returns:
+        True if the packing is valid, False otherwise.
+    """
+
+    return packing.lower() in constants.PACKINGS_DICT
 
 
 def is_valid_permutation(permutation: np.ndarray | list[int]) -> bool:
@@ -185,100 +282,3 @@ def rescale_img(
         img = img.crop((offset, offset, offset + img_size, offset + img_size))
 
     return img
-
-
-def is_valid_emoji_name(emoji_name: str | list[str]) -> bool:
-    """Check if emojis exist in the OpenMoji dataset.
-
-    Args:
-        emoji_name: The emoji name or a list of emoji names to be
-          checked.
-
-    Returns:
-        True if the emoji or all emojis in the list exist in the
-        OpenMoji dataset, False otherwise.  Returns False for empty
-        lists.
-    """
-
-    if isinstance(emoji_name, list):
-        if len(emoji_name) == 0:
-            return False
-        return all(name in _META_DATA for name in emoji_name)
-
-    return emoji_name in _META_DATA
-
-
-def get_emoji_group(emoji_name: str) -> str:
-    """Get the "group" attribute of an emoji.
-
-    Args:
-        emoji_name: The emoji name.
-
-    Returns:
-        The "group" attribute of the emoji.
-
-    Raises:
-        ValueError: If the emoji name is not valid.
-    """
-
-    if not is_valid_emoji_name(emoji_name):
-        raise ValueError(f"'{emoji_name}' is not a valid emoji name.")
-
-    return _META_DATA[emoji_name]["group"]
-
-
-def get_emoji_hexcode(emoji_name: str) -> str:
-    """Get the "hexcode" attribute of an emoji.
-
-    Args:
-        emoji_name: The emoji name.
-
-    Returns:
-        The "hexcode" attribute of the emoji.
-
-    Raises:
-        ValueError: If the emoji name is not valid.
-    """
-
-    if not is_valid_emoji_name(emoji_name):
-        raise ValueError(f"'{emoji_name}' is not a valid emoji name.")
-
-    return _META_DATA[emoji_name]["hexcode"]
-
-
-def is_valid_packing(packing: str) -> bool:
-    """Check if the provided packing is valid (i.e., implemented).
-
-    Args:
-        packing: Type of circle packing.
-
-    Returns:
-        True if the packing is valid, False otherwise.
-    """
-
-    return packing.lower() in constants.PACKINGS_DICT
-
-
-def is_layout_available(
-        packing: str,
-        num_circles: int
-) -> bool:
-    """Check if a layout is available.
-
-    This function checks whether a particular combination of packing
-    type and number of circles is available.
-
-    Args:
-        packing: Type of circle packing.
-        num_circles: Total number of circles in the packing.
-
-    Returns:
-        True if the layout is available, False otherwise.
-    """
-
-    is_num_circles_valid = is_integer(num_circles) and num_circles > 0
-
-    if not is_valid_packing(packing) or not is_num_circles_valid:
-        return False
-
-    return num_circles in constants.PACKINGS_DICT[packing.lower()][1]

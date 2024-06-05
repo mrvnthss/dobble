@@ -64,6 +64,26 @@ VALID_LAYOUTS = [
 ]
 
 
+def test_get_emoji_group_with_invalid_emoji_name():
+    with pytest.raises(ValueError):
+        utils.get_emoji_group(INVALID_EMOJI_NAME)
+
+
+@pytest.mark.parametrize("name, group, _", TEST_EMOJIS)
+def test_get_emoji_group_with_test_emojis(name, group, _):
+    assert utils.get_emoji_group(name) == group
+
+
+def test_get_emoji_hexcode_with_invalid_emoji_name():
+    with pytest.raises(ValueError):
+        utils.get_emoji_hexcode(INVALID_EMOJI_NAME)
+
+
+@pytest.mark.parametrize("name, _, hexcode", TEST_EMOJIS)
+def test_get_emoji_hexcode_with_test_emojis(name, _, hexcode):
+    assert utils.get_emoji_hexcode(name) == hexcode
+
+
 def test_is_integer_with_integer():
     assert utils.is_integer(INTEGER)
 
@@ -74,6 +94,31 @@ def test_is_integer_with_integer_as_float():
 
 def test_is_integer_with_non_integer():
     assert not utils.is_integer(NON_INTEGER)
+
+
+@pytest.mark.parametrize("packing", constants.PACKINGS_DICT)
+def test_is_layout_available_with_negative_num_circles(packing):
+    assert not utils.is_layout_available(packing, NEGATIVE_NUMBER)
+
+
+@pytest.mark.parametrize("packing", constants.PACKINGS_DICT)
+def test_is_layout_available_with_zero_num_circles(packing):
+    assert not utils.is_layout_available(packing, 0)
+
+
+@pytest.mark.parametrize("num_circles", VALID_NUM_CIRCLES)
+def test_is_layout_available_with_invalid_packing(num_circles):
+    assert not utils.is_layout_available(INVALID_PACKING, num_circles)
+
+
+@pytest.mark.parametrize("packing, num_circles", INVALID_LAYOUTS)
+def test_is_layout_available_with_invalid_layouts(packing, num_circles):
+    assert not utils.is_layout_available(packing, num_circles)
+
+
+@pytest.mark.parametrize("packing, num_circles", VALID_LAYOUTS)
+def test_is_layout_available_with_valid_layouts(packing, num_circles):
+    assert utils.is_layout_available(packing, num_circles)
 
 
 def test_is_prime_with_zero():
@@ -130,6 +175,30 @@ def test_is_prime_power_with_prime_power():
 
 def test_is_prime_power_with_large_prime_power():
     assert utils.is_prime_power(LARGE_PRIME_POWER)
+
+
+@pytest.mark.parametrize("emoji_name", constants.CLASSIC_DOBBLE_EMOJIS)
+def test_is_valid_emoji_name_with_classic_dobble_emojis(emoji_name):
+    assert utils.is_valid_emoji_name(emoji_name)
+    assert utils.is_valid_emoji_name([emoji_name])
+
+
+def test_is_valid_emoji_name_with_invalid_emoji_name():
+    assert not utils.is_valid_emoji_name(INVALID_EMOJI_NAME)
+    assert not utils.is_valid_emoji_name([INVALID_EMOJI_NAME])
+
+
+def test_is_valid_emoji_name_with_empty_list():
+    assert not utils.is_valid_emoji_name([])
+
+
+def test_is_valid_packing_with_invalid_packing():
+    assert not utils.is_valid_packing(INVALID_PACKING)
+
+
+@pytest.mark.parametrize("packing", constants.PACKINGS_DICT)
+def test_is_valid_packing_with_valid_packings(packing):
+    assert utils.is_valid_packing(packing)
 
 
 @pytest.mark.parametrize("invalid_permutation", INVALID_PERMUTATIONS)
@@ -203,72 +272,3 @@ def test_rescale_img_with_small_square():
     # Check that rescaled image contains more non-transparent pixels
     rescaled_img = utils.rescale_img(img, padding=0)
     assert np.sum(np.array(rescaled_img)[:, :, -1] > 0) > np.sum(np.array(img)[:, :, -1] > 0)
-
-
-@pytest.mark.parametrize("emoji_name", constants.CLASSIC_DOBBLE_EMOJIS)
-def test_is_valid_emoji_name_with_classic_dobble_emojis(emoji_name):
-    assert utils.is_valid_emoji_name(emoji_name)
-    assert utils.is_valid_emoji_name([emoji_name])
-
-
-def test_is_valid_emoji_name_with_invalid_emoji_name():
-    assert not utils.is_valid_emoji_name(INVALID_EMOJI_NAME)
-    assert not utils.is_valid_emoji_name([INVALID_EMOJI_NAME])
-
-
-def test_is_valid_emoji_name_with_empty_list():
-    assert not utils.is_valid_emoji_name([])
-
-
-def test_get_emoji_group_with_invalid_emoji_name():
-    with pytest.raises(ValueError):
-        utils.get_emoji_group(INVALID_EMOJI_NAME)
-
-
-@pytest.mark.parametrize("name, group, _", TEST_EMOJIS)
-def test_get_emoji_group_with_test_emojis(name, group, _):
-    assert utils.get_emoji_group(name) == group
-
-
-def test_get_emoji_hexcode_with_invalid_emoji_name():
-    with pytest.raises(ValueError):
-        utils.get_emoji_hexcode(INVALID_EMOJI_NAME)
-
-
-@pytest.mark.parametrize("name, _, hexcode", TEST_EMOJIS)
-def test_get_emoji_hexcode_with_test_emojis(name, _, hexcode):
-    assert utils.get_emoji_hexcode(name) == hexcode
-
-
-def test_is_valid_packing_with_invalid_packing():
-    assert not utils.is_valid_packing(INVALID_PACKING)
-
-
-@pytest.mark.parametrize("packing", constants.PACKINGS_DICT)
-def test_is_valid_packing_with_valid_packings(packing):
-    assert utils.is_valid_packing(packing)
-
-
-@pytest.mark.parametrize("packing", constants.PACKINGS_DICT)
-def test_is_layout_available_with_negative_num_circles(packing):
-    assert not utils.is_layout_available(packing, NEGATIVE_NUMBER)
-
-
-@pytest.mark.parametrize("packing", constants.PACKINGS_DICT)
-def test_is_layout_available_with_zero_num_circles(packing):
-    assert not utils.is_layout_available(packing, 0)
-
-
-@pytest.mark.parametrize("num_circles", VALID_NUM_CIRCLES)
-def test_is_layout_available_with_invalid_packing(num_circles):
-    assert not utils.is_layout_available(INVALID_PACKING, num_circles)
-
-
-@pytest.mark.parametrize("packing, num_circles", INVALID_LAYOUTS)
-def test_is_layout_available_with_invalid_layouts(packing, num_circles):
-    assert not utils.is_layout_available(packing, num_circles)
-
-
-@pytest.mark.parametrize("packing, num_circles", VALID_LAYOUTS)
-def test_is_layout_available_with_valid_layouts(packing, num_circles):
-    assert utils.is_layout_available(packing, num_circles)

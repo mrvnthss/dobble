@@ -1,10 +1,10 @@
 """Functions to compute incidence matrices of FPPs.
 
 Functions:
-    * _get_permutation_matrix: Return the permutation matrix
-        corresponding to a permutation.
     * compute_incidence_matrix: Compute the canonical incidence matrix
         of a finite projective plane.
+    * _get_permutation_matrix: Return the permutation matrix
+        corresponding to a permutation.
 """
 
 
@@ -12,32 +12,6 @@ import numpy as np
 
 from . import constants
 from . import utils
-
-
-def _get_permutation_matrix(permutation: np.ndarray) -> np.ndarray:
-    """Return the permutation matrix corresponding to a permutation.
-
-    Args:
-        permutation: The permutation to be converted to a permutation
-          matrix.
-
-    Returns:
-        The permutation matrix corresponding to the permutation.
-
-    Raises:
-        ValueError: If the argument is not a valid permutation.
-    """
-
-    # Check if the permutation is valid
-    if not utils.is_valid_permutation(permutation):
-        raise ValueError("Invalid permutation.")
-
-    # Construct permutation matrix
-    size = len(permutation)
-    permutation_matrix = np.zeros((size, size), dtype=np.uint8)
-    permutation_matrix[np.arange(size), permutation - 1] = 1
-
-    return permutation_matrix
 
 
 def compute_incidence_matrix(order: int) -> np.ndarray:
@@ -127,3 +101,29 @@ def compute_incidence_matrix(order: int) -> np.ndarray:
         incidence_matrix[start_row:end_row, start_col:end_col] = permutation_matrix
 
     return incidence_matrix
+
+
+def _get_permutation_matrix(permutation: np.ndarray) -> np.ndarray:
+    """Return the permutation matrix corresponding to a permutation.
+
+    Args:
+        permutation: The permutation to be converted to a permutation
+          matrix.
+
+    Returns:
+        The permutation matrix corresponding to the permutation.
+
+    Raises:
+        ValueError: If the argument is not a valid permutation.
+    """
+
+    # Check if the permutation is valid
+    if not utils.is_valid_permutation(permutation):
+        raise ValueError("Invalid permutation.")
+
+    # Construct permutation matrix
+    size = len(permutation)
+    permutation_matrix = np.zeros((size, size), dtype=np.uint8)
+    permutation_matrix[np.arange(size), permutation - 1] = 1
+
+    return permutation_matrix

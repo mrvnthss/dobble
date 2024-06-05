@@ -46,26 +46,6 @@ def is_incidence_matrix_of_fpp(
     )
 
 
-def test_get_permutation_matrix_with_empty_permutation():
-    with pytest.raises(ValueError):
-        planes._get_permutation_matrix(np.array([], dtype=np.uint8))
-
-
-def test_get_permutation_matrix_with_invalid_permutation():
-    with pytest.raises(ValueError):
-        planes._get_permutation_matrix(INVALID_PERMUTATION)
-
-
-def test_get_permutation_matrix_with_valid_permutation():
-    expected_matrix = np.array([[0, 1, 0, 0],
-                                [0, 0, 0, 1],
-                                [1, 0, 0, 0],
-                                [0, 0, 1, 0]], dtype=np.uint8)
-    np.testing.assert_array_equal(
-        planes._get_permutation_matrix(VALID_PERMUTATION), expected_matrix
-    )
-
-
 def test_compute_incidence_matrix_with_zero():
     with pytest.raises(ValueError):
         planes.compute_incidence_matrix(0)
@@ -113,4 +93,24 @@ def test_compute_incidence_matrix_with_implemented_prime_powers(order):
     assert is_incidence_matrix_of_fpp(
         planes.compute_incidence_matrix(order),
         order
+    )
+
+
+def test_get_permutation_matrix_with_empty_permutation():
+    with pytest.raises(ValueError):
+        planes._get_permutation_matrix(np.array([], dtype=np.uint8))
+
+
+def test_get_permutation_matrix_with_invalid_permutation():
+    with pytest.raises(ValueError):
+        planes._get_permutation_matrix(INVALID_PERMUTATION)
+
+
+def test_get_permutation_matrix_with_valid_permutation():
+    expected_matrix = np.array([[0, 1, 0, 0],
+                                [0, 0, 0, 1],
+                                [1, 0, 0, 0],
+                                [0, 0, 1, 0]], dtype=np.uint8)
+    np.testing.assert_array_equal(
+        planes._get_permutation_matrix(VALID_PERMUTATION), expected_matrix
     )
