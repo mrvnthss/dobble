@@ -4,9 +4,16 @@ Typical usage example:
 
   >>> emoji_names = ["light bulb", "sun", "maple leaf", "unicorn", "bomb"]
   >>> dobble_card = Card(emoji_names, packing="ccir")
+  >>> dobble_card.rotate(seed=42)
   >>> dobble_card.rotate_emojis(seed=42)
   >>> dobble_card.show()
   >>> dobble_card_np = dobble_card.get_array()
+  >>> print(dobble_card)
+  Card data
+    Number of emojis: 5
+    Emojis: ['light bulb', 'sun', 'maple leaf', 'unicorn', 'bomb']
+    Packing: ccir
+    Rotation: 278.6 degrees
 """
 
 
@@ -102,6 +109,12 @@ class Card(Visual):
 
         self.emojis = {name: Emoji(name) for name in emoji_names}
         self.num_emojis = len(emoji_names)
+
+    def __repr__(self) -> str:
+        return (
+            f"Card data\n  Number of emojis: {self.num_emojis}\n  Emojis: {self.emoji_names}"
+            f"\n  Packing: {self.packing}\n  Rotation: {self.rotation:.1f} degrees"
+        )
 
     def get_array(
             self,

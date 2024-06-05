@@ -121,6 +121,13 @@ def test_init_with_valid_parameters(card):
         assert isinstance(card.emojis[name], Emoji)
 
 
+def test_repr(card):
+    assert repr(card) == (
+        "Card data\n  Number of emojis: 5\n  Emojis: ['unicorn', 'dolphin', 'cheese wedge', "
+        "'bomb', 'ice']\n  Packing: ccir\n  Rotation: 0.0 degrees"
+    )
+
+
 def test_get_array_with_default_parameters(card):
     returned_array = card.get_array()
     assert isinstance(returned_array, np.ndarray)
