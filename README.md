@@ -11,7 +11,7 @@
 
 <br>
 <div align="center">
-    <img src="imgs/cards/cards.gif" alt="playing-cards" width="500">
+    <img src="imgs/cards/card_examples.gif" alt="playing-cards" width="500">
 </div>
 
 ## Table of Contents
