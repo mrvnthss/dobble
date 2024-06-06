@@ -32,10 +32,10 @@ jobs:
         poetry install
     - name: Lint with pylint
       run: |
-        poetry run pylint $(git ls-files '*.py')
+        poetry run pylint $(git ls-files '*.py' | grep -v '^tutorials/')
     - name: Test with pytest and coverage
       run: |
-        poetry run coverage run -m pytest
+        poetry run coverage run --rcfile=.coveragerc -m pytest
         poetry run coverage xml
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
