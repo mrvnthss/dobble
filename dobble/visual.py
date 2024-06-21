@@ -12,7 +12,8 @@ class Visual(ABC):
 
     This class serves as a base class for the Card and Emoji classes.
 
-    NOTE: This class is not intended to be used directly by the user.
+    Note:
+        This class is not intended to be used directly by the user.
 
     Attributes:
         rotation: The counterclockwise rotation of the visual element in
@@ -52,7 +53,8 @@ class Visual(ABC):
     ) -> Image.Image:
         """Get the image as a PIL Image.
 
-        NOTE: This method needs to be implemented in each subclass.
+        Note:
+            This method needs to be implemented in each subclass.
 
         Args:
             outline_only: Whether to return/use the outline-only version
