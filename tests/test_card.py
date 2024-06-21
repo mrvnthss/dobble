@@ -170,6 +170,42 @@ def test_get_img_with_rotation(card, mocker):
     mock_rotate.assert_called_once_with(60, resample=Resampling.BICUBIC)
 
 
+def test_get_layout_with_invalid_parameters(card):
+    with pytest.raises(ValueError):
+        card.get_layout(padding=NEGATIVE_PADDING)
+    with pytest.raises(ValueError):
+        card.get_layout(padding=INVALID_PADDING)
+    with pytest.raises(ValueError):
+        card.get_layout(img_size=NEGATIVE_IMG_SIZE)
+    with pytest.raises(ValueError):
+        card.get_layout(img_size=FLOAT_IMG_SIZE)
+
+
+def test_get_layout_with_default_parameters(card):
+    returned_img = card.get_layout()
+    assert isinstance(returned_img, Image.Image)
+    assert returned_img.size == (1024, 1024)
+    assert returned_img.mode == "RGBA"
+
+
+def test_get_layout_with_non_default_parameters(card):
+    returned_img = card.get_layout(
+        padding=0.1,
+        img_size=512
+    )
+    assert isinstance(returned_img, Image.Image)
+    assert returned_img.size == (512, 512)
+    assert returned_img.mode == "RGBA"
+
+
+@pytest.mark.parametrize("num_emojis", list(range(27, 51)))
+def test_get_layout_with_too_many_emojis(num_emojis):
+    emoji_names = constants.CLASSIC_DOBBLE_EMOJIS[:num_emojis]
+    card = Card(emoji_names)
+    with pytest.raises(ValueError):
+        card.get_layout()
+
+
 def test_reset_emoji_rotations_with_no_input(card):
     card.rotate_emojis(seed=42)
     assert _all_emojis_rotated(card)
@@ -309,6 +345,23 @@ def test_show(card, mocker):
     mock_show = mocker.patch("PIL.Image.Image.show")
     card.show()
     mock_show.assert_called_once()
+
+
+@pytest.mark.parametrize("num_emojis", list(range(5, 27)))
+def test_show_layout(num_emojis, mocker):
+    emoji_names = constants.CLASSIC_DOBBLE_EMOJIS[:num_emojis]
+    card = Card(emoji_names)
+    mock_show = mocker.patch("PIL.Image.Image.show")
+    card.show_layout()
+    mock_show.assert_called_once()
+
+
+@pytest.mark.parametrize("num_emojis", list(range(27, 51)))
+def test_show_layout_with_too_many_emojis(num_emojis):
+    emoji_names = constants.CLASSIC_DOBBLE_EMOJIS[:num_emojis]
+    card = Card(emoji_names)
+    with pytest.raises(ValueError):
+        card.show_layout()
 
 
 @pytest.mark.parametrize("invalid_permutation", INVALID_PERMUTATIONS)

@@ -17,6 +17,7 @@ Typical usage example:
 """
 
 
+import string
 import warnings
 
 import numpy as np
@@ -45,6 +46,8 @@ class Card(Visual):
           the card image as a NumPy array.
         get_img(outline_only=False, padding=0.05, img_size=1024): Get
           the card image as a PIL Image.
+        get_layout(padding=0.05, img_size=1024): Get a visualization of
+          the card's layout as a PIL image.
         reset_emoji_rotations(emoji_names=None): Reset the rotation of
           the specified emoji(s) to 0 degrees.
         reset_rotation(): Reset the rotation of the playing card to 0
@@ -55,6 +58,8 @@ class Card(Visual):
           emoji(s).
         show(outline_only=False, padding=0.05, img_size=1024): Display
           the card image.
+        show_layout(outline_only=False, padding=0.05, img_size=1024):
+          Display the card's layout and the card image.
         shuffle_emojis(permutation=None, seed=None): Shuffle the emojis
           on the card.
     """
@@ -191,6 +196,68 @@ class Card(Visual):
 
         return img
 
+    def get_layout(
+            self,
+            padding: float = 0.05,
+            img_size: int = 1024
+    ) -> Image.Image:
+        """Get a visualization of the card's layout as a PIL image.
+
+        Note:
+            This method is only available for cards containing up to 26
+            emojis.
+
+        Args:
+            padding: The padding around each emoji image as a fraction
+              of the image size.  Must be in the range [0, 1).
+            img_size: The size of the square image in pixels.
+
+        Returns:
+            A visualization of the card's layout as a PIL Image.
+
+        Raises:
+            ValueError: If the method is being called from a Card
+              instance containing more than 26 emojis.
+        """
+
+        if self.num_emojis > 26:
+            raise ValueError(
+                "The 'get_layout' method is not available for cards with more than 26 emojis."
+            )
+
+        # Store card parameters to be restored at the end of this function
+        card_params = {
+            "emoji_names": self.emoji_names.copy(),
+            "emojis": self.emojis.copy()
+        }
+
+        try:
+            # Retrieve current emoji rotations
+            emoji_rotations = [emoji.rotation for emoji in self.emojis.values()]
+
+            # Temporarily replace emojis with letters from the alphabet
+            letters = string.ascii_uppercase[:self.num_emojis]
+            self.emoji_names = [f"regional indicator {letter}" for letter in letters]
+            self.emojis = {name: Emoji(name) for name in self.emoji_names}
+
+            # Apply appropriate rotations to emojis
+            for emoji, rotation in zip(self.emojis.values(), emoji_rotations):
+                emoji.rotate(rotation)
+
+            # Retrieve card image
+            layout_img = self.get_img(
+                outline_only=True,
+                padding=padding,
+                img_size=img_size
+            )
+
+        finally:
+            # Reset card parameters
+            self.emoji_names = card_params["emoji_names"]
+            self.emojis = card_params["emojis"]
+
+        return layout_img
+
     def reset_emoji_rotations(
             self,
             emoji_names: str | list[str] = None
@@ -291,8 +358,56 @@ class Card(Visual):
             outline_only: bool = False,
             padding: float = 0.05,
             img_size: int = 1024
-    ):
+    ) -> None:
         super().show(outline_only, padding, img_size)
+
+    def show_layout(
+            self,
+            outline_only: bool = False,
+            padding: float = 0.05,
+            img_size: int = 1024
+    ) -> None:
+        """Display the card's layout and the card image.
+
+        This function displays the card's layout next to the card image
+        itself.  This can be helpful when trying to achieve a particular
+        card appearance (e.g., by swapping and/or rotating emojis).
+
+        Args:
+            outline_only: Whether to use the outline-only version of the
+              emojis.
+            padding: The padding around each emoji image as a fraction
+              of the image size.  Must be in the range [0, 1).
+            img_size: The size of each of the two square images in
+              pixels.  The image that is displayed by this function is
+              ``2 * img_size`` pixels wide and ``img_size`` pixels high.
+
+        Raises:
+            ValueError: If the method is being called from a Card
+              instance containing more than 26 emojis.
+        """
+
+        if self.num_emojis > 26:
+            raise ValueError(
+                "The 'show_layout' method is not available for cards with more than 26 emojis."
+            )
+
+        # Retrieve images
+        card_img = self.get_img(
+            outline_only=outline_only,
+            padding=padding,
+            img_size=img_size
+        )
+        layout_img = self.get_layout(
+            padding=padding,
+            img_size=img_size
+        )
+
+        # Arrange images next to each other, then display image
+        final_img = Image.new("RGBA", (2 * img_size, img_size))
+        final_img.paste(card_img, (0, 0))
+        final_img.paste(layout_img, (img_size, 0))
+        final_img.show()
 
     def shuffle_emojis(
             self,
