@@ -67,8 +67,6 @@ class Visual(ABC):
             The image as a PIL Image in RGBA mode.
         """
 
-        raise NotImplementedError
-
     def get_array(
             self,
             outline_only: bool,
