@@ -188,3 +188,7 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Dependency management
+/.python-version
+/poetry.lock
