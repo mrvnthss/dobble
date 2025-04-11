@@ -1,17 +1,28 @@
-[tool.poetry]
+[project]
 name = "dobble"
 version = "0.1.0"
 description = "A Python package for generating individual Dobble playing cards and full decks with customizable emojis and layouts."
-authors = ["Marvin Theiss <mrvnthss@mail.de>"]
-license = "GNU General Public License v3.0"
+authors = [
+    {name = "Marvin Theiss",email = "mrvnthss@mail.de"}
+]
+license = {text = "GPL-3.0-only"}
 readme = "README.md"
-include = ["data/*"]
+requires-python = ">=3.11"
+dependencies = [
+    "numpy (>=1.26.2,<2.0.0)",
+    "pandas (>=2.1.4,<3.0.0)",
+    "pillow (>=10.1.0,<11.0.0)",
+]
 
-[tool.poetry.dependencies]
-numpy = "^1.26.2"
-pandas = "^2.1.4"
-pillow = "^10.1.0"
-python = "^3.11"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+include = [
+    "data/*"
+]
 
 [tool.poetry.group.dev.dependencies]
 complexipy = "^0.3.3"
@@ -23,7 +34,3 @@ pytest = "^7.4.3"
 pytest-cov = "^5.0.0"
 pytest-mock = "^3.14.0"
 requests = "^2.32.2"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
